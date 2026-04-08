@@ -18,15 +18,26 @@ Both webapps have **minimal test coverage** - only example/scaffold tests exist.
 
 ---
 
+## Important Note
+
+**The `promo` and `fromo` packages do not exist in frontend-monorepo.** The Users Page UI may be:
+1. In the **monolith** (legacy code)
+2. In `org-management` webapp (new, under development)
+3. Rendered by a different system
+
+---
+
 ## Test Files Found
 
 ### org-management (Pterodactyl-owned)
 
 | File | Tests | Status |
 |------|-------|--------|
-| `webapps/org-management/src/pages/Example/__tests__/ExamplePage-test.tsx` | 1 scaffold test | **PLACEHOLDER ONLY** |
+| `src/pages/Example/__tests__/ExamplePage-test.tsx` | `it('renders the example page with correct content')` | **SCAFFOLD ONLY** |
+| `cypress/e2e/organization-management-tests.js` | `it('Visits the app')` - visits `/provider/organization-management` | **SMOKE ONLY** |
+| `webpack/__tests__/bundles-tests.ts` | `it('has valid bundle names')` - validates webpack bundles | **INFRA ONLY** |
 
-**Gap:** No actual user management, role management, or permissions tests.
+**Gap:** No actual user management, role management, or permissions tests. This appears to be a **new webapp in early development**.
 
 ---
 
@@ -45,6 +56,15 @@ The following tests exist but are owned by **other teams** (patient-booking):
 | `api/permissionSettings/__tests__/getUserSavedData-tests.ts` | API calls for saved data | @Zocdoc/patient-booking |
 
 **Note:** These are for **patient-side** data privacy permissions (GDPR/CCPA), not practice user management.
+
+#### Role-Based Access Tests (`provider-dashboard-web-app`)
+
+| File | What It Tests | Owner |
+|------|---------------|-------|
+| `features/appointment-report/utils/__tests__/accessChecks-test.ts` | `isFullAdminUser`, `isAppointmentManagementUser`, `isInternalUser` role checks | @Zocdoc/provider-dashboard |
+| Same file | `canAccessAppointmentLinks`, `canAccessDisputeActions` permission checks | @Zocdoc/provider-dashboard |
+
+**Note:** These test role-checking utility functions but are owned by another team.
 
 ---
 

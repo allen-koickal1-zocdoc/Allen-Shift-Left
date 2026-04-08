@@ -1,14 +1,12 @@
 # Lambdas, Crons & Workers Inventory - Pterodactyl Team
 
-## Ownership Clarification
+## Ownership
 
-**Confirmed Pterodactyl-owned repositories** (owner-email: technology-provider-pterodactyl@zocdoc.com):
+**Pterodactyl-owned repositories:**
 1. practice-user-permissions
 2. practice-authorization-proxy
 3. provider-grouping
-
-**NOT owned by Pterodactyl:**
-- `provider-join-service` - Owned by provider-peacock-team (technology-providergrowth@zocdoc.com)
+4. provider-join-service
 
 ---
 
@@ -81,22 +79,42 @@
 
 ---
 
+## provider-join-service
+
+### Lambdas
+
+| Lambda Name | Purpose | Has Tests? | Test Location |
+|-------------|---------|------------|---------------|
+| `AbandonmentLambda` | Processes abandoned signup leads | YES (minimal) | `ProviderJoinService.AbandonmentLambda.Tests/FunctionTest.cs` |
+
+### Step Functions
+
+| Step Function | Purpose | Has Tests? |
+|---------------|---------|------------|
+| Provider Signup Flow | Orchestrates provider self-signup | **NO** - `StepFunctionService` untested |
+
+**Note:** The `StepFunctionService` that interacts with AWS Step Functions has **zero tests** - this is a critical gap.
+
+---
+
 ## Summary
 
 ### Total Background Jobs
 
-| Repository | Lambdas | Crons | Workers | Total |
-|------------|---------|-------|---------|-------|
-| provider-grouping | 9 | 1 | 1 | 11 |
-| practice-user-permissions | 12 | 1 | 1 | 14 |
-| practice-authorization-proxy | 0 | 0 | 0 | 0 |
-| **Total** | **21** | **2** | **2** | **25** |
+| Repository | Lambdas | Crons | Workers | Step Functions | Total |
+|------------|---------|-------|---------|----------------|-------|
+| provider-grouping | 9 | 1 | 1 | 0 | 11 |
+| practice-user-permissions | 12 | 1 | 1 | 0 | 14 |
+| practice-authorization-proxy | 0 | 0 | 0 | 0 | 0 |
+| provider-join-service | 1 | 0 | 0 | 1 | 2 |
+| **Total** | **22** | **2** | **2** | **1** | **27** |
 
 ### Test Coverage Gaps
 
 | Component | Repository | Issue | Priority |
 |-----------|------------|-------|----------|
 | `provider-grouping-monolith-sync` | provider-grouping | **NO TESTS** | P0 |
+| `StepFunctionService` | provider-join-service | **NO TESTS** | P0 |
 | `practice-user-permissions-worker` | practice-user-permissions | No unit tests (only integration) | P1 |
 
 ---
@@ -106,6 +124,8 @@
 ### P0 - Critical
 
 1. **Add tests for `provider-grouping-monolith-sync` lambda** - This lambda handles syncing organization membership/metadata changes to the monolith with zero test coverage.
+
+2. **Add tests for `StepFunctionService` in provider-join-service** - Critical for provider self-signup abandonment flow.
 
 ### P1 - High
 

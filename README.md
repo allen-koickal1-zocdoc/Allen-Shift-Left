@@ -18,8 +18,7 @@ Comprehensive test coverage analysis for the **Provider Account & User Setup (Pt
 | [practice-user-permissions](https://github.com/Zocdoc/practice-user-permissions) | Fine-grained authorization for practice users (PUP) | PR201 (PHI) | [Report](analysis/practice-user-permissions.md) |
 | [practice-authorization-proxy](https://github.com/Zocdoc/practice-authorization-proxy) | Proxy for OKTA FGA requests | PR201 (PHI) | [Report](analysis/practice-authorization-proxy.md) |
 | [provider-grouping](https://github.com/Zocdoc/provider-grouping) | Provider Organizations & Groups (POGS) | PR001 | [Report](analysis/provider-grouping.md) |
-
-> **Note:** `provider-join-service` is owned by **provider-peacock-team** (technology-providergrowth@zocdoc.com), not Pterodactyl.
+| [provider-join-service](https://github.com/Zocdoc/provider-join-service) | Provider self-signup flow | TBD | [Report](analysis/provider-join-service.md) |
 
 ## Services & Infrastructure
 
@@ -87,6 +86,7 @@ Each repository has a dedicated analysis report containing:
 - [Lambdas/Crons/Workers](analysis/lambdas-crons-workers.md) - Background jobs inventory
 - [Cypress E2E Tests](analysis/cypress-e2e-tests.md) - End-to-end test coverage
 - [Frontend Unit Tests](analysis/frontend-tests.md) - **CRITICAL: Zero tests exist**
+- [Selenium Tests](analysis/selenium-tests.md) - Monolith Selenium tests
 
 ---
 

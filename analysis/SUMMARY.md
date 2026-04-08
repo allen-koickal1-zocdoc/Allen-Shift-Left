@@ -9,8 +9,7 @@
 | practice-user-permissions | 94 | ~870 | 75-80% | PracticeBlockedService, BatchGetEntityDirectUsersCount |
 | practice-authorization-proxy | 4 (+3 placeholder) | 30 | 70-75% | AuthorizationImpl unit tests, 3 placeholder tests |
 | provider-grouping | 31 | ~200 | 65-75% | StrategicLambdaHandler (IGNORED), MonolithSyncLambda |
-
-> **Note:** `provider-join-service` is owned by provider-peacock-team, not Pterodactyl.
+| provider-join-service | 55 | ~300 | 60-70% | StepFunctionService, CreatePracticeDtoFactory |
 
 ### Frontend & E2E
 
