@@ -79,6 +79,7 @@ Each repository has a dedicated analysis report containing:
 
 ## Quick Links
 
+- **[MASTER INVENTORY](analysis/MASTER-INVENTORY.md) - Complete count of ALL tests**
 - [Consolidated Summary](analysis/SUMMARY.md) - Cross-repo findings and priorities
 - [Gap Analysis](analysis/GAPS.md) - All missing tests across repos
 - [Obsolete Tests](analysis/OBSOLETE.md) - Tests to consider removing

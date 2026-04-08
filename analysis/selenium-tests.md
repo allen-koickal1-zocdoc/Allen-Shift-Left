@@ -2,37 +2,36 @@
 
 ## Summary
 
-Selenium tests for Pterodactyl features are located in **zocdoc_web monolith** under `SeleniumTests/SeleniumTests/Tests/`.
+**Total: 89+ tests** in zocdoc_web monolith under `SeleniumTests/SeleniumTests/Tests/`
 
 ---
 
 ## Test Inventory
 
-### User & Practice User Management
+### User & Practice User Management (23 tests)
 
-| File | Description |
-|------|-------------|
-| `Tests/API/UserManagementApiTests.cs` | User management API tests |
-| `Tests/API/PracticeUserManagementApiTests.cs` | Practice user management API tests |
-| `Tests/API/OrganizationUserApiTests.cs` | Organization user API tests |
+| File | Tests | Description |
+|------|-------|-------------|
+| `Tests/API/UserManagementApiTests.cs` | 5 | User management API tests |
+| `Tests/API/PracticeUserManagementApiTests.cs` | 17 | Practice user management API tests |
+| `Tests/API/OrganizationUserApiTests.cs` | 1 | Organization user API tests |
 
-### Permissions & Authorization (FGA/RBAC)
+### Permissions & Authorization (FGA/RBAC) (37 tests)
 
-| File | Description |
-|------|-------------|
-| `Tests/ProviderDashboard/PermissionCheckerFgaTest.cs` | FGA permission checker tests |
-| `Tests/API/PracticeUserPermissionsMultiProviderLoginLogic.cs` | Multi-provider login permissions |
-| `Tests/ProviderConfigApiFgaAuthTests.cs` | Provider config FGA auth tests |
-| `Tests/API/BulkProfileCompletionFgaAuthTests.cs` | Bulk profile completion FGA auth |
-| `Tests/API/SelfSignUp/SelfSignUpFgaAuthTests.cs` | Self sign-up FGA auth tests |
-| `Tests/API/SelfSignUp/ProviderSelfSignUpFgaAuthTests.cs` | Provider self sign-up FGA auth |
-| `Tests/ProviderDashboard/ProviderDashboardRbacControllerHttpTests.cs` | Provider dashboard RBAC tests |
+| File | Tests | Description |
+|------|-------|-------------|
+| `Tests/ProviderDashboard/PermissionCheckerFgaTest.cs` | 2 | FGA permission checker tests |
+| `Tests/API/PracticeUserPermissionsMultiProviderLoginLogic.cs` | 1 | Multi-provider login permissions |
+| `Tests/ProviderConfigApiFgaAuthTests.cs` | 3 | Provider config FGA auth tests |
+| `Tests/ProviderDashboard/ProviderDashboardRbacControllerHttpTests.cs` | 31 | Provider dashboard RBAC tests |
+| `Tests/API/SelfSignUp/SelfSignUpFgaAuthTests.cs` | TBD | Self sign-up FGA auth tests |
+| `Tests/API/SelfSignUp/ProviderSelfSignUpFgaAuthTests.cs` | TBD | Provider self sign-up FGA auth |
 
-### Role Management
+### Role Management (29 tests)
 
-| File | Description |
-|------|-------------|
-| `Tests/API/PracticeUserRolesPrivateApiTest.cs` | Practice user roles private API tests |
+| File | Tests | Description |
+|------|-------|-------------|
+| `Tests/API/PracticeUserRolesPrivateApiTest.cs` | 29 | Practice user roles private API tests |
 
 ### Practice Authorization
 
