@@ -370,9 +370,11 @@ Contributing factors:
 
 ---
 
-## Related Analyses
+## Trend Analysis Batches
 
-### [Audit Request Analysis](audit-request-analysis/README.md)
+Each batch is analyzed in isolation to preserve distinct patterns.
+
+### [Batch 1: Audit Request Analysis](audit-request-analysis/README.md)
 **45 tickets** — Providers dispute account changes, CX requests audit logs
 
 | Cluster | Count | Root Cause |
@@ -389,7 +391,7 @@ Contributing factors:
 
 ---
 
-### [Propagation Delay Analysis](propagation-delay-analysis/README.md)
+### [Batch 2: Propagation Delay Analysis](propagation-delay-analysis/README.md)
 **8 tickets** — Data sync/propagation delays between systems
 
 | Cluster | Count | Root Cause |
@@ -401,3 +403,18 @@ Contributing factors:
 | Billing/Reports | 1 | Report loading failures |
 
 **Key Finding:** All have `Updation-Delay-Required-Action` label
+
+---
+
+### [Batch 3: Mixed Issues Analysis](batch-03-mixed-issues/README.md)
+**13 tickets** — Mixed root causes (no single dominant pattern)
+
+| Category | Count | Root Cause |
+|----------|-------|------------|
+| IP/Security Blocking | 5 | Security mechanisms working as designed |
+| Actual Bugs | 4 | Timezone, availability, review count issues |
+| Data Propagation | 2 | Legacy data sync, calendar integration |
+| Working as Intended | 1 | Location deletion blocked correctly |
+| Misfiled | 1 | Hardware issue (not software) |
+
+**Key Finding:** 38% are IP blocks — need CX playbook, not engineering

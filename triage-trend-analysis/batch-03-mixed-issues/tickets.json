@@ -1,0 +1,144 @@
+{
+  "analysisDate": "2026-04-10",
+  "batchNumber": 3,
+  "totalTickets": 13,
+  "categoryBreakdown": {
+    "ipSecurityBlocking": 5,
+    "actualBugs": 4,
+    "dataPropagation": 2,
+    "workingAsIntended": 1,
+    "misfiled": 1
+  },
+  "tickets": [
+    {
+      "key": "TRIAG-22871",
+      "summary": "Access Blocked/IP address blocked",
+      "productArea": ["Provider-Auth", "SRE"],
+      "labels": ["Redirected", "issue-type-functional", "triage-issue"],
+      "status": "Closed",
+      "resolution": "Won't Fix",
+      "category": "IP/Security Blocking",
+      "description": "Provider receiving 'Access Blocked' message when trying to log in"
+    },
+    {
+      "key": "TRIAG-22902",
+      "summary": "Provider Can't Access Account",
+      "productArea": "Provider-Auth",
+      "labels": ["Redirected", "issue-type-security", "triage-issue"],
+      "status": "Closed",
+      "resolution": "Done",
+      "category": "IP/Security Blocking",
+      "description": "Provider unable to access account due to security block"
+    },
+    {
+      "key": "TRIAG-22951",
+      "summary": "Access temporarily restricted",
+      "productArea": "SRE",
+      "labels": ["Redirected", "issue-type-usability", "triage-issue"],
+      "status": "Closed",
+      "resolution": "Closed",
+      "category": "IP/Security Blocking",
+      "description": "User receiving 'Access temporarily restricted' message"
+    },
+    {
+      "key": "TRIAG-22863",
+      "summary": "Login Access Error",
+      "productArea": "SRE",
+      "labels": ["Redirected", "issue-type-functional", "triage-issue"],
+      "status": "Closed",
+      "resolution": "Won't Do",
+      "category": "IP/Security Blocking",
+      "description": "Practice users receiving error messages when accessing Zocdoc platform"
+    },
+    {
+      "key": "TRIAG-22333",
+      "summary": "Users unable to login",
+      "productArea": "SRE",
+      "labels": ["Redirected", "issue-type-security", "triage-issue"],
+      "status": "Closed",
+      "resolution": "Done",
+      "category": "IP/Security Blocking",
+      "description": "Multiple users at practice getting 'Access Blocked' error - IP-based security block"
+    },
+    {
+      "key": "TRIAG-22711",
+      "summary": "Time zone issue across multiple locations",
+      "productArea": "Integrated-Availability",
+      "labels": ["Redirected", "issue-type-functional", "triage-issue"],
+      "status": "Closed",
+      "resolution": "Closed",
+      "category": "Actual Bug",
+      "description": "Provider with locations in MST and PST experiencing incorrect calendar hour display after DST change"
+    },
+    {
+      "key": "TRIAG-22550",
+      "summary": "Availability not showing on Marketplace",
+      "productArea": "Practice-SKU-Management",
+      "labels": ["Redirected", "issue-type-functional", "triage-issue"],
+      "status": "Closed",
+      "resolution": "Done",
+      "category": "Actual Bug",
+      "description": "Availability not propagating to marketplace for specific provider"
+    },
+    {
+      "key": "TRIAG-22609",
+      "summary": "Error while setting disposition",
+      "productArea": "Salesforce",
+      "labels": ["Redirected", "triage-issue"],
+      "status": "Closed",
+      "resolution": "Closed",
+      "category": "Actual Bug",
+      "description": "Salesforce integration error when setting disposition for specific provider"
+    },
+    {
+      "key": "TRIAG-22213",
+      "summary": "Review Count Discrepancy",
+      "productArea": "Reviews(Provider)",
+      "labels": ["Redirected", "issue-type-functional", "triage-issue"],
+      "status": "Closed",
+      "resolution": "Done",
+      "category": "Actual Bug",
+      "description": "Review count discrepancy - 8 total reviews vs 10 in 5-star dropdown"
+    },
+    {
+      "key": "TRIAG-22381",
+      "summary": "Request for engineering support",
+      "productArea": "Pulse",
+      "labels": ["Redirected", "issue-type-data", "triage-issue"],
+      "status": "Closed",
+      "resolution": "Done",
+      "category": "Data Propagation",
+      "description": "Legacy Interface mappings and deleted entities re-propagating after refresh"
+    },
+    {
+      "key": "TRIAG-22230",
+      "summary": "Clone-Patient availability/calendar desync",
+      "productArea": "Calendar-Integration",
+      "labels": ["Original-Bug-Contained-PHI", "Redirected", "issue-type-functional", "triage-issue"],
+      "status": "Closed",
+      "resolution": "Closed",
+      "category": "Data Propagation",
+      "description": "Calendar integration showing availability internally but not patient-facing"
+    },
+    {
+      "key": "TRIAG-22828",
+      "summary": "Location Deletion Irvine Boulevard",
+      "productArea": "Location-Management",
+      "labels": ["Redirected", "Working-as-Intended", "issue-type-functional", "triage-issue"],
+      "status": "Closed",
+      "resolution": "Working as Intended",
+      "category": "Working as Intended",
+      "description": "Location deletion blocked correctly - not a bug"
+    },
+    {
+      "key": "TRIAG-22637",
+      "summary": "Desk Dock Issues",
+      "productArea": "Third-Party-Issue",
+      "labels": ["Redirected", "issue-type-functional", "triage-issue"],
+      "status": "Closed",
+      "resolution": "Closed",
+      "category": "Misfiled",
+      "description": "Internal employee hardware issue (desk dock) - not a Zocdoc software issue"
+    }
+  ]
+}
