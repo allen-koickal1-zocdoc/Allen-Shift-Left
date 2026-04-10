@@ -150,6 +150,7 @@ These aren't bugs — they're **trust gaps**. The pattern:
 - `clusters/` - Detailed analysis per cluster
 - `recommendations.md` - Operational and product improvement recommendations
 - `tickets.json` - Structured ticket data
+- `propagation-delay-tickets.md` - Separate category: data sync/propagation delays (8 tickets)
 
 ---
 
