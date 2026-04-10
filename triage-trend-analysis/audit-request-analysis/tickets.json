@@ -1,0 +1,172 @@
+{
+  "analysisDate": "2026-04-10",
+  "totalTickets": 45,
+  "metaRootCause": "CX lacks self-service audit trail visibility - 41 of 45 tickets (91%) are requests for change logs because CX cannot determine who/when settings changed",
+  "resolutionBreakdown": {
+    "WorkingAsIntended": 22,
+    "Done": 17,
+    "Closed": 3,
+    "Incomplete": 2,
+    "WontDo": 1
+  },
+  "clusters": [
+    {
+      "id": 1,
+      "name": "SPO (Sponsored Results) Audit Requests",
+      "rootCause": "Providers dispute SPO activation/changes and request logs to identify who enabled the feature. CX lacks visibility into change history, requiring QA triage to pull logs. Most resolved as 'Working as Intended' - providers activated it themselves.",
+      "ticketIds": ["TRIAG-22952", "TRIAG-22941", "TRIAG-22797", "TRIAG-22784", "TRIAG-22599", "TRIAG-22587", "TRIAG-22528", "TRIAG-22251", "TRIAG-22165"],
+      "count": 9,
+      "percentage": 20,
+      "productAreas": ["SPO(Provider)"],
+      "symptoms": [
+        "Provider denies enabling SPO",
+        "Provider charged for SPO unexpectedly",
+        "Request for activation logs/timestamps",
+        "Request for user who made changes"
+      ],
+      "sampleSummaries": [
+        "SPO logs request - practice requests exact date/time SPO was activated and IP address",
+        "Request for SPO activation logs - Provider claims she never activated this",
+        "SPO booking when SPO was off - PR received SPO booking when she said SPO was off"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "Visit Reason (VR) Change Audit Requests",
+      "rootCause": "Providers receive bookings for visit reasons they claim not to support, and request logs to prove when VRs were added/removed. Lack of visible audit trail in CX tools. Most resolved as 'Working as Intended' - VRs were correctly configured at booking time.",
+      "ticketIds": ["TRIAG-22867", "TRIAG-22862", "TRIAG-22747", "TRIAG-22710", "TRIAG-22429", "TRIAG-22409", "TRIAG-22282", "TRIAG-22198", "TRIAG-22197"],
+      "count": 9,
+      "percentage": 20,
+      "productAreas": ["VR-Management"],
+      "symptoms": [
+        "Provider received booking for VR they don't service",
+        "Request for VR add/remove timestamps",
+        "VRs allegedly repopulated on their own",
+        "VRs allegedly removed without authorization"
+      ],
+      "sampleSummaries": [
+        "Visit reason history needed - when added/removed + source of change (Asthma / Neuropsych Eval)",
+        "Inaccurate Booking - Practice believes they removed ADHD VR and it repopulated",
+        "VRs were removed from provider - Reports all VRs were removed, has since added them back"
+      ]
+    },
+    {
+      "id": 3,
+      "name": "Insurance Settings Audit Requests",
+      "rootCause": "Providers receive bookings for insurances they claim not to accept, or dispute OON settings. Request logs to identify who changed insurance settings. CX lacks visibility into insurance change history.",
+      "ticketIds": ["TRIAG-22946", "TRIAG-22533", "TRIAG-22517", "TRIAG-22496", "TRIAG-22276", "TRIAG-22242", "TRIAG-22207", "TRIAG-22197"],
+      "count": 8,
+      "percentage": 18,
+      "productAreas": ["Insurance-Settings-Page", "Provider-Insurance"],
+      "symptoms": [
+        "Provider received booking for insurance they don't accept",
+        "Request for insurance change logs",
+        "Accept OON setting allegedly changed without authorization",
+        "Insurance plan allegedly removed but bookings still came through"
+      ],
+      "sampleSummaries": [
+        "Insurance settings log - request for log of changes to Accept out of network setting",
+        "Provider got booking for insurance he doesn't have listed - verify if Apple Health was in list",
+        "Insurances Changes - Practice claiming Zocdoc user made unauthorized changes to insurance setup"
+      ]
+    },
+    {
+      "id": 4,
+      "name": "Calendar/Availability Audit Requests",
+      "rootCause": "Providers claim OOO blocks or busy blocks were added/removed without their knowledge, or availability changed unexpectedly. Request logs to identify who made changes. Bookings occur during times provider thought were blocked.",
+      "ticketIds": ["TRIAG-22987", "TRIAG-22850", "TRIAG-22778", "TRIAG-22643", "TRIAG-22443", "TRIAG-22416", "TRIAG-22183"],
+      "count": 7,
+      "percentage": 16,
+      "productAreas": ["Manual-Availability", "Integrated-Availability", "Calendar", "Appointment-Experience(Provider)"],
+      "symptoms": [
+        "OOO block allegedly removed without authorization",
+        "Busy blocks added without provider knowledge",
+        "Availability/time slots created without authorization",
+        "Request for calendar change audit logs"
+      ],
+      "sampleSummaries": [
+        "busy blocks added, poc unsure by who - busy blocks were added blocking previous availability",
+        "OOO Blocked Removed - practice asking when and by whom OOO was removed from calendar",
+        "Incorrect Appointment Time Slots Created - manual calendar showed slots they didn't add"
+      ]
+    },
+    {
+      "id": 5,
+      "name": "Spend/Budget Management Audit Requests",
+      "rootCause": "Providers dispute spend caps, budget changes, or claim bookings came through when spend was off. Request logs to verify timing of settings changes. CX cannot self-service these audits.",
+      "ticketIds": ["TRIAG-22986", "TRIAG-22723", "TRIAG-22574", "TRIAG-22427", "TRIAG-22389"],
+      "count": 5,
+      "percentage": 11,
+      "productAreas": ["Spend-Management"],
+      "symptoms": [
+        "Unexpected spend cap on account",
+        "Budget reverted to previous value",
+        "Booking came through when spend was off",
+        "Request for spend change logs"
+      ],
+      "sampleSummaries": [
+        "Unexpected $50,000 spend cap on enterprise account - does not know how or by whom it was added",
+        "Logs Of Provider Turning Off Spend - received appointment after turning off spend",
+        "Budget Tool - Confirmed budget saved as 50K but reverted back to 80K"
+      ]
+    },
+    {
+      "id": 6,
+      "name": "Working Hours Change Disputes",
+      "rootCause": "Provider working hours changed unexpectedly, leading to bookings during unavailable times. Request for audit of who changed working hours.",
+      "ticketIds": ["TRIAG-22481", "TRIAG-22412"],
+      "count": 2,
+      "percentage": 4,
+      "productAreas": ["Working-Hours"],
+      "symptoms": [
+        "Working hours changed without authorization",
+        "Bookings during times WH were removed",
+        "Request for WH change logs"
+      ],
+      "sampleSummaries": [
+        "PR removed WH but times still booked - stated she removed all WH but appointments were still booked",
+        "Provider Working Hours Incorrect - unexplained schedule changes causing major scheduling disruption"
+      ]
+    },
+    {
+      "id": 7,
+      "name": "Google/Partner Settings Audit Requests",
+      "rootCause": "Providers claim 'Bookings from Google and others' setting keeps reverting or was changed without authorization. Request logs to identify who changed the setting.",
+      "ticketIds": ["TRIAG-22966", "TRIAG-22803"],
+      "count": 2,
+      "percentage": 4,
+      "productAreas": ["Google-Reserve", "Practice-Settings-Page"],
+      "symptoms": [
+        "Google booking setting keeps reverting to enabled",
+        "Provider claims never enabled Google bookings",
+        "Request for setting change audit logs"
+      ],
+      "sampleSummaries": [
+        "Google Business Profile - POC turned off Bookings from Google multiple times but it keeps turning back on",
+        "PR requesting to see who changed Bookings from Google and others practice-level setting"
+      ]
+    }
+  ],
+  "unclustered": [
+    {
+      "key": "TRIAG-22964",
+      "summary": "Location deletion error",
+      "productArea": "Location-Management"
+    },
+    {
+      "key": "TRIAG-22690",
+      "summary": "Zocdoc Mapping Pin- Can we move the location?",
+      "productArea": "Geolocation"
+    },
+    {
+      "key": "TRIAG-22525",
+      "summary": "Specialty Change log",
+      "productArea": "Specialty-Management"
+    },
+    {
+      "key": "TRIAG-22368",
+      "summary": "Unable to access Virtual Visit logs for past Video Visit",
+      "productArea": "ZVS(Provider)"
+    }
+  ]
+}

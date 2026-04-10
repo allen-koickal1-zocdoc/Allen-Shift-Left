@@ -367,3 +367,12 @@ Contributing factors:
 - `README.md` - This summary report
 - `incident-details/` - Full postmortem details for each incident
 - `triage-tickets.md` - Complete list of analyzed triage tickets
+
+---
+
+## Related Analyses
+
+- **[Audit Request Analysis](audit-request-analysis/README.md)** - 45 tickets clustered by root cause (audit/log requests, not bugs)
+  - 91% share a single meta-root-cause: CX lacks self-service audit logs
+  - 7 distinct clusters: SPO, VR, Insurance, Calendar, Spend, Working Hours, Google Settings
+  - Includes operational and product improvement recommendations
