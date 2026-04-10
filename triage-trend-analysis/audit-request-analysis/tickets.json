@@ -1,16 +1,7 @@
 {
   "analysisDate": "2026-04-10",
-  "totalTickets": 53,
-  "categories": {
-    "auditRequests": {
-      "count": 45,
-      "metaRootCause": "CX lacks self-service audit trail visibility - 41 of 45 tickets (91%) are requests for change logs because CX cannot determine who/when settings changed"
-    },
-    "propagationDelays": {
-      "count": 8,
-      "metaRootCause": "Data propagation/sync delays - updates in one system not reflecting in another in a timely manner"
-    }
-  },
+  "totalTickets": 45,
+  "metaRootCause": "CX lacks self-service audit trail visibility - 41 of 45 tickets (91%) are requests for change logs because CX cannot determine who/when settings changed",
   "resolutionBreakdown": {
     "WorkingAsIntended": 22,
     "Done": 17,
@@ -176,117 +167,6 @@
       "key": "TRIAG-22368",
       "summary": "Unable to access Virtual Visit logs for past Video Visit",
       "productArea": "ZVS(Provider)"
-    }
-  ],
-  "propagationDelayTickets": [
-    {
-      "key": "TRIAG-22938",
-      "summary": "Incorrect VR showing up on PFS",
-      "productArea": "VR-Management",
-      "labels": ["Updation-Delay-Required-Action", "issue-type-functional", "triage-issue"],
-      "status": "Closed",
-      "resolution": "Fixed",
-      "cluster": "VR Propagation"
-    },
-    {
-      "key": "TRIAG-22433",
-      "summary": "The provider updated her VRs and they are not updating on pt side",
-      "productArea": "VR-Management",
-      "labels": ["Updation-Delay-Required-Action", "issue-type-functional", "triage-issue"],
-      "status": "Closed",
-      "resolution": "Closed",
-      "cluster": "VR Propagation"
-    },
-    {
-      "key": "TRIAG-22800",
-      "summary": "Headshot Issue",
-      "productArea": "Provider-Profile-Page(Patient)",
-      "labels": ["Updation-Delay-Required-Action", "issue-type-performance", "triage-issue"],
-      "status": "Closed",
-      "resolution": "Closed",
-      "cluster": "Profile Media Updates"
-    },
-    {
-      "key": "TRIAG-22596",
-      "summary": "FAQ's",
-      "productArea": "Provider-Profile-Page(Patient)",
-      "labels": ["Updation-Delay-Required-Action", "issue-type-data", "triage-issue"],
-      "status": "Closed",
-      "resolution": "Fixed",
-      "cluster": "VR Propagation"
-    },
-    {
-      "key": "TRIAG-22869",
-      "summary": "Marketplace Availability Bug",
-      "productArea": "Availability",
-      "labels": ["Required-operational-fix", "Updation-Delay-Required-Action", "issue-type-functional", "triage-issue"],
-      "status": "Closed",
-      "resolution": "Closed",
-      "cluster": "Availability Propagation"
-    },
-    {
-      "key": "INTPLAT-3136",
-      "summary": "DSP status showing inactive for active MD Mardiney opp",
-      "productArea": "Availability-Onboarding-Flow",
-      "labels": ["Updation-Delay-Required-Action", "issue-type-functional", "triage-issue"],
-      "status": "Closed",
-      "resolution": "Done",
-      "cluster": "Salesforce Sync"
-    },
-    {
-      "key": "TRIAG-22511",
-      "summary": "Delay in Salesforce Case Creation",
-      "productArea": "Salesforce",
-      "labels": ["Redirected", "Updation-Delay-Required-Action", "Working-as-Intended", "triage-issue"],
-      "status": "Closed",
-      "resolution": "Closed",
-      "cluster": "Salesforce Sync"
-    },
-    {
-      "key": "TRIAG-22160",
-      "summary": "DEC invoice not able to load and DEC Appointment Report not loading",
-      "productArea": "Appointment-Report",
-      "labels": ["Updation-Delay-Required-Action", "issue-type-functional", "triage-issue"],
-      "status": "Closed",
-      "resolution": "Done",
-      "cluster": "Billing/Reports Loading"
-    }
-  ],
-  "propagationDelayClusters": [
-    {
-      "name": "VR Propagation",
-      "count": 3,
-      "ticketIds": ["TRIAG-22938", "TRIAG-22433", "TRIAG-22596"],
-      "productAreas": ["VR-Management", "Provider-Profile-Page(Patient)"],
-      "rootCause": "VR updates not propagating to patient-facing pages, search, or FAQ sections in a timely manner"
-    },
-    {
-      "name": "Salesforce Sync",
-      "count": 2,
-      "ticketIds": ["INTPLAT-3136", "TRIAG-22511"],
-      "productAreas": ["Availability-Onboarding-Flow", "Salesforce"],
-      "rootCause": "Status/case sync between Pulse and Salesforce failing or delayed"
-    },
-    {
-      "name": "Availability Propagation",
-      "count": 1,
-      "ticketIds": ["TRIAG-22869"],
-      "productAreas": ["Availability"],
-      "rootCause": "Marketplace availability activation not syncing properly"
-    },
-    {
-      "name": "Profile Media Updates",
-      "count": 1,
-      "ticketIds": ["TRIAG-22800"],
-      "productAreas": ["Provider-Profile-Page(Patient)"],
-      "rootCause": "Profile media (headshots) not updating due to caching"
-    },
-    {
-      "name": "Billing/Reports Loading",
-      "count": 1,
-      "ticketIds": ["TRIAG-22160"],
-      "productAreas": ["Appointment-Report"],
-      "rootCause": "Invoice and appointment report generation/loading failures"
     }
   ]
 }

@@ -372,7 +372,32 @@ Contributing factors:
 
 ## Related Analyses
 
-- **[Audit Request Analysis](audit-request-analysis/README.md)** - 45 tickets clustered by root cause (audit/log requests, not bugs)
-  - 91% share a single meta-root-cause: CX lacks self-service audit logs
-  - 7 distinct clusters: SPO, VR, Insurance, Calendar, Spend, Working Hours, Google Settings
-  - Includes operational and product improvement recommendations
+### [Audit Request Analysis](audit-request-analysis/README.md)
+**45 tickets** — Providers dispute account changes, CX requests audit logs
+
+| Cluster | Count | Root Cause |
+|---------|-------|------------|
+| SPO Audits | 9 | Provider denies enabling SPO |
+| VR Audits | 9 | VRs allegedly changed without authorization |
+| Insurance Audits | 8 | Insurance settings disputes |
+| Calendar Audits | 7 | OOO/availability change disputes |
+| Spend Audits | 5 | Budget/spend setting disputes |
+| Working Hours | 2 | Working hours change disputes |
+| Google Settings | 2 | Google booking setting reverting |
+
+**Key Finding:** 91% share meta-root-cause — CX lacks self-service audit logs
+
+---
+
+### [Propagation Delay Analysis](propagation-delay-analysis/README.md)
+**8 tickets** — Data sync/propagation delays between systems
+
+| Cluster | Count | Root Cause |
+|---------|-------|------------|
+| VR Propagation | 3 | VR updates not reflecting on patient side |
+| Salesforce Sync | 2 | Pulse ↔ SF status mismatch |
+| Availability Propagation | 1 | Marketplace activation issues |
+| Profile Media | 1 | Headshot caching delays |
+| Billing/Reports | 1 | Report loading failures |
+
+**Key Finding:** All have `Updation-Delay-Required-Action` label

@@ -1,0 +1,161 @@
+{
+  "analysisDate": "2026-04-10",
+  "totalTickets": 8,
+  "metaRootCause": "Data propagation/sync delays - updates in one system not reflecting in another in a timely manner",
+  "commonLabel": "Updation-Delay-Required-Action",
+  "resolutionBreakdown": {
+    "Fixed": 3,
+    "Closed": 3,
+    "Done": 2
+  },
+  "tickets": [
+    {
+      "key": "TRIAG-22938",
+      "summary": "Incorrect VR showing up on PFS",
+      "productArea": "VR-Management",
+      "labels": ["Updation-Delay-Required-Action", "issue-type-functional", "triage-issue"],
+      "status": "Closed",
+      "resolution": "Fixed",
+      "cluster": "VR Propagation",
+      "description": "Provider profile showing 'Allergy Shots' under popular VRs but this VR is not mapped to their profile."
+    },
+    {
+      "key": "TRIAG-22433",
+      "summary": "The provider updated her VRs and they are not updating on pt side",
+      "productArea": "VR-Management",
+      "labels": ["Updation-Delay-Required-Action", "issue-type-functional", "triage-issue"],
+      "status": "Closed",
+      "resolution": "Closed",
+      "cluster": "VR Propagation",
+      "description": "Provider updated VRs to be limited, but patient search still shows her available for all visit reasons after 1+ hour."
+    },
+    {
+      "key": "TRIAG-22596",
+      "summary": "FAQ's",
+      "productArea": "Provider-Profile-Page(Patient)",
+      "labels": ["Updation-Delay-Required-Action", "issue-type-data", "triage-issue"],
+      "status": "Closed",
+      "resolution": "Fixed",
+      "cluster": "VR Propagation",
+      "description": "Provider FAQ still showing VRs that were removed. VR removal not reflected in FAQ section."
+    },
+    {
+      "key": "TRIAG-22800",
+      "summary": "Headshot Issue",
+      "productArea": "Provider-Profile-Page(Patient)",
+      "labels": ["Updation-Delay-Required-Action", "issue-type-performance", "triage-issue"],
+      "status": "Closed",
+      "resolution": "Closed",
+      "cluster": "Profile Media Updates",
+      "description": "POC unable to see updated headshot for provider. Image updated in system but not displaying."
+    },
+    {
+      "key": "TRIAG-22869",
+      "summary": "Marketplace Availability Bug",
+      "productArea": "Availability",
+      "labels": ["Required-operational-fix", "Updation-Delay-Required-Action", "issue-type-functional", "triage-issue"],
+      "status": "Closed",
+      "resolution": "Closed",
+      "cluster": "Availability Propagation",
+      "description": "Provider has CI complete but Marketplace SKU not activated. Availability flashing on PFP."
+    },
+    {
+      "key": "INTPLAT-3136",
+      "summary": "DSP status showing inactive for active MD Mardiney opp",
+      "productArea": "Availability-Onboarding-Flow",
+      "labels": ["Updation-Delay-Required-Action", "issue-type-functional", "triage-issue"],
+      "status": "Closed",
+      "resolution": "Done",
+      "cluster": "Salesforce Sync",
+      "description": "Pulse shows professional as Active but Salesforce DSP shows Inactive."
+    },
+    {
+      "key": "TRIAG-22511",
+      "summary": "Delay in Salesforce Case Creation",
+      "productArea": "Salesforce",
+      "labels": ["Redirected", "Updation-Delay-Required-Action", "Working-as-Intended", "triage-issue"],
+      "status": "Closed",
+      "resolution": "Closed",
+      "cluster": "Salesforce Sync",
+      "description": "Three-day delay in Salesforce case creation for 3 providers."
+    },
+    {
+      "key": "TRIAG-22160",
+      "summary": "DEC invoice not able to load and DEC Appointment Report not loading",
+      "productArea": "Appointment-Report",
+      "labels": ["Updation-Delay-Required-Action", "issue-type-functional", "triage-issue"],
+      "status": "Closed",
+      "resolution": "Done",
+      "cluster": "Billing/Reports Loading",
+      "description": "December invoice grayed out/unloadable, DEC Appointment Report not loading since Dec 26th."
+    }
+  ],
+  "clusters": [
+    {
+      "id": 1,
+      "name": "VR Propagation",
+      "count": 3,
+      "percentage": 37.5,
+      "ticketIds": ["TRIAG-22938", "TRIAG-22433", "TRIAG-22596"],
+      "productAreas": ["VR-Management", "Provider-Profile-Page(Patient)"],
+      "rootCause": "VR updates not propagating to patient-facing pages, search, or FAQ sections in a timely manner",
+      "symptoms": [
+        "VR changes not reflecting on patient search",
+        "Removed VRs still showing in FAQ",
+        "Unmapped VRs appearing on profile"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "Salesforce Sync",
+      "count": 2,
+      "percentage": 25,
+      "ticketIds": ["INTPLAT-3136", "TRIAG-22511"],
+      "productAreas": ["Availability-Onboarding-Flow", "Salesforce"],
+      "rootCause": "Status/case sync between Pulse and Salesforce failing or delayed",
+      "symptoms": [
+        "DSP status mismatch between Pulse and SF",
+        "SF case creation delays"
+      ]
+    },
+    {
+      "id": 3,
+      "name": "Availability Propagation",
+      "count": 1,
+      "percentage": 12.5,
+      "ticketIds": ["TRIAG-22869"],
+      "productAreas": ["Availability"],
+      "rootCause": "Marketplace availability activation not syncing properly",
+      "symptoms": [
+        "Availability flashing on PFP",
+        "Marketplace SKU not activating"
+      ]
+    },
+    {
+      "id": 4,
+      "name": "Profile Media Updates",
+      "count": 1,
+      "percentage": 12.5,
+      "ticketIds": ["TRIAG-22800"],
+      "productAreas": ["Provider-Profile-Page(Patient)"],
+      "rootCause": "Profile media (headshots) not updating due to caching",
+      "symptoms": [
+        "Updated headshot not displaying",
+        "Image caching issues"
+      ]
+    },
+    {
+      "id": 5,
+      "name": "Billing/Reports Loading",
+      "count": 1,
+      "percentage": 12.5,
+      "ticketIds": ["TRIAG-22160"],
+      "productAreas": ["Appointment-Report"],
+      "rootCause": "Invoice and appointment report generation/loading failures",
+      "symptoms": [
+        "Invoice grayed out",
+        "Report not loading"
+      ]
+    }
+  ]
+}
