@@ -48,9 +48,10 @@ Link template: `https://github.com/Zocdoc/{repo}/blob/{SHA}/{path}#L{line}`.
 | [frontend-users-page.md](frontend-users-page.md) | Zero unit tests in the Pterodactyl Users Page UI |
 | [METHODOLOGY.md](METHODOLOGY.md) | grep patterns used, SHA-pinning rationale, source-vs-test mapping algorithm |
 | [MISSED-TEST-SURFACES.md](MISSED-TEST-SURFACES.md) | Per-project breakdown, CDK tests, Datadog Synthetics, in-app Cypress, Storybook (added after first pass) |
+| [EXHAUSTIVE-SWEEP.md](EXHAUSTIVE-SWEEP.md) | 5-surface residual sweep (cypress component / vitest / plinth contract / other Pterodactyl UI / cross-folder Cypress) — added 26 tests via `create-staff-page-v2-tests.ts` |
 | [PLAIN-ENGLISH.md](PLAIN-ENGLISH.md) | Layman summary: where we stand and what's next |
 
-## Headline Totals (corrected 2026-04-27)
+## Headline Totals (corrected 2026-04-27 after exhaustive sweep)
 
 | Surface | Files | Tests |
 |---------|------:|------:|
@@ -61,8 +62,10 @@ Link template: `https://github.com/Zocdoc/{repo}/blob/{SHA}/{path}#L{line}`.
 | zocdoc_web monolith (HTTP API, mislabeled "Selenium") | 13 | 255 |
 | Cypress E2E sandbox repo (Account-User-Setup) | 9 | 72 |
 | Frontend Pterodactyl UI — Jest unit tests | 2 | 5 |
-| Frontend Pterodactyl UI — in-app Cypress E2E | 3 | 123 |
-| **TOTAL** | **218** | **2,629** |
+| Frontend Pterodactyl UI — in-app Cypress E2E | 4 | 149 |
+| **TOTAL** | **219** | **2,655** |
+
+The 5-surface sweep ([EXHAUSTIVE-SWEEP.md](EXHAUSTIVE-SWEEP.md)) added one in-app Cypress file (`create-staff-page-v2-tests.ts`, 26 tests) and confirmed the four other surfaces (cypress component tests, vitest, plinth/openapi contract, cross-folder Pterodactyl Cypress) are clean.
 
 Plus 13 Chromatic visual regression stories under Pterodactyl ownership.
 
