@@ -19,8 +19,8 @@ grep -cE "^\s*it\("                                   # Cypress
 | [provider-join-service](provider-join-service.md) | 54 | **634** | (broad) | n/a | v1 had no aggregate; 5 projects, one empty |
 | [zocdoc_web monolith ("Selenium")](selenium-monolith.md) | 13 | **255** | 89+ | **+166** | None are actual Selenium tests |
 | [Cypress E2E (Account-User-Setup)](cypress-e2e.md) | 9 | **72** | ~70 | +2 | Counts `it(` only, not `describe(` |
-| `provider-fe-monorepo/apps/settings/` Jest/Vitest | 0 | **0** | 0 | 0 | Confirmed gap |
-| **TOTAL** | **213** | **2,501** | — | — | |
+| [Frontend Pterodactyl UI (provider-fe-monorepo)](frontend-users-page.md) | 5 | **128** | 0 | **+128** | **CORRECTED 2026-04-27**: 5 Jest unit + 123 in-app Cypress (was missed by wrong grep) |
+| **TOTAL** | **218** | **2,629** | — | — | |
 
 ## Per-project breakdown
 
@@ -70,6 +70,17 @@ grep -cE "^\s*it\("                                   # Cypress
 | ProviderJoinService.AbandonmentLambda.Tests | 3 |
 | SelfSignup.Tests.Unit | **0 (empty)** |
 | **Total** | **634** |
+
+### Frontend (provider-fe-monorepo) — Pterodactyl-owned UI per CODEOWNERS
+
+| UI area | Jest unit | In-app Cypress | Chromatic stories |
+|---------|----------:|---------------:|------------------:|
+| `apps/settings/src/pages/settingsPages/practiceUsersPage/` | 5 | 68 | 2 |
+| `apps/settings/src/pages/settingsPages/practiceSettings/createProviderOrStaffPage/` | 0 | 0 (or in shared `SettingsPages/` cypress folder, unverified) | 2 |
+| `apps/provider-home-webapp/src/pages/signUpPortal/` | 0 | 55 | 9 |
+| **Total** | **5** | **123** | **13** |
+
+**Critical gaps absent from earlier v2:** CDK/infrastructure tests, Datadog Synthetics as code, contract/Pact, Verify snapshot, mutation tests, accessibility tests. See [MISSED-TEST-SURFACES.md](MISSED-TEST-SURFACES.md).
 
 ## Source-vs-test LOC
 

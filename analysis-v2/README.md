@@ -12,6 +12,9 @@ Every count, claim, and gap in v2 is backed by a `grep` result actually run agai
 | 2 | practice-user-permissions had "~870 tests" | **1,043 verified tests** (undercounted by ~173). |
 | 3 | Selenium per-file undercounts of 100+ tests across 3 files (e.g. `OrganizationUserApiTests` v1=1 / actual=34) | Corrected per-file table in [`selenium-monolith.md`](selenium-monolith.md). |
 | 4 | Three FGA test files missed entirely (`BulkProfileCompletionFgaAuthTests`, `PracticeLocationsSettingsFgaAuthTests`, `MultiPracticeProfileSettingsFgaAuthTests` — 43 tests total) | All three documented in [`selenium-monolith.md`](selenium-monolith.md). |
+| 5 | Frontend Users Page has "ZERO frontend unit tests" | **REFUTED — v2 self-correction.** Pterodactyl owns 3 UI areas per CODEOWNERS, with **5 Jest unit tests + 123 in-app Cypress + 13 Chromatic stories**. The original v2 grep used `*.test.tsx` but the monorepo uses `*-tests.tsx`. See [`frontend-users-page.md`](frontend-users-page.md) and [`MISSED-TEST-SURFACES.md`](MISSED-TEST-SURFACES.md). |
+| 6 | Per-project breakdown for backend (Cron, Lambda, Worker integration tests) | **PUP Cron has 1 integration test for a 4x/day cron, Lambda has 1 integration test for 12 Lambdas, Worker.UnitTests is empty.** See [`MISSED-TEST-SURFACES.md`](MISSED-TEST-SURFACES.md). |
+| 7 | CDK / infrastructure tests | **0 CDK tests in any of the 4 backend repos** despite each having `jest.config.js` configured. Plus no Datadog Synthetics, Pact, k6, Verify, or mutation tests anywhere. See [`MISSED-TEST-SURFACES.md`](MISSED-TEST-SURFACES.md). |
 
 ## SHA Pin Table
 
@@ -44,17 +47,28 @@ Link template: `https://github.com/Zocdoc/{repo}/blob/{SHA}/{path}#L{line}`.
 | [cypress-e2e.md](cypress-e2e.md) | 72 `it(...)` blocks across 9 spec files |
 | [frontend-users-page.md](frontend-users-page.md) | Zero unit tests in the Pterodactyl Users Page UI |
 | [METHODOLOGY.md](METHODOLOGY.md) | grep patterns used, SHA-pinning rationale, source-vs-test mapping algorithm |
+| [MISSED-TEST-SURFACES.md](MISSED-TEST-SURFACES.md) | Per-project breakdown, CDK tests, Datadog Synthetics, in-app Cypress, Storybook (added after first pass) |
+| [PLAIN-ENGLISH.md](PLAIN-ENGLISH.md) | Layman summary: where we stand and what's next |
 
-## Headline Totals
+## Headline Totals (corrected 2026-04-27)
 
 | Surface | Files | Tests |
-|---------|-------|-------|
+|---------|------:|------:|
 | practice-user-permissions | 94 | 1,043 |
 | practice-authorization-proxy | 7 | 26 |
 | provider-grouping | 36 | 471 |
 | provider-join-service | 54 | 634 |
 | zocdoc_web monolith (HTTP API, mislabeled "Selenium") | 13 | 255 |
-| Cypress E2E (Account-User-Setup) | 9 | 72 |
-| **TOTAL** | **213** | **2,501** |
+| Cypress E2E sandbox repo (Account-User-Setup) | 9 | 72 |
+| Frontend Pterodactyl UI — Jest unit tests | 2 | 5 |
+| Frontend Pterodactyl UI — in-app Cypress E2E | 3 | 123 |
+| **TOTAL** | **218** | **2,629** |
 
-Frontend (`provider-fe-monorepo/apps/settings/`): **0** Jest/Vitest unit tests covering the Pterodactyl-owned Users Page. Confirmed in [`frontend-users-page.md`](frontend-users-page.md).
+Plus 13 Chromatic visual regression stories under Pterodactyl ownership.
+
+**Empty / near-empty test projects (genuine gaps):**
+- `PracticeUserPermissions.Worker.UnitTests` — 0 tests (project exists)
+- `PracticeUserPermissions.Cron.IntegrationTests` — 1 test for a 4x/day cron
+- `PracticeUserPermissions.Lambda.IntegrationTests` — 1 test for 12 Lambdas
+- `SelfSignup.Tests.Unit` — 0 tests (project exists)
+- All four repos' `cdk/test/` directories — empty despite Jest configs

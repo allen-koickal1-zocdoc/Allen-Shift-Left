@@ -82,4 +82,19 @@ For each v1 claim that v2 evaluated, status is one of **CONFIRMED**, **REFUTED**
 
 | v1 Claim | Status | v2 Evidence |
 |----------|--------|-------------|
-| Zero frontend unit tests for the Users Page | **CONFIRMED** | `find provider-fe-monorepo/apps/settings -type f \( -name "*.test.tsx" -o -name "*.test.ts" -o -name "*.spec.tsx" -o -name "*.spec.ts" \)` → no results. The correct repo for the Users Page is `provider-fe-monorepo` (not "frontend-monorepo" as v1 implied). |
+| Zero frontend unit tests for the Users Page | **REFUTED — v2 self-correction (2026-04-27)** | The earlier v2 grep used `*.test.tsx` but this monorepo uses `*-tests.tsx` (hyphen). 2 Jest unit test files exist for the Users Page: [`PracticeUsersPageViewV2-tests.tsx`](https://github.com/Zocdoc/provider-fe-monorepo/blob/37d7eff62d9096c1b59ca494697b3ac5068a3234/apps/settings/src/pages/settingsPages/practiceUsersPage/__tests__/PracticeUsersPageViewV2-tests.tsx) (2 tests) and [`useSelfSignUpData-tests.ts`](https://github.com/Zocdoc/provider-fe-monorepo/blob/37d7eff62d9096c1b59ca494697b3ac5068a3234/apps/settings/src/pages/settingsPages/practiceUsersPage/hooks/__tests__/useSelfSignUpData-tests.ts) (3 tests). Plus 68 in-app Cypress tests under `apps/settings/cypress/e2e/PracticeUsersPage/` (incorrectly excluded as "out of scope" in original v2). See [frontend-users-page.md](frontend-users-page.md). |
+| Repo named "frontend-monorepo" | **REFUTED** | Correct repo is `provider-fe-monorepo`. |
+| Pterodactyl scope = "Users Page only" | **REFUTED** | Per [CODEOWNERS](https://github.com/Zocdoc/provider-fe-monorepo/blob/37d7eff62d9096c1b59ca494697b3ac5068a3234/.github/CODEOWNERS), Pterodactyl owns 3 UI areas: `practiceUsersPage/`, `practiceSettings/createProviderOrStaffPage/`, and `apps/provider-home-webapp/.../signUpPortal/`. |
+
+## Test surfaces v2 originally omitted
+
+Surfaced after the user asked "did we miss any test like api, cron, datadog synthetic anything at all". Full detail in [MISSED-TEST-SURFACES.md](MISSED-TEST-SURFACES.md).
+
+| Surface | v2 status | Finding |
+|---------|-----------|---------|
+| In-app Cypress (provider-fe-monorepo) | originally **OMITTED**, now corrected | 123 Pterodactyl-owned tests across 3 files (PracticeUsersPage 68, signUpPortal 55) |
+| Storybook + Chromatic visual regression | originally **OMITTED**, now corrected | 13 Pterodactyl-owned story files |
+| CDK infrastructure Jest tests | now included | **0 tests in all 4 backend repos** (jest.config.js exists, `test/` dirs are empty) |
+| PUP per-project breakdown | now included | Cron has 1 integration test, Lambda has 1 integration test, Worker.UnitTests is empty |
+| Datadog Synthetic configs as code | now included | Not in any repo. Cannot verify whether they exist in the Datadog UI itself. |
+| Pact / contract / Postman / k6 / Verify / mutation / a11y | now included | All confirmed absent in all 4 repos. |
