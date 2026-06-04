@@ -54,6 +54,7 @@ Plus **12 Chromatic/Storybook visual-regression stories** under Pterodactyl owne
 
 | Report | Scope |
 |--------|-------|
+| [ASSESSMENT.md](ASSESSMENT.md) | Overall verdict on test strength & coverage + prioritized remediation |
 | [MASTER-INVENTORY.md](MASTER-INVENTORY.md) | Per-repo + per-project counts and LOC, with v2→v3 deltas |
 | [CORRECTIONS-VS-V2.md](CORRECTIONS-VS-V2.md) | Every v2 claim graded CONFIRMED / CHANGED / REFUTED |
 | [GAPS.md](GAPS.md) | Verified coverage gaps at current HEAD |
