@@ -2,6 +2,8 @@
 
 Comprehensive test coverage analysis for the **Provider Account & User Setup (Pterodactyl)** team's repositories.
 
+> **Latest audit: [`analysis-v3/`](analysis-v3/README.md)** — re-verified against each repo's current HEAD (2026-06-04). Supersedes [`analysis-v2/`](analysis-v2/) (April 2026, now stale) and [`analysis/`](analysis/) (v1). Headline: **251 test files / 2,981 tests**. Biggest correction: the monolith's `[CiTest]` tests (433 across 27 files) were mis-counted in v2.
+
 ## Team Overview
 
 | Attribute | Value |
