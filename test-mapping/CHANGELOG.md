@@ -2,6 +2,26 @@
 
 Identity key for a row: `<repo-relative-path>::<MethodName>[ (CaseName)]`.
 
+## 2026-08-21 — initial mapping: `Zocdoc/auth-service` @ fa9a039
+
+Scope: whole repo, branch `main`. Granularity: one row per test method. NUnit throughout, across three projects — `tests/ApiTests/` (deployed instance, or the mock for `[Category("FakeOnly")]`), `tests/IntegrationTests/` (real DynamoDB), `tests/UnitTests/`.
+
+- 101 test files mapped, 1,172 test methods total.
+  - `tests/ApiTests/PatientApi/PatientApiTests.cs` — 76 tests
+  - `tests/UnitTests/EventLogging/LoggingEventFactoryTests.cs`, `LoggingEventFactoryV2Tests.cs` — 56 tests each
+  - `tests/UnitTests/PostLoginMetricsServiceTests.cs` — 52 tests
+  - `tests/UnitTests/PatientLoginServiceTests.cs` — 49 tests
+  - `tests/ApiTests/PatientApi/CreatePatientAccountApiTests.cs` — 47 tests
+  - `tests/UnitTests/Login/PracticeLoginServiceTests.cs` — 41 tests
+  - `tests/UnitTests/Auth0/Auth0ServiceTests.cs` — 30 tests
+  - `tests/IntegrationTests/PatientPhoneDynamoPersistenceTests.cs` — 26 tests
+  - `tests/UnitTests/User/UserCreationServiceTests.cs` — 22 tests
+  - `tests/ApiTests/PatientApi/WebSiteLoginAndRefreshTests.cs` — 21 tests
+  - remaining 91 files — 19 or fewer tests each; 24 files have 3 or fewer and 7 have exactly 1
+- Coverage gaps recorded: the practice-user Auth0 synchroniser lambda has placeholder coverage only (`LambdaTests.cs` and `PracticeUserAuth0SynchronizerLambdaHandlerTests.cs` assert a test log and a `test_metric`, nothing about synchronisation); `tests/UnitTests/ServiceAuthProofOfConcept.cs` is a `[Test]`-annotated developer script for generating an assertion JWT, not product coverage; the phone abuse throttle has exactly one test.
+- `[Category("RealOnly")]` tests (stream-processor API tests, the Auth0 webhook event tests, the service-auth release lambda, the monolith refresh event) assert on Firehose/SNS/SQS side effects that only a deployed stack produces — a green local run does not cover them.
+- Correction: the earlier index figure of 1,191 was inflated. The C# extractor emitted one row per `[TestCase]` attribute; the distinct method count is 1,172.
+
 ## 2026-08-21 — initial mapping: `Zocdoc/consumer-privacy-service` @ 91dad97
 
 Scope: whole repo, branch `master`. Granularity: one row per test method. xUnit throughout.
