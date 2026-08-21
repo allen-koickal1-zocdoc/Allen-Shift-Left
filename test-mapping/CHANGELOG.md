@@ -2,6 +2,28 @@
 
 Identity key for a row: `<repo-relative-path>::<MethodName>[ (CaseName)]`.
 
+## 2026-08-21 — initial mapping: `Zocdoc/auth0-infrastructure` @ cac1149
+
+Scope: whole repo, branch `main`. Granularity: one row per test method.
+
+- 18 test files mapped, 200 tests total — 57 C# (NUnit) and 143 JS (142 Jest + 1 Cypress).
+  - `__tests__/unit/challenge-mfa-tests.js` — 37 tests
+  - `tests/UnitTests/EventProducerHandlerTests.cs` — 32 tests
+  - `__tests__/unit/add-internal-services-role-claims-tests.js` — 31 tests
+  - `__tests__/unit/add-external-api-user-metadata-tests.js` — 15 tests
+  - `__tests__/unit/add-provider-claims-tests.js` — 15 tests
+  - `tests/UnitTests/PopulateDataForDatadogHelperTests.cs` — 14 tests (one is a 48-case table)
+  - `__tests__/unit/database-get-user-by-email-action-script-tests.js` — 13 tests
+  - `__tests__/unit/database-login-action-script-tests.js` — 13 tests
+  - `__tests__/unit/add-zocdoc-claims-tests.js` — 6 tests
+  - `__tests__/unit/log-post-login-event-tests.js`, `log-provider-post-login-event-tests.js` — 5 tests each
+  - `tests/UnitTests/EventProducerServicesTests.cs` — 4 tests
+  - `tests/UnitTests/Auth0TenantResolverTests.cs` — 3 tests
+  - `tests/UnitTests/HandlerTests.cs`, `__tests__/unit/add-internal-services-claims-tests.js` — 2 tests each
+  - `tests/IntegrationTests/SsmConfigSourceIntegrationTests.cs`, `tests/UnitTests/FakeTests.cs`, `__tests__/cypress/e2e/3-auth0-tests/auth0-smoke-tests.cy.js` — 1 test each
+- Coverage gaps recorded: `actions/patient/add_patient_role.js`, `redirect.js`, and `require_zd_app_for_marketplace.js` have no tests; `cdk/jest.config.js` targets a `cdk/test/` directory that does not exist.
+- Correction: the earlier index figure of "66 C# + 141 JS" was wrong in both directions. The C# extractor emitted one row per `[TestCase]` attribute (57 distinct methods, not 66), and the JS extractor missed two `test.each` blocks whose title string sits on the following line (143, not 141).
+
 ## 2026-08-21 — initial mapping: `Zocdoc/ServiceMockEndpoints` @ 90eacfb
 
 Scope: whole repo, branch `master`. Granularity: one row per test method.
