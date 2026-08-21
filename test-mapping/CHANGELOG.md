@@ -2,6 +2,16 @@
 
 Identity key for a row: `<repo-relative-path>::<MethodName>[ (CaseName)]`.
 
+## 2026-08-21 — initial mapping: `Zocdoc/zocdoc_web` (auth-owned paths) @ eed912c
+
+Final repo in the Auth team sweep. Scope taken from `CODEOWNERS`: `ZocDoc.Security/ZocDoc.Security.Tests/`, `PracticeAuthorization/PracticeAuthorization.Test/`, and `Apis/PracticeUserRolesPrivate/Zocdoc.PracticeUserRolesPrivate.Tests/`.
+
+- **188 test classes / 2,180 test methods**, mapped one row per class (per-method rows would have been unusable at this size). Rows are grouped into 26 feature-area sections, ordered by project then by size, largest class first within each area.
+- Row-count correction: the raw extractor emits one row per `[TestCase]` attribute, giving 2,202. Distinct `(file, line, name)` methods = **2,180**. Any earlier reference to 2,202 is superseded.
+- Ten classes are database-backed rather than mocked (rows 66, 67, 70, 72, 95, 114, 125, 126, 145, 171) and are marked `Integration (SQL)`; everything else is `Unit`.
+- **Stale ownership finding:** `CODEOWNERS` still assigns `/Zocdoc.AuditLogging/` to the Auth team, but that directory no longer exists in the repo — it became the standalone `audit-logging-service`, mapped separately. The entry has no tests behind it and should be removed.
+- Four class names could not be extracted automatically because the declaration wraps across lines (`ServiceAuthAssertionValidationServiceTests`, `PhoneNumberVerificationSqlPersistenceTests`, `AuthAttributeShortCircuitServiceTests`, and the `Roles_RenameRole_prc` fixture); all were resolved by reading the source and source links point at the `internal class` line.
+
 ## 2026-08-21 — initial mapping: `Zocdoc/auth-service` @ fa9a039
 
 Scope: whole repo, branch `main`. Granularity: one row per test method. NUnit throughout, across three projects — `tests/ApiTests/` (deployed instance, or the mock for `[Category("FakeOnly")]`), `tests/IntegrationTests/` (real DynamoDB), `tests/UnitTests/`.
