@@ -17,7 +17,7 @@ Slack `#auth` · Jira `AUTH` · `technology-auth@zocdoc.com` · QA owner Allen K
 | [user-locking-test-mapping.md](auth/user-locking-test-mapping.md) | `Zocdoc/user-locking` | 8 files / 80 tests | per method | Done |
 | [user-accounts](auth/user-accounts-test-mapping.md) | `Zocdoc/user-accounts` @ `0271f52` | 85 tests | per method | Done |
 | [ServiceMockEndpoints](auth/service-mock-endpoints-test-mapping.md) | `Zocdoc/ServiceMockEndpoints` @ `90eacfb` | 99 tests | per method | Done |
-| consumer-privacy-service | `Zocdoc/consumer-privacy-service` | 308 tests | per method | Pending |
+| [consumer-privacy-service](auth/consumer-privacy-service-test-mapping.md) | `Zocdoc/consumer-privacy-service` @ `91dad97` | 308 tests | per method | Done |
 | auth-service | `Zocdoc/auth-service` | 1191 tests | per method | Pending |
 | [external-developer-api-auth-test-mapping.md](auth/external-developer-api-auth-test-mapping.md) | `Zocdoc/external-developer-api-auth` | 1 file / 4 tests | per test | Done |
 | zocdoc_web (auth-owned paths) | `Zocdoc/zocdoc_web` · `ZocDoc.Security`, `PracticeAuthorization`, `Apis/PracticeUserRolesPrivate` | 188 test classes | per class | Pending |

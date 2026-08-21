@@ -2,6 +2,24 @@
 
 Identity key for a row: `<repo-relative-path>::<MethodName>[ (CaseName)]`.
 
+## 2026-08-21 — initial mapping: `Zocdoc/consumer-privacy-service` @ 91dad97
+
+Scope: whole repo, branch `master`. Granularity: one row per test method. xUnit throughout.
+
+- 34 test files mapped, 308 test methods total.
+  - `tests/UnitTests/ConsumerPrivacy.Web/InternalApiImplTests.cs` — 88 tests
+  - `tests/UnitTests/ConsumerPrivacy.Web/PublicApiImplTests.cs` — 72 tests
+  - `tests/IntegrationTests/ConsumerPrivacy.Infrastructure/DynamoDb/RequestStoreTests.cs` — 20 tests
+  - `tests/UnitTests/ConsumerPrivacy.Infrastructure/HttpCallerTests.cs` — 16 tests
+  - `tests/UnitTests/ConsumerPrivacy.Infrastructure/OptOutServiceTests.cs` — 13 tests
+  - `tests/UnitTests/ConsumerPrivacy.Lambda/RequestProcessorTests.cs` — 11 tests
+  - `tests/UnitTests/ConsumerPrivacy.Web/OptOutPatientIdAuditorTests.cs` — 10 tests
+  - `tests/IntegrationTests/ConsumerPrivacy.Infrastructure/S3/S3ClientTests.cs` — 9 tests
+  - `tests/UnitTests/ConsumerPrivacy/EmailAddressUtilsTests.cs`, `ConsumerPrivacy.Web/DownloadImplTests.cs` — 6 tests each
+  - 5 tests each: `Lambda/Monolith/MonolithCallerTests.cs`, `Lambda/Monolith/MonolithRepositoryTests.cs`, `Lambda/Salesforce/SalesforceCallerTests.cs`, `Lambda/Salesforce/SalesforceRepositoryTests.cs`, `Web/RequestHeadersParserTests.cs`, `Web/ConsumerPrivacyRequestsStateTests.cs`
+  - remaining 19 files — 4 or fewer tests each
+- Coverage gaps recorded: `tests/FunctionalTests/` contains only a scaffold placeholder, so no test drives a CCPA request end to end; `HomeControllerTests.cs` and `IntegrationTests/ConsumerPrivacyTests.cs` are also scaffolds.
+
 ## 2026-08-21 — initial mapping: `Zocdoc/auth0-infrastructure` @ cac1149
 
 Scope: whole repo, branch `main`. Granularity: one row per test method.
