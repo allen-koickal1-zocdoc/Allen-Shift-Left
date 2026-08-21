@@ -19,7 +19,7 @@ Slack `#auth` · Jira `AUTH` · `technology-auth@zocdoc.com` · QA owner Allen K
 | ServiceMockEndpoints | `Zocdoc/ServiceMockEndpoints` | 99 tests | per method | Pending |
 | consumer-privacy-service | `Zocdoc/consumer-privacy-service` | 308 tests | per method | Pending |
 | auth-service | `Zocdoc/auth-service` | 1191 tests | per method | Pending |
-| external-developer-api-auth | `Zocdoc/external-developer-api-auth` | 4 JS tests | per method | Pending |
+| [external-developer-api-auth-test-mapping.md](auth/external-developer-api-auth-test-mapping.md) | `Zocdoc/external-developer-api-auth` | 1 file / 4 tests | per test | Done |
 | zocdoc_web (auth-owned paths) | `Zocdoc/zocdoc_web` · `ZocDoc.Security`, `PracticeAuthorization`, `Apis/PracticeUserRolesPrivate` | 188 test classes | per class | Pending |
 
 Repo ownership was resolved by code search for `team: auth` / `technology-auth@zocdoc.com` in `plinth.yaml`, cross-checked against the org `team-directory.yaml`. The GitHub teams API is not reachable with the available token, so this list is targeted rather than exhaustively enumerated.

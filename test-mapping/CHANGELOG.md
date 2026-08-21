@@ -2,6 +2,13 @@
 
 Identity key for a row: `<repo-relative-path>::<MethodName>[ (CaseName)]`.
 
+## 2026-08-21 — initial mapping: `Zocdoc/external-developer-api-auth` @ 198ebb4
+
+Scope: whole repo, branch `main`. Granularity: one row per test.
+
+- 1 test file mapped, 4 tests total.
+  - `cdk/test/auth0-app-clients.test.ts` — 4 tests (Jest)
+
 ## 2026-08-21 — initial mapping: `Zocdoc/audit-logging-service` @ 2d5e6ad
 
 Scope: whole repo, branch `main`. Granularity: one row per test method.
