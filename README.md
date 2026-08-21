@@ -79,6 +79,12 @@ Each repository has a dedicated analysis report containing:
 | Practice Management | 26 | `cypress/e2e/rbac/practicemgmt-smoke.spec.js` |
 | Providers Page | 9 | `cypress/e2e/provider/provider-providerspage-regression.spec.js` |
 
+## Other Test Mappings
+
+Team-scoped Shift-Left test mappings (outside the Pterodactyl audit above) live in [`test-mapping/`](test-mapping/README.md):
+
+- [Infrastructure / Auth](test-mapping/sandbox-auth-test-mapping.md) - 6 Playwright spec files, 24 tests, from `Zocdoc/sandbox` `playwright/BU/Infrastructure/Auth`.
+
 ## Quick Links
 
 - **[MASTER INVENTORY](analysis/MASTER-INVENTORY.md) - Complete count of ALL tests**
