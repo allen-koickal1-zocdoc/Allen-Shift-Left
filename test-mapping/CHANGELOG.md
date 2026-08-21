@@ -2,6 +2,18 @@
 
 Identity key for a row: `<repo-relative-path>::<MethodName>[ (CaseName)]`.
 
+## 2026-08-21 — initial mapping: `Zocdoc/user-locking` @ a0de1bc
+
+Scope: whole repo, branch `main`. Granularity: one row per test method.
+
+- 8 test files mapped, 80 test methods total (1 `TestCaseSource` with 3 cases).
+  - `tests/UserLocking.Web.ApiTests/UserLockingApiTests.cs` — 38 tests
+  - `tests/UserLocking.Web.UnitTests/UserLockingImplTests.cs` — 12 tests
+  - `tests/UserLocking.LoginLockPropagatorLambda.UnitTests/HandlerTests.cs` — 11 tests
+  - `tests/UserLocking.Web.IntegrationTests/UserLockDynamoPersistenceTests.cs` — 9 tests
+  - `tests/UserLocking.LoginLockPropagatorLambda.IntegrationTests/LambdaTests.cs` — 7 tests
+  - `tests/*/ExampleTests.cs` (×3) — 3 scaffold placeholders, no product coverage
+
 ## 2026-08-21 — initial mapping: `Zocdoc/external-developer-api-auth` @ 198ebb4
 
 Scope: whole repo, branch `main`. Granularity: one row per test.
