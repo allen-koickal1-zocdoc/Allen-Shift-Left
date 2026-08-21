@@ -2,6 +2,18 @@
 
 Identity key for a row: `<repo-relative-path>::<MethodName>[ (CaseName)]`.
 
+## 2026-08-21 — initial mapping: `Zocdoc/user-accounts` @ 0271f52
+
+Scope: whole repo, branch `main`. Granularity: one row per test method.
+
+- 7 test files mapped, 85 test methods total (1 `TestCase` pair; 8 `[Values]` tests expand over whole enums at run time).
+  - `tests/UserAccounts.Web.ApiTests/AccountsApiTests.cs` — 23 tests (14 `[Category("FakeOnly")]`)
+  - `tests/UserAccounts.UnitTests/FakeUserAccountDynamoPersistenceTests.cs` — 19 tests
+  - `tests/UserAccounts.Web.UnitTests/ConversionExtensionsTests.cs` — 19 tests
+  - `tests/UserAccounts.Web.UnitTests/AccountsImplTests.cs` — 14 tests
+  - `tests/UserAccounts.IntegrationTests/DynamoUserAccountDynamoPersistenceTests.cs` — 8 tests
+  - `tests/*/ExampleTests.cs` (×2) — 2 scaffold placeholders, no product coverage
+
 ## 2026-08-21 — initial mapping: `Zocdoc/user-locking` @ a0de1bc
 
 Scope: whole repo, branch `main`. Granularity: one row per test method.
