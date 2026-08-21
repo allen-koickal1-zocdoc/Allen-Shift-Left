@@ -16,7 +16,7 @@ Slack `#auth` · Jira `AUTH` · `technology-auth@zocdoc.com` · QA owner Allen K
 | auth0-infrastructure | `Zocdoc/auth0-infrastructure` | 66 C# + 141 JS tests | per method | Pending |
 | [user-locking-test-mapping.md](auth/user-locking-test-mapping.md) | `Zocdoc/user-locking` | 8 files / 80 tests | per method | Done |
 | [user-accounts](auth/user-accounts-test-mapping.md) | `Zocdoc/user-accounts` @ `0271f52` | 85 tests | per method | Done |
-| ServiceMockEndpoints | `Zocdoc/ServiceMockEndpoints` | 99 tests | per method | Pending |
+| [ServiceMockEndpoints](auth/service-mock-endpoints-test-mapping.md) | `Zocdoc/ServiceMockEndpoints` @ `90eacfb` | 99 tests | per method | Done |
 | consumer-privacy-service | `Zocdoc/consumer-privacy-service` | 308 tests | per method | Pending |
 | auth-service | `Zocdoc/auth-service` | 1191 tests | per method | Pending |
 | [external-developer-api-auth-test-mapping.md](auth/external-developer-api-auth-test-mapping.md) | `Zocdoc/external-developer-api-auth` | 1 file / 4 tests | per test | Done |

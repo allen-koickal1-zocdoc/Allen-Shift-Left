@@ -2,6 +2,23 @@
 
 Identity key for a row: `<repo-relative-path>::<MethodName>[ (CaseName)]`.
 
+## 2026-08-21 — initial mapping: `Zocdoc/ServiceMockEndpoints` @ 90eacfb
+
+Scope: whole repo, branch `master`. Granularity: one row per test method.
+
+- 12 test files mapped, 99 test methods total (54 declared `TestCase` cases across 10 of them).
+  - `auth-dotnet/test/Zocdoc.Auth.Mock.Tests/FgaControllerTests.cs` — 34 tests
+  - `auth-dotnet/test/Zocdoc.Auth.Mock.Tests/TestingControllerTests.cs` — 21 tests
+  - `auth-dotnet/test/Zocdoc.Auth.Mock.Tests/JwtAuthenticationControllerTests.cs` — 10 tests
+  - `auth-dotnet/test/Zocdoc.Auth.Mock.Tests/OAuth2TokenControllerTests.cs` — 9 tests
+  - `auth-dotnet/test/Zocdoc.Auth.Mock.Tests/IdentityControllerTests.cs` — 6 tests
+  - `auth-dotnet/test/Zocdoc.Auth.Mock.Tests/WellKnownControllerTests.cs` — 6 tests
+  - `auth-dotnet/test/Zocdoc.Auth.Mock.Tests/AuthorizationControllerTests.cs` — 5 tests
+  - `auth-dotnet/test/Zocdoc.Auth.Mock.Tests/AuthenticationControllerTests.cs` — 3 tests
+  - `auth-dotnet/test/Zocdoc.Auth.Mock.Tests/Auth0EndpointsTests.cs` — 2 tests
+  - `auth-dotnet/test/Zocdoc.Auth.Mock.Tests/JwtAuthenticationServiceTests.cs`, `ShowPayloadExampleControllerTests.cs` — 1 test each
+  - `auth-dotnet/test/Zocdoc.Auth.Mock.Tests/ApiParityTests.cs` — 1 test, `[Ignore]`d and never executed
+
 ## 2026-08-21 — initial mapping: `Zocdoc/user-accounts` @ 0271f52
 
 Scope: whole repo, branch `main`. Granularity: one row per test method.
