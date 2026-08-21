@@ -2,6 +2,26 @@
 
 Identity key for a row: `<repo-relative-path>::<MethodName>[ (CaseName)]`.
 
+## 2026-08-21 — initial mapping: `Zocdoc/audit-logging-service` @ 2d5e6ad
+
+Scope: whole repo, branch `main`. Granularity: one row per test method.
+
+- 17 test files mapped, 56 test methods total (11 declared `TestCase`/`TestCaseSource` cases across 6 of them).
+  - `tests/ApiTests/AuthorizationLogApiTests.cs` — 7 tests
+  - `tests/UnitTests/AuthorizationLogImplTest.cs` — 6 tests
+  - `tests/UnitTests/PatientRefresh.Worker/ScanServiceTests.cs` — 6 tests
+  - `tests/UnitTests/LogConverterTest.cs` — 5 tests
+  - `tests/UnitTests/PatientIdEnqueue.Lambda/S3LogParserTests.cs` — 4 tests
+  - `tests/UnitTests/PatientIdEnqueue.Lambda/ReportingModelToDdbDtoServiceTest.cs` — 4 tests
+  - `tests/UnitTests/PatientRefresh.Worker/PatientResponseToDdbDtoServiceTests.cs` — 4 tests
+  - `tests/UnitTests/PatientRefresh.Worker/WorkerTests.cs` — 4 tests
+  - `tests/IntegrationTests/PatientWorkerIntegrationTests.cs` — 3 tests
+  - `tests/UnitTests/LegalReportingPatientDynamoPersistenceTest.cs` — 3 tests
+  - `tests/UnitTests/PatientRefresh.Worker/PatientServiceTests.cs` — 3 tests
+  - `tests/UnitTests/DynamoKeyServiceTest.cs` — 2 tests
+  - `tests/IntegrationTests/FirehoseClientWrapperIntegrationTests.cs`, `tests/UnitTests/FirehoseClientWrapperTest.cs`, `tests/UnitTests/GuidGeneratorTest.cs`, `tests/UnitTests/PatientNamespaceContractTests.cs` — 1 test each
+  - `monolithInvestigationScripts/BitmaskDecode.cs` — 1 `[Test]`-annotated developer script, no assertions
+
 ## 2026-08-21 — initial mapping: `Zocdoc/legal-agreement` @ fdc9ad0
 
 Scope: whole repo, branch `main`. Granularity: one row per test method.

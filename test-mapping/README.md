@@ -12,7 +12,7 @@ Slack `#auth` · Jira `AUTH` · `technology-auth@zocdoc.com` · QA owner Allen K
 |---------|--------|-------|-------------|--------|
 | [sandbox-test-mapping.md](auth/sandbox-test-mapping.md) | `Zocdoc/sandbox` · `playwright/BU/Infrastructure/Auth` | 6 files / 24 tests | per test | Done |
 | [legal-agreement-test-mapping.md](auth/legal-agreement-test-mapping.md) | `Zocdoc/legal-agreement` | 8 files / 52 tests | per method | Done |
-| audit-logging-service | `Zocdoc/audit-logging-service` | 56 tests | per method | Pending |
+| [audit-logging-service-test-mapping.md](auth/audit-logging-service-test-mapping.md) | `Zocdoc/audit-logging-service` | 17 files / 56 tests | per method | Done |
 | auth0-infrastructure | `Zocdoc/auth0-infrastructure` | 66 C# + 141 JS tests | per method | Pending |
 | user-locking | `Zocdoc/user-locking` | 80 tests | per method | Pending |
 | user-accounts | `Zocdoc/user-accounts` | 85 tests | per method | Pending |
