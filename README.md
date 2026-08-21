@@ -83,7 +83,7 @@ Each repository has a dedicated analysis report containing:
 
 Team-scoped Shift-Left test mappings (outside the Pterodactyl audit above) live in [`test-mapping/`](test-mapping/README.md):
 
-- [Infrastructure / Auth](test-mapping/sandbox-auth-test-mapping.md) - 6 Playwright spec files, 24 tests, from `Zocdoc/sandbox` `playwright/BU/Infrastructure/Auth`.
+- [Infrastructure / Auth](test-mapping/README.md#infrastructure--auth) - all tests owned by the Auth team, across the sandbox Playwright suite, the team's service repos, and the auth-owned paths in `zocdoc_web`.
 
 ## Quick Links
 
