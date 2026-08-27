@@ -2,6 +2,17 @@
 
 Identity key for a row: `<repo-relative-path>::<MethodName>[ (CaseName)]`.
 
+## 2026-08-27 — gap analysis: Infrastructure / Auth (all 11 mappings)
+
+New [auth/GAPS.md](auth/GAPS.md). Method: enumerate each repo's production surface at current `HEAD` (API operation impls, controllers, lambda handlers, workers, Auth0 action scripts, CDK stacks, service classes) and diff it against the test surface. A unit counts as uncovered only after three checks agree — word-boundary scan, substring scan (to catch `FooTests.cs` naming and `IFoo` mentions), and a read of the source to confirm the class is concrete and behaves as claimed. **220 proposed tests** plus 9 hygiene items, prioritised P1-P3.
+
+- Largest gaps: `auth-service` (all nine API operation impls and five of six login controllers are unit-test-free), `zocdoc_web` (three of the four authentication schemes plus the password expiry/reuse checker), `auth0-infrastructure` (3 of 13 action scripts have zero tests, and all three make access decisions).
+- The dominant shape across every repo is **interface mocked, implementation never run** — consumers are well tested against a contract nobody has checked. Verified for eleven interfaces including `IAuthServiceApiCaller`, `IBasicAuthService`, and all three monolith authentication schemes.
+- Five untested service edges between Auth-owned repos — monolith→auth-service, monolith→user-locking, user-locking→auth-service, auth-service→provider-grouping, legal-agreement→provider-grouping — are called out as the single highest-leverage addition.
+- 12 scaffold bodies (`ExampleTests`, `Test1`, `Assert.True(true)`) plus two `[Test]`-annotated developer scripts and one `[Ignore]`d parity test are counted as coverage in the mapping index and inflate its totals. `[Category("RealOnly")]` adds another 56 auth-service tests that never execute outside a deployed stack.
+- **Row corrections found while diffing** (the mappings themselves need updating): `external-developer-api-auth` omits `test-sync-clients-to-kong.sh` (12 bash assertions, present at the pinned commit) and its Jest file is now 6 tests, not 4; `user-accounts` @ `0271f52` needs full regeneration, not a count bump — 8 test files changed at HEAD `91af902` and `[Category("FakeOnly")]` no longer exists in the repo, invalidating 14 tagged rows; `auth-service` @ `fa9a039` is behind by 6 test files including `PracticeLoginServiceTests.cs` (+500); `auth0-infrastructure` @ `cac1149` is behind by `add-provider-claims-tests.js` (+491/-32). `legal-agreement`, `audit-logging-service`, `user-locking`, `consumer-privacy-service`, and the `sandbox` Auth specs have no test drift.
+- **Self-correction from the first pass of GAPS.md**, kept here because the document was reviewed before publication: the claim that `FirehoseClientWrapper`'s `FailedPutCount > 0` branch was untested was wrong (`Test_GetFireHoseResponse` asserts it; the *success* path is the actual gap); `ApiParityTests.TestingJwt` was downgraded from P1 after confirming it duplicates `TestingControllerTests`; and `OAuth2Client` was dropped from the zocdoc_web list as an `internal abstract class`.
+
 ## 2026-08-21 — initial mapping: `Zocdoc/zocdoc_web` (auth-owned paths) @ eed912c
 
 Final repo in the Auth team sweep. Scope taken from `CODEOWNERS`: `ZocDoc.Security/ZocDoc.Security.Tests/`, `PracticeAuthorization/PracticeAuthorization.Test/`, and `Apis/PracticeUserRolesPrivate/Zocdoc.PracticeUserRolesPrivate.Tests/`.
