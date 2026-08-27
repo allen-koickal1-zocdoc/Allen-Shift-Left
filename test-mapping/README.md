@@ -22,6 +22,8 @@ Slack `#auth` · Jira `AUTH` · `technology-auth@zocdoc.com` · QA owner Allen K
 | [external-developer-api-auth-test-mapping.md](auth/external-developer-api-auth-test-mapping.md) | `Zocdoc/external-developer-api-auth` | 1 file / 4 tests | per test | Done |
 | [zocdoc_web (auth-owned paths)](auth/zocdoc-web-test-mapping.md) | `Zocdoc/zocdoc_web` @ `eed912c` · `ZocDoc.Security`, `PracticeAuthorization`, `Apis/PracticeUserRolesPrivate` | 188 test classes / 2,180 methods | per class | Done |
 
+**Coverage gaps:** [auth/GAPS.md](auth/GAPS.md) — 220 proposed tests derived by diffing these mappings against each repo's production surface at HEAD. Includes verified corrections to the mapping rows themselves.
+
 Repo ownership was resolved by code search for `team: auth` / `technology-auth@zocdoc.com` in `plinth.yaml`, cross-checked against the org `team-directory.yaml`. The GitHub teams API is not reachable with the available token, so this list is targeted rather than exhaustively enumerated.
 
 Version history: [CHANGELOG.md](CHANGELOG.md).
