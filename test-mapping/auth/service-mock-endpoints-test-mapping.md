@@ -10,7 +10,7 @@ scope: whole repo
 granularity: one row per test method
 -->
 
-> Source: [`Zocdoc/ServiceMockEndpoints`](https://github.com/Zocdoc/ServiceMockEndpoints/tree/90eacfbdc7a481a96db8abc9384172da2fc85493) @ `90eacfb` (branch `master`)
+> **Source:** [`Zocdoc/ServiceMockEndpoints`](https://github.com/Zocdoc/ServiceMockEndpoints/tree/90eacfbdc7a481a96db8abc9384172da2fc85493) @ `90eacfb` (branch `master`) · mapped 2026-08-21 · one row per test
 
 This repo is the **fake auth server** (`authentication-mock-apis`, per `plinth.yaml`) that every other Zocdoc service points at in its own integration tests: it mints JWTs, serves JWKS and OIDC discovery documents, and stands in for OpenFGA. All 99 tests live in the single `Zocdoc.Auth.Mock.Tests` project and drive the mock over HTTP through a test client. A regression here silently changes the auth behaviour that dozens of downstream test suites assume.
 
@@ -18,7 +18,7 @@ This repo is the **fake auth server** (`authentication-mock-apis`, per `plinth.y
 
 The OpenFGA stand-in: an OAuth token endpoint, a tuple store fed by `/write`, a simpler override store fed by `/setup`, and `check` / `read` / `list-objects` reading from them.
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 1 | OauthClientCredentials_WithValidForm_ShouldReturnOk | FGA-tenant token minting | POST the client-credentials form to the FGA `oauth/token` endpoint | 200 with `expires_in` 1800 and `token_type` bearer; subject is `{clientId}@clients`, audience matches the request, issuer is the `mock-fga-tenant` URL. | API | [L56](https://github.com/Zocdoc/ServiceMockEndpoints/blob/90eacfbdc7a481a96db8abc9384172da2fc85493/auth-dotnet/test/Zocdoc.Auth.Mock.Tests/FgaControllerTests.cs#L56) |
 | 2 | OauthClientCredentials_MissingGrantType_Forbidden | Token request without a grant type | POST the form with `grant_type` omitted | 403. | API | [L87](https://github.com/Zocdoc/ServiceMockEndpoints/blob/90eacfbdc7a481a96db8abc9384172da2fc85493/auth-dotnet/test/Zocdoc.Auth.Mock.Tests/FgaControllerTests.cs#L87) |
@@ -61,7 +61,7 @@ The OpenFGA stand-in: an OAuth token endpoint, a tuple store fed by `/write`, a 
 
 The `/testing/jwt*` endpoints, which are how every other service's test suite obtains a token. 21 methods, 36 executed cases once `[TestCase]` expansion is counted.
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 35 | Test_GetJwt | Default Zocdoc JWT | GET `/testing/jwt` | Issued-at and valid-from are now, expiry is +5 minutes, subject is the canonical test account id, and no `type`, `patient`, or `practice` claims are present. | API | [L18](https://github.com/Zocdoc/ServiceMockEndpoints/blob/90eacfbdc7a481a96db8abc9384172da2fc85493/auth-dotnet/test/Zocdoc.Auth.Mock.Tests/TestingControllerTests.cs#L18) |
 | 36 | Test_GetJwt_patient | Patient token with custom lifetime | GET `/testing/jwt?patient_id=123&expires_in_minutes=60` | Expiry is +60 minutes and the `patient` claim is `123`; no `practice` claim leaks in. | API | [L33](https://github.com/Zocdoc/ServiceMockEndpoints/blob/90eacfbdc7a481a96db8abc9384172da2fc85493/auth-dotnet/test/Zocdoc.Auth.Mock.Tests/TestingControllerTests.cs#L33) |
@@ -91,7 +91,7 @@ The `/testing/jwt*` endpoints, which are how every other service's test suite ob
 
 The token-exchange endpoint that trades a bearer token for a Zocdoc JWT. 10 methods, 28 executed cases.
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 56 | Server_GetUserInfo_GivenBearerToken_ShouldReturnJwt | Exchange happy path (6 cases) | Send a bearer token and read back the minted JWT | Issuer `Zd`, audience `JWTv2`, RS256 with the expected kid, and the expiry honours the per-case requested lifetime. | API | [L20](https://github.com/Zocdoc/ServiceMockEndpoints/blob/90eacfbdc7a481a96db8abc9384172da2fc85493/auth-dotnet/test/Zocdoc.Auth.Mock.Tests/JwtAuthenticationControllerTests.cs#L20) |
 | 57 | Server_GetUserInfo_HeaderClaims | Claims supplied via headers (7 cases) | Send the exchange request with claim headers set | Each header lands in the minted token; standard issuer, audience, kid, and 5-minute lifetime assertions hold. | API | [L55](https://github.com/Zocdoc/ServiceMockEndpoints/blob/90eacfbdc7a481a96db8abc9384172da2fc85493/auth-dotnet/test/Zocdoc.Auth.Mock.Tests/JwtAuthenticationControllerTests.cs#L55) |
@@ -110,7 +110,7 @@ The token-exchange endpoint that trades a bearer token for a Zocdoc JWT. 10 meth
 
 Service-to-service token endpoints: the legacy `/api/1/oauth2/servicetoken` and the Auth0-shaped `mock-internal-services-tenant/oauth/token`.
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 66 | ServerPostToken_WithWrongGrantType_ShouldReturnBadRequest | Legacy endpoint grant-type validation | POST `servicetoken` with an unsupported grant type | 400. | API | [L20](https://github.com/Zocdoc/ServiceMockEndpoints/blob/90eacfbdc7a481a96db8abc9384172da2fc85493/auth-dotnet/test/Zocdoc.Auth.Mock.Tests/OAuth2TokenControllerTests.cs#L20) |
 | 67 | ServerPostToken_WithJwtAssertion_ShouldReturnOkAndIgnoreJwtSignature | Legacy endpoint ignores assertion signatures | POST a JWT assertion whose signature is not verifiable, with two roles | 200; `role` claims are `1` and `2` and `service` is `some_service`. The mock deliberately does not validate the assertion signature. | API | [L33](https://github.com/Zocdoc/ServiceMockEndpoints/blob/90eacfbdc7a481a96db8abc9384172da2fc85493/auth-dotnet/test/Zocdoc.Auth.Mock.Tests/OAuth2TokenControllerTests.cs#L33) |
@@ -128,7 +128,7 @@ Service-to-service token endpoints: the legacy `/api/1/oauth2/servicetoken` and 
 
 The `/api/{provider,patient}/v1/identity` endpoints that resolve a token to ids.
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 75 | GetProviderIdentity_ReturnsProviderIdAndPracticeIdWithValidAuthorizationHeader | Provider identity resolution | GET the provider identity endpoint with a valid Authorization header | 200 with exactly `{"practiceId":27841,"providerId":73922}`. | API | [L15](https://github.com/Zocdoc/ServiceMockEndpoints/blob/90eacfbdc7a481a96db8abc9384172da2fc85493/auth-dotnet/test/Zocdoc.Auth.Mock.Tests/IdentityControllerTests.cs#L15) |
 | 76 | GetProviderIdentity_ReturnsUnauthorizedWithMissingAuthorizationHeader | Provider identity, no header | GET with no Authorization header | 401. | API | [L27](https://github.com/Zocdoc/ServiceMockEndpoints/blob/90eacfbdc7a481a96db8abc9384172da2fc85493/auth-dotnet/test/Zocdoc.Auth.Mock.Tests/IdentityControllerTests.cs#L27) |
@@ -143,7 +143,7 @@ The `/api/{provider,patient}/v1/identity` endpoints that resolve a token to ids.
 
 OIDC discovery documents and the JWKS. These are what downstream services fetch to validate mock-issued tokens, so their shape is a hard contract.
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 81 | Get_WellKnownOpenIdConfiguration | Root discovery document | GET `/.well-known/openid-configuration` | Matches the expected document exactly. | API | [L16](https://github.com/Zocdoc/ServiceMockEndpoints/blob/90eacfbdc7a481a96db8abc9384172da2fc85493/auth-dotnet/test/Zocdoc.Auth.Mock.Tests/WellKnownControllerTests.cs#L16) |
 | 82 | Get_MockCognitoPoolOpenIdConfiguration | Cognito pool discovery document | GET `/mock-cognito-pool/.well-known/openid-configuration` | Matches the expected document exactly. | API | [L45](https://github.com/Zocdoc/ServiceMockEndpoints/blob/90eacfbdc7a481a96db8abc9384172da2fc85493/auth-dotnet/test/Zocdoc.Auth.Mock.Tests/WellKnownControllerTests.cs#L45) |
@@ -156,7 +156,7 @@ OIDC discovery documents and the JWKS. These are what downstream services fetch 
 
 ## `auth-dotnet/test/Zocdoc.Auth.Mock.Tests/AuthorizationControllerTests.cs`
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 87 | Test_GetInsuranceCards | Mocked insurance-card authorization response | GET the mock `patient-insurance/authorization/v1/insurance-cards` route | The canned JSON payload is returned. | API | [L16](https://github.com/Zocdoc/ServiceMockEndpoints/blob/90eacfbdc7a481a96db8abc9384172da2fc85493/auth-dotnet/test/Zocdoc.Auth.Mock.Tests/AuthorizationControllerTests.cs#L16) |
 | 88 | Test_GetInsuranceCards_Unauthorized | Same route without credentials | Send the request with no valid authorization | 401. | API | [L24](https://github.com/Zocdoc/ServiceMockEndpoints/blob/90eacfbdc7a481a96db8abc9384172da2fc85493/auth-dotnet/test/Zocdoc.Auth.Mock.Tests/AuthorizationControllerTests.cs#L24) |
@@ -168,7 +168,7 @@ OIDC discovery documents and the JWKS. These are what downstream services fetch 
 
 ## `auth-dotnet/test/Zocdoc.Auth.Mock.Tests/AuthenticationControllerTests.cs`
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 92 | Test_Get | `/authentication/v1` GET | GET the route | Returns the expected canned JSON. | API | [L13](https://github.com/Zocdoc/ServiceMockEndpoints/blob/90eacfbdc7a481a96db8abc9384172da2fc85493/auth-dotnet/test/Zocdoc.Auth.Mock.Tests/AuthenticationControllerTests.cs#L13) |
 | 93 | Test_Post | `/authentication/v1` POST | POST to the route with no body | Returns the expected canned JSON. | API | [L21](https://github.com/Zocdoc/ServiceMockEndpoints/blob/90eacfbdc7a481a96db8abc9384172da2fc85493/auth-dotnet/test/Zocdoc.Auth.Mock.Tests/AuthenticationControllerTests.cs#L21) |
@@ -178,7 +178,7 @@ OIDC discovery documents and the JWKS. These are what downstream services fetch 
 
 ## `auth-dotnet/test/Zocdoc.Auth.Mock.Tests/Auth0EndpointsTests.cs`
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 95 | GetUserInfo_ShouldReturnExpectedJsonResponse | Auth0 `/userinfo` stand-in | GET `/mock-auth0-tenant/userinfo` with credentials | 200 with the expected user-info JSON. | API | [L19](https://github.com/Zocdoc/ServiceMockEndpoints/blob/90eacfbdc7a481a96db8abc9384172da2fc85493/auth-dotnet/test/Zocdoc.Auth.Mock.Tests/Auth0EndpointsTests.cs#L19) |
 | 96 | GetUserInfo_ShouldReturnUnauthorized | `/userinfo` without credentials | GET the same route with no Authorization header | 401. | API | [L58](https://github.com/Zocdoc/ServiceMockEndpoints/blob/90eacfbdc7a481a96db8abc9384172da2fc85493/auth-dotnet/test/Zocdoc.Auth.Mock.Tests/Auth0EndpointsTests.cs#L58) |
@@ -187,7 +187,7 @@ OIDC discovery documents and the JWKS. These are what downstream services fetch 
 
 ## `auth-dotnet/test/Zocdoc.Auth.Mock.Tests/JwtAuthenticationServiceTests.cs`
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 97 | Certificate_Nonsense | Self-signed signing certificate generation | Generate the mock's certificate from a known RSA key and inspect it | Subject `CN=zocdoc.com`, expiry about a year out, exactly one basic-constraints extension, sha256RSA signature, and the embedded public key's exponent and modulus match the source key. | Unit | [L14](https://github.com/Zocdoc/ServiceMockEndpoints/blob/90eacfbdc7a481a96db8abc9384172da2fc85493/auth-dotnet/test/Zocdoc.Auth.Mock.Tests/JwtAuthenticationServiceTests.cs#L14) |
 
@@ -195,7 +195,7 @@ OIDC discovery documents and the JWKS. These are what downstream services fetch 
 
 ## `auth-dotnet/test/Zocdoc.Auth.Mock.Tests/ShowPayloadExampleControllerTests.cs`
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 98 | Test_GetNonZdRequestsProvider | Payload-echo debugging endpoint | Mint a testing JWT, send it to the show-payload route | The response carries a `message` element and the decoded JWT matches the expected payload. | API | [L16](https://github.com/Zocdoc/ServiceMockEndpoints/blob/90eacfbdc7a481a96db8abc9384172da2fc85493/auth-dotnet/test/Zocdoc.Auth.Mock.Tests/ShowPayloadExampleControllerTests.cs#L16) |
 
@@ -203,7 +203,7 @@ OIDC discovery documents and the JWKS. These are what downstream services fetch 
 
 ## `auth-dotnet/test/Zocdoc.Auth.Mock.Tests/ApiParityTests.cs`
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 99 | TestingJwt | Parity between the mock and the real auth service — **`[Ignore]`d, never runs** | Would GET `/testing/jwt` and assert issuer, subject, audience, lifetime, algorithm, signature, and kid | Marked `[Ignore("This test is not implemented yet")]`. The file exists to hold parity checks; today it holds one disabled test. | Disabled | [L18](https://github.com/Zocdoc/ServiceMockEndpoints/blob/90eacfbdc7a481a96db8abc9384172da2fc85493/auth-dotnet/test/Zocdoc.Auth.Mock.Tests/ApiParityTests.cs#L18) |
 

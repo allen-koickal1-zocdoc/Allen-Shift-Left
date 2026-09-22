@@ -10,7 +10,7 @@ scope: ZocDoc.Security, PracticeAuthorization, Apis/PracticeUserRolesPrivate
 granularity: one row per test class
 -->
 
-> Source: [`Zocdoc/zocdoc_web`](https://github.com/Zocdoc/zocdoc_web/tree/eed912c1362a8e6c62d11ed6b3245f01cc6e7530) @ `eed912c` (branch `master`)
+> **Source:** [`Zocdoc/zocdoc_web`](https://github.com/Zocdoc/zocdoc_web/tree/eed912c1362a8e6c62d11ed6b3245f01cc6e7530) @ `eed912c` (branch `master`) · mapped 2026-08-21 · one row per test class
 
 The Auth team's surface inside the monolith. Scope was taken from `CODEOWNERS`: three test projects covering the legacy ASP.NET membership stack, the OAuth2 authorization server the monolith still hosts, the Auth0/Cognito/Apple identity-provider adapters, and the practice-user permission model.
 
@@ -30,7 +30,7 @@ One scope note: `CODEOWNERS` still assigns `/Zocdoc.AuditLogging/` to the Auth t
 
 The classes that answer "who is this user and what are they allowed to do to other users". The two largest are deletion-permission matrices: row 1 covers Zocdoc-internal admin roles and row 2 covers practice staff deleting each other, both enumerating every actor/target role pair rather than testing a rule in the abstract.
 
-| # | Test Class | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Class | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 1 | AdminUserManagementPermissionCheckerTests | Internal deletion rights (40 tests) | Every admin/management/CSR/CSR-marketing actor against every target user type | The full matrix of who may delete whom — CSR can delete a patient but not a Zocdoc employee, CSR-marketing only Answers users. | Unit | [L15](https://github.com/Zocdoc/zocdoc_web/blob/eed912c1362a8e6c62d11ed6b3245f01cc6e7530/ZocDoc.Security/ZocDoc.Security.Tests/AdminUserManagementPermissionCheckerTests.cs#L15) |
 | 2 | PracticeStaffUserManagementCheckerTests | Practice staff management (23 tests) | Delete and role-edit checks across MPL, full-admin, PUP-authorized and self-target cases | Staff cannot delete themselves, cannot act without PUP authorization, and the MPL target rule differs from the non-MPL one. | Unit | [L25](https://github.com/Zocdoc/zocdoc_web/blob/eed912c1362a8e6c62d11ed6b3245f01cc6e7530/ZocDoc.Security/ZocDoc.Security.Tests/PracticeStaffUserManagementCheckerTests.cs#L25) |
@@ -52,7 +52,7 @@ The classes that answer "who is this user and what are they allowed to do to oth
 
 The largest area — 23 classes, 309 tests — covering three external identity providers (Auth0, Cognito, Apple) plus the social-login web flow. The four JWT validators (rows 17, 20, 24, 29) all run the same seven-way negative battery: no signing key, bad signature, unsigned, expired, wrong audience, wrong issuer, then the legitimate token.
 
-| # | Test Class | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Class | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 14 | SocialLoginHandlerTests | Social sign-in (43 tests) | Monolith id found/not found, no id, unapproved, locked, locked-then-unlocked, and the OOM lock flag with a throwing OOM check | The largest class in the mapping. Falls back to email login when no monolith id matches, and when the OOM lock check throws it falls back to the monolith result rather than failing the login. | Unit | [L30](https://github.com/Zocdoc/zocdoc_web/blob/eed912c1362a8e6c62d11ed6b3245f01cc6e7530/ZocDoc.Security/ZocDoc.Security.Tests/IdentityProvider/WebFlow/SocialLoginHandlerTests.cs#L30) |
 | 15 | Auth0ServiceTests | Auth0 operations (36 tests) | Delete user and secondary SMS users, refresh, user info, and passwordless start including phone-number stealing | Refresh is rejected when the token is not owned by the patient; passwordless start handles a number already held by another account. | Unit | [L28](https://github.com/Zocdoc/zocdoc_web/blob/eed912c1362a8e6c62d11ed6b3245f01cc6e7530/ZocDoc.Security/ZocDoc.Security.Tests/IdentityProvider/Auth0/Auth0ServiceTests.cs#L28) |
@@ -84,7 +84,7 @@ The largest area — 23 classes, 309 tests — covering three external identity 
 
 The OAuth2 authorization server the monolith still hosts for the patient mobile app and the provider alerter. Four sub-areas: the token/validation services at the root, per-client resource-owner rules under `Clients/`, the RSA key handling under `Keys/`, and the newer JWT-assertion service-to-service flow under `ServiceAuth/`. The recurring theme is failure shape — most classes spend more tests on how a bad token is rejected than on the happy path.
 
-| # | Test Class | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Class | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 37 | OAuth2ServiceTest | Token requests and access-token validation (36 tests) | Both AB-flag states, then every validation failure: extraction error, null principal, invalid proxy, invalid client, revoked and expired tokens — each with `SetForbiddenResponseOnFailure` true and false | The 403 is opt-in: with the flag off a failed validation returns a false result and writes no response, so callers must check the result themselves. | Unit | [L32]($R/OAuth2ServiceTest.cs#L32) |
 | 38 | OAuth2AuthorizationServiceTests | Authorization records and token state (21 tests) | Add authorization with expiring and non-expiring refresh tokens, then access- and refresh-token validity across missing, expired, revoked and mismatched-proxy cases | An invalid proxy throws rather than returning false, and a proxy/user mismatch alerts before returning false — it is treated as a possible attack, not a normal miss. | Unit | [L25]($R/Authorization/OAuth2AuthorizationServiceTests.cs#L25) |
@@ -111,7 +111,7 @@ The OAuth2 authorization server the monolith still hosts for the patient mobile 
 
 Login itself, plus the email-domain rules under `UserEmails/` that decide which addresses a practice may use. This is the densest area in the mapping: the top two classes alone hold 127 tests, and both are dominated by the Auth0 migration — the same login has to work through the legacy ASP.NET path and through Auth0's patient and provider tenants. Three classes here hit a real database rather than mocks.
 
-| # | Test Class | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Class | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 55 | UserLoginServiceTests | Every login entry point (77 tests) | Refresh-token, SMS and passwordless logins through Auth0; the legacy SMS path; newly created passwordless users; null inputs; and the password-expiration parameter | The largest class in the monolith mapping. Each Auth0 path is paired with its failure — bad user, bad token, failed validation — so the fallback behaviour is pinned as tightly as the success. | Unit | [L57]($R/UserLoginServiceTests.cs#L57) |
 | 56 | LoginValidationServiceTests | Pre-login validation (50 tests) | Auth0 refresh-token validation across exception, user mismatch, invalid, blocked and MFA-blocked users; then SMS passwordless validation over null users, ASP.NET checks, scheme checks and bad tokens | Blocked and MFA-blocked are distinct outcomes from invalid, and a token/user mismatch is rejected even when both sides are individually valid. | Unit | [L38]($R/LoginValidationServiceTests.cs#L38) |
@@ -137,7 +137,7 @@ Login itself, plus the email-domain rules under `UserEmails/` that decide which 
 
 Zocdoc's replacement for the stock ASP.NET SQL membership provider, plus the password hashing under `Hashing/`. The hashing tree carries the SHA-1 → PBKDF2 migration: both algorithms are still implemented, and the interesting tests are about upgrading a hash in place during a successful login rather than about either algorithm on its own.
 
-| # | Test Class | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Class | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 72 | CustomBaseSqlMembershipProviderIntegrationTests | The membership provider end to end (72 tests) | Initialisation and connection-string failures, then create/get/validate/change-password/reset/unlock across uniqueness, trimming, unsupported parameters, hash type, missing users and lockout counters | Marked `[Category("SQL")]` through its fixture and wired with real salts, verifiers and SQL friend — the widest genuinely-integrated class in the mapping. Iteration count is lowered to 2 so it stays fast. | Integration (SQL) | [L28]($R/CustomBaseSqlMembershipProviderIntegrationTests.cs#L28) |
 | 73 | Pbkdf2VerifierTests | PBKDF2 hashing and verification (23 tests) | Create a hash over null/whitespace and bad iteration counts, check embedded properties and the 16-byte salt request; then the SHA-1 backfill variant with its own salt validation; then verification | The backfill path reuses the existing SHA-1 salt instead of asking for a new one, which is asserted explicitly — regenerating it would invalidate every migrated password. | Unit | [L19]($R/Hashing/Pbkdf2/Pbkdf2VerifierTests.cs#L19) |
@@ -162,7 +162,7 @@ Zocdoc's replacement for the stock ASP.NET SQL membership provider, plus the pas
 
 Proving a user owns an email address or a phone number: Twilio-backed phone verification, email confirm keys, and the username-change requests those keys authorise. Two generations of the phone service coexist (`PhoneVerificationService` and `...V2`), and a debug-machine bypass runs through the Twilio adapter.
 
-| # | Test Class | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Class | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 88 | UserIdentityVerificationServiceTests | Password-then-phone step-up (19 tests) | Record valid and invalid password attempts, verify with validation passing and failing, then phone verification over not-found, deleted, already-verified, failed and succeeded records; then status reads | Each bad record state raises its own exception type rather than a shared failure, and inconsistent dates throw instead of being reconciled. | Unit | [L23]($R/UserIdentityVerification/UserIdentityVerificationServiceTests.cs#L23) |
 | 89 | PhoneVerificationServiceTests | Sending a phone code (18 tests) | Happy path through Twilio, then Twilio and SQL throwing, a failed phone reveal, MFA without a scoped username, a locked number, a bad format, a missing provider phone, Android SMS vs call app-hash handling, and a home preferred phone | Rich failure surface for one send call. Notably a home preferred phone is overridden to the cell number, and the Android app hash is attached for SMS but not for voice. | Unit | [L30]($R/PhoneVerification/PhoneVerificationServiceTests.cs#L30) |
@@ -182,7 +182,7 @@ Proving a user owns an email address or a phone number: Twilio-backed phone veri
 
 The monolith's own JWT, in two versions living side by side: v1 at the root and v2 under `v2/`. Validation accepts both; generation only produces v2. The claim set is the interesting part — roles are stored as an integer array and the subject is the user's public id, both of which are asserted precisely because they are a wire contract with every service that reads a Zocdoc JWT.
 
-| # | Test Class | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Class | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 99 | JwtV2ClaimsServiceTests | Claim assembly (40 tests) | New jti, timeout, then practice RBAC roles across no roles, bogus roles, non-practice roles and real practice roles — each for an explicit user and for the current user — plus the provider-can-login role behind its flag | Every role lookup is duplicated for the explicit-user and current-user entry points, which is where most of the 40 tests go. Bogus and non-practice roles return null rather than an empty list. | Unit | [L23]($R/v2/JwtV2ClaimsServiceTests.cs#L23) |
 | 100 | JwtV2GenerationServiceTests | Token generation (35 tests) | Null-user throws on both entry points, DataDog claims, token format, functional claims, subject, roles with none/one/many, the integer-array encoding, and patient id present and absent | The subject is the public id, not the numeric user key, and role values are integers — these two assertions are the contract every consuming service depends on. | Unit | [L30]($R/v2/JwtV2GenerationServiceTests.cs#L30) |
@@ -201,7 +201,7 @@ The monolith's own JWT, in two versions living side by side: v1 at the root and 
 
 The reconciliation layer that keeps the monolith's user tables in step with the out-of-monolith identity stores — Auth0, `auth-service`, and the OOM user APIs. Every class here is a background sync rather than a request path, so the recurring assertion is that a failure is logged and the batch continues instead of aborting.
 
-| # | Test Class | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Class | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 109 | AuthIdentityReconciliatorServiceTests | Identity reconciliation driver (12 tests) | Reconcile end to end, chunking, skipping bad emails, iterator get/set, the two id-selection queries, then user-data and provider-username sync including a missing monolith identity and an unexpected exception | Bad emails are skipped rather than failing the run, and both sync failures log instead of throwing — the loop is designed to make partial progress. | Unit | [L24]($R/AuthIdentityReconciliatorServiceTests.cs#L24) |
 | 110 | ProviderUserReconcilatorServiceTests | Provider-user deletion queue (10 tests) | Queue for deletion with a success and an exception, batch insert and delete usernames, queue reads with zero and non-zero batch sizes, item removal, and OOM delete over failure, single-item and multi-item queues | A zero batch size skips SQL entirely, and a multi-item queue only calls delete for the valid users while still recording the metric. Deletion failure records a metric and rethrows — unlike the other syncs here. | Unit | [L22]($R/ProviderUserReconcilatorServiceTests.cs#L22) |
@@ -219,7 +219,7 @@ The reconciliation layer that keeps the monolith's user tables in step with the 
 
 Password reset and expiry. The three largest classes are all facets of one flow — request a reset, validate the request, and audit what was decided — and each enumerates the same user states (unknown, locked patient, unapproved, inactive) so the three layers agree. The Cognito/IdP branch runs through the same request path, adding a create-user fallback when the account is missing from the identity provider.
 
-| # | Test Class | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Class | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 118 | PasswordResetServiceTests | Requesting a reset (51 tests) | Invalid email, unknown user, locked patient, valid patient with and without a redirect url, then the IdP-enabled branch over present-in-Cognito, missing-with-create-succeeding, missing-with-create-failing, create-then-reset-failing, and non-patient users | An unknown user still receives an email — a deliberate anti-enumeration choice, and one of the few places a "failure" produces outbound mail. The Cognito-missing branch has four distinct outcomes. | Unit | [L39]($R/PasswordResetServiceTests.cs#L39) |
 | 119 | PasswordResetValidationServiceTests | Reset eligibility (40 tests) | User not found, not approved, invalid password, valid password with user validation succeeding and failing, and a locked patient — the whole set repeated for the reset and the request-reset entry points | The two entry points are validated separately against the same state matrix, which is where the count comes from. | Unit | [L17]($R/PasswordResetValidationServiceTests.cs#L17) |
@@ -237,7 +237,7 @@ Password reset and expiry. The three largest classes are all facets of one flow 
 
 Provider-side account security, dominated by the MFA rollout: enabling MFA on a practice or strategic, the grace period before it is enforced, the phone-registration redirect that grace period drives, and a nightly audit that re-derives the expected state and logs every discrepancy. The strategic hierarchy is the hard part — a child practice cannot be left disabled under an enabled parent.
 
-| # | Test Class | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Class | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 127 | PracticeMfaServiceTests | Enabling and disabling MFA (37 tests) | Set for a strategic over missing id, already set, enable and disable; set for an entity over invalid input and each practice/strategic on-off combination; already-enabled children during a strategic enable; and disable blocked by an enabled parent strategic | Enabling a strategic skips practices already enabled, and disabling one fails while its parent is still enabled — the hierarchy invariant is enforced on the write path, not just audited. | Unit | [L34]($R/PracticeMfaServiceTests.cs#L34) |
 | 128 | PracticeUsersServiceTests | Listing practice users (18 tests) | Practice staff and all users, each over no users, no MPL users, no direct users, both kinds together, churned excluded, and deleted MPL users | Direct and MPL users come from different sources and must merge without duplication; churn and deletion filter differently. | Unit | [L22]($R/PracticeUsersServiceTests.cs#L22) |
@@ -254,7 +254,7 @@ Provider-side account security, dominated by the MFA rollout: enabling MFA on a 
 
 Multi-practice login (MPL) — one user account mapped to several practices. Only seven classes, but the top two hold 106 tests between them because every mapping change has to satisfy four independent constraints at once: eligibility, the mapping limit, email-domain restrictions, and the MFA state of every practice involved.
 
-| # | Test Class | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Class | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 135 | MultiProviderServiceTests | Changing practice mappings (72 tests) | Actor cannot manage the account, target not enabled, target not eligible, adding mappings, MFA violations, MFA turned on for the user, a missing default provider, deletions, MFA kept on because another practice requires it, MFA turned off because none do, and combined add/remove | The MFA side-effect is the subtlety: removing a practice can turn a user's MFA off, but only if no remaining practice requires it — asserted from both directions. | Unit | [L39]($R/MultiProviderServiceTests.cs#L39) |
 | 136 | MultiProviderSecurityServiceTests | Pre-validating mapping changes (34 tests) | Eligibility pass-through, then no mappings, duplicates, over the limit, a churned practice, a username violating domain restrictions, MFA violations, and the strategic-user cases — non-strategic providers, same strategic, different strategics under one top level, and different top-level strategics | A strategic user may span practices only within one top-level strategic; each rejection returns its own result type rather than a shared failure. | Unit | [L33]($R/MultiProviderSecurityServiceTests.cs#L33) |
@@ -270,7 +270,7 @@ Multi-practice login (MPL) — one user account mapped to several practices. Onl
 
 Role bundles — named groups of ASP.NET roles assigned to internal users — and the change log that records every grant and revoke. The intersection tests are the reason this area exists as its own concern: removing a user from one bundle must not strip roles they still hold through another.
 
-| # | Test Class | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Class | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 142 | RoleChangeLoggingServiceTests | Role change audit log (14 tests) | Role added and removed for a user, roles added and removed from a bundle, users added and removed from a bundle, the non-internal-user and patient-role exclusions, no logged-in actor, and reading changes between dates | Patient-role changes are deliberately not logged — a signal-to-noise decision — and logging throws when there is no actor rather than recording an anonymous change. | Unit | [L24]($R/Roles/Logging/RoleChangeLoggingServiceTests.cs#L24) |
 | 143 | RoleBundleRepositoryTests | Bundle persistence (10 tests) | Reject an invalid role name, create a bundle, then add and remove users and roles — each mutation paired with an assertion that it was logged | Every mutation is checked twice: that it reached SQL and that it produced an audit entry. | Unit | [L15]($R/Roles/RoleBundleRepositoryTests.cs#L15) |
@@ -284,7 +284,7 @@ Role bundles — named groups of ASP.NET roles assigned to internal users — an
 
 The Auth0 management API client and the token that authorises it. Small area, but row 148 is the most concurrency-sensitive class in the mapping.
 
-| # | Test Class | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Class | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 147 | Auth0ApiClientTests | Auth0 management calls (30 tests) | Get user info with and without a JWT, then create passwordless email and SMS users, link and unlink SMS users, delete a user and the remaining management calls — each with a success and a failure case | Systematically paired success/failure coverage; the failure half is what pins how Auth0 errors surface to callers. | Unit | [L24]($R/Auth0/Auth0ApiClientTests.cs#L24) |
 | 148 | Auth0AdministrationTokenCacheTests | Management token caching (8 tests) | First fetch, sequential cached calls, then parallel calls against a null token, an expired token and a refreshable token; renewal at 83% of lifetime; a fetch failure with a still-valid token; and a failure with no good token | Under parallel callers exactly one does the work while the others wait — asserted for three different token states. A fetch failure returns the existing good token and only throws when there is none. | Unit | [L17]($R/Auth0/Auth0AdministrationTokenCacheTests.cs#L17) |
@@ -297,7 +297,7 @@ The Auth0 management API client and the token that authorises it. Small area, bu
 
 The request-time authentication pipeline: which scheme handles a request, whether the auth attribute can be short-circuited, and the MFA-aware password and phone authentication that sits behind the OAuth2 token endpoint.
 
-| # | Test Class | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Class | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 151 | MultiFactorAuthenticationServiceTests | MFA authentication (21 tests) | Password authentication over malformed username, malformed password, unknown account, locked and unapproved non-MFA users; then phone authentication over malformed username, verification id and code, unknown account, non-patient/provider users and non-MFA users | Every rejection is a distinct typed error rather than a boolean, so the caller can distinguish a malformed input from a locked account — the errors themselves are the contract. | Unit | [L29]($R/Authentication/MultiFactorAuthenticationServiceTests.cs#L29) |
 | 152 | JwtAuthenticationSchemeTests | JWT scheme handler (8 tests) | Invalid request, no token, invalid token, an invalid token on a Plinth API route, a valid v2 token, missing sub, missing user, and a validation-result sanity check | Nearly a mirror of row 102 with one addition — Plinth API routes get a different response shape for the same failure. | Unit | [L27]($R/Authentication/AuthenticationScheme/JwtAuthenticationSchemeTests.cs#L27) |
@@ -310,7 +310,7 @@ The request-time authentication pipeline: which scheme handles a request, whethe
 
 The legacy forms sign-in the provider site still uses. Small, but it holds the CSR trusted-IP rule and the churned-practice block — two checks that gate real access and appear nowhere else.
 
-| # | Test Class | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Class | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 155 | SignInTests | Sign-in outcomes (17 tests) | Patient sign-in with good credentials, a bad password and a bad email; CSR and CSR-sales from a trusted IP; an unsafe role on a debug machine; unapproved and locked-out users; then active doctors, active resources and new-application doctors | Enumerates the account states that may and may not sign in. CSR roles require a trusted IP, and the unsafe-role case is allowed only on a debug machine. | Unit | [L38]($R/Auth/SignInTests.cs#L38) |
 | 156 | AuthFormUtilityTests | The sign-in form path (11 tests) | Valid and invalid credentials, invalid user, a CSR-domain email without the CSR role for a normal user and for a valid professional, CSR domain with the role, the same with a failing audit, a churned practice, and live doctor and practice-staff successes | A Zocdoc-domain email without the CSR role is explicitly not treated as CSR, and a failed audit blocks the sign-in even when credentials and role are correct. | Unit | [L21]($R/Auth/AuthFormUtilityTests.cs#L21) |
@@ -322,7 +322,7 @@ The legacy forms sign-in the provider site still uses. Small, but it holds the C
 
 Hash helper wrappers. Four tests total — the thinnest area in the mapping, and the only justification is that these are pure functions over framework primitives.
 
-| # | Test Class | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Class | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 158 | SHA256HelperTests | SHA-256 formatting (2 tests) | Hex and base64 output | Only output formatting is covered, not the hash itself. | Unit | [L8]($R/Encryption/SHA256HelperTests.cs#L8) |
 | 159 | MD5HelperTests | MD5 formatting (1 test) | Hex output | MD5 is still present in the codebase; the test says nothing about where it is used. | Unit | [L8]($R/Encryption/MD5HelperTests.cs#L8) |
@@ -334,7 +334,7 @@ Hash helper wrappers. Four tests total — the thinnest area in the mapping, and
 
 "Remember me" sessions that outlive the forms ticket. Sixty tests across three classes, most of them in the cookie/ticket plumbing rather than the session model — the ticket is read from either the request or the response depending on where in the pipeline the caller sits, and getting that wrong is the failure this area guards against.
 
-| # | Test Class | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Class | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 161 | ExtendedSessionServiceTests | Session lifecycle (37 tests) | Create, delete, delete-by, expiration lookup, the active-session check with and without a ticket parameter in both outcomes, then the implementation paths including using the response cookie and a null ticket | Creation reads the response cookie rather than the request cookie, because the ticket is written earlier in the same request; a null ticket inserts nothing instead of a partial row. | Unit | [L23]($R/ExtendedSession/ExtendedSessionServiceTests.cs#L23) |
 | 162 | ExtendedSessionTicketHelperTests | Ticket and cookie handling (19 tests) | Add the identifier to user data, replace the existing forms cookie, persistent and non-persistent expiry, missing ticket and identifier cases, and reading the ticket from request, response, an invalid source and a context with no cookie | An invalid ticket source throws rather than defaulting to the request — the ambiguity is treated as a programming error. | Unit | [L21]($R/ExtendedSession/ExtendedSessionTicketHelperTests.cs#L21) |
@@ -346,7 +346,7 @@ Hash helper wrappers. Four tests total — the thinnest area in the mapping, and
 
 Metric recorders that emit account-state gauges on a schedule. Six tests across three classes — the coverage is proportional to the risk, since a wrong metric misleads rather than breaks.
 
-| # | Test Class | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Class | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 164 | ZdMembershipRecorderTests | Membership metrics (3 tests) | Record all statuses, then orphaned-provider-user detection with the flag off and with detection but no reconciliation | Detection and reconciliation are separately switchable, so the orphan sweep can run in observe-only mode. | Unit | [L19]($R/Monitoring/ZdMembershipRecorderTests.cs#L19) |
 | 165 | ProfessionalStatusRecorderTests | Professional status metrics (2 tests) | All known statuses, then unaccounted-for ones | Unknown statuses are counted rather than dropped, so a new status value shows up in the metric instead of vanishing. | Unit | [L14]($R/Monitoring/ProfessionalStatusRecorderTests.cs#L14) |
@@ -358,7 +358,7 @@ Metric recorders that emit account-state gauges on a schedule. Six tests across 
 
 The account activity log — login successes and failures, password resets, MFA validation and logouts. Row 167 holds nearly all of it because each event type is asserted with and without metadata and in both outcomes.
 
-| # | Test Class | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Class | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 167 | UserAccountActivityLoggingServiceTests | Activity event shapes (38 tests) | Login success and failure with and without metadata, reset-password request and result in both outcomes, MFA password validation success and failure, logout, and the remaining event types | Each event's full payload is asserted, not just that something was logged — this log is what account-security investigations read. | Unit | [L31]($R/UserAccountActivityEvent/UserAccountActivityLoggingServiceTests.cs#L31) |
 | 168 | UserAccountActivityEventServiceTests | Batch reads (2 tests) | An empty id list, and a populated one | An empty list short-circuits without a query. | Unit | [L12]($R/UserAccountActivityEvent/UserAccountActivityEventServiceTests.cs#L12) |
@@ -370,7 +370,7 @@ The account activity log — login successes and failures, password resets, MFA 
 
 The test-account backdoor — the mechanism automated tests and internal tooling use to create and link patients without going through the real signup flow. Both classes spend most of their tests on the authorization around it rather than the creation itself, which is the right emphasis for a bypass.
 
-| # | Test Class | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Class | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 170 | AuthBackdoorServiceTests | Backdoor operations (6 tests) | Set an Auth0 user id and link, each with a success and an unauthorized case; then create a patient, including the booking-restriction bypass | Every operation has an explicit unauthorized test — the bypass is only reachable with the right caller. | Unit | [L24]($R/AuthBackdoor/AuthBackdoorServiceTests.cs#L24) |
 | 171 | AuthBackdoorSyncSqlTests | Backdoor persistence (5 tests) | Create a new patient, create one with null optional fields, link a new patient, link an existing one, and link the same patient twice | Database-backed. Linking twice returns null rather than creating a duplicate mapping. | Integration (SQL) | [L17]($R/AuthBackdoor/AuthBackdoorSyncSqlTests.cs#L17) |
@@ -381,7 +381,7 @@ The test-account backdoor — the mechanism automated tests and internal tooling
 
 One class, covering scoped auth — the limited identity a patient gets from a booking confirmation link or a verification token instead of a full login.
 
-| # | Test Class | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Class | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 172 | ScopedAuthLoginServiceTests | Scoped identity precedence (13 tests) | Set each of provider-confirm-id, request-id and verification-token on its own, then each one after each of the other two; then read the identity with none set and with each source present | Nine of the thirteen tests are ordering permutations — which scope wins when two are set is the whole point of the class, and it is pinned exhaustively rather than by rule. | Unit | [L15]($R/Patient/ScopedAuthLoginServiceTests.cs#L15) |
 
@@ -391,7 +391,7 @@ One class, covering scoped auth — the limited identity a patient gets from a b
 
 One class, but 35 tests: deciding whether a patient may use SMS as a login factor and what masked number to show them.
 
-| # | Test Class | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Class | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 173 | SmsAuthenticationServiceTests | SMS eligibility and masking (35 tests) | Null, unapproved and locked users; no patient; multiple, missing, badly formatted and fake phone numbers; one locked number among several; then Auth0 validation failing, throwing and passing | Fails closed on every ambiguity — multiple phone numbers on file makes a user ineligible rather than picking one, and an Auth0 exception is treated as a failed validation. | Unit | [L32]($R/SmsAuthentication/SmsAuthenticationServiceTests.cs#L32) |
 
@@ -401,7 +401,7 @@ One class, but 35 tests: deciding whether a patient may use SMS as a login facto
 
 One class over the table that records which authentication scheme each user is on, and when MFA was activated for them — the data the MFA audit in row 129 and the grace period in row 131 both read.
 
-| # | Test Class | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Class | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 174 | UserAuthenticationSchemeRepositoryTests | Scheme and MFA-date reads (9 tests) | Three no-op cases for record, batch record and current-scheme reads; activation-date lookups singly and batched; registration history for a missing user and one with scheme changes; batch MFA-enabled; and all practice users with MFA | Three methods are asserted to be no-ops, which is deliberate — the writes moved out of the monolith and the stubs remain so callers keep compiling. | Unit | [L17]($R/UserAuthenticationScheme/UserAuthenticationSchemeRepositoryTests.cs#L17) |
 
@@ -411,7 +411,7 @@ One class over the table that records which authentication scheme each user is o
 
 The second project: practice-level authorization. The root holds the pre-FGA model — RBAC role reads, CSR role spoofing, and primary-practice selection.
 
-| # | Test Class | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Class | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 175 | RbacSpoofableRolesServiceTests | CSR role spoofing (22 tests) | Spoofing on and possible, spoofed roles returned for a given user and the current user, then real roles returned when the feature is disabled, the actor is not CSR, the request is not on Pulse, or spoofing is off | Four independent conditions must all hold before a spoof takes effect, and each is tested through both the given-user and current-user entry points — that pairing is where the 22 tests come from. | Unit | [L26]($P/RbacSpoofableRolesServiceTests.cs#L26) |
 | 176 | PracticeAuthorizationServiceTests | Primary-practice suggestion (13 tests) | Suggest from hierarchy and from an explicit list, each over no other practice, only the current one, all inactive, and several available; then the allowable-practices list over the same states plus a partially-inactive set | The oldest active practice wins, and inactive practices are excluded everywhere rather than ranked last. | Unit | [L18]($P/PracticeAuthorizationServiceTests.cs#L18) |
@@ -425,7 +425,7 @@ The second project: practice-level authorization. The root holds the pre-FGA mod
 
 The FGA migration. Four classes, 77 tests, and the shape is a proxy to the external authorization service plus a per-endpoint config that decides whether each endpoint runs legacy, shadow or FGA. Row 182 is the most operationally important class in this project — it governs the rollout switch itself.
 
-| # | Test Class | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Class | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 180 | PracticeAuthorizationProxyServiceTests | The FGA proxy service (42 tests) | Practice checks over a null user, a non-practice user, a null practice, empty permissions and a real call; organization checks over empty permissions, an empty organization id, a null user and a non-practice user; then the batch variants over empty permissions and empty ids | The two entry points fail differently by design: practice checks return false on bad input while organization and batch checks throw. A caller that ignores the distinction gets an unexpected allow or an unexpected exception. | Unit | [L30]($P/Fga/PracticeAuthorizationProxyServiceTests.cs#L30) |
 | 181 | PracticeAuthorizationProxyApiCallerTests | The HTTP caller (29 tests) | Practice and organization checks over success, 401, 403 and 400; then batching over a single batch, multiple batches, chunking with throttling, and an unauthorized batch | Each HTTP status maps to a specific exception type, and batching is both chunked and throttled — the throttle is asserted, not just the chunk boundary. | Unit | [L26]($P/Fga/PracticeAuthorizationProxyApiCallerTests.cs#L26) |
@@ -438,7 +438,7 @@ The FGA migration. Four classes, 77 tests, and the shape is a proxy to the exter
 
 The third project: the private API that other services call to read and write practice-user roles. Five classes, 54 tests, weighted toward request validation and the backfill that migrated existing users onto the new role model.
 
-| # | Test Class | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Class | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 184 | RequestValidationServiceTests | Request validation (18 tests) | Deletion validation over non-existing and non-provider users; then role-set validation over duplicates, a stored role-set differing from an MPL request, non-existing users, churned users, non-existing practices, non-provider users, a valid MPL request, and churned-entry filtering including an empty list | Validation returns the offending id rather than a boolean, so the caller can report which user or practice failed. MPL requests are validated against the stored role set, not just the request body. | Unit | [L19]($A/RequestValidationServiceTests.cs#L19) |
 | 185 | PracticeUsersServiceTests | User data reads (13 tests) | Valid ids, no authorized users, null authorized users, empty ids, duplicate ids, dependency wiring, permissions for one and several practices, no permissions, null ids, and names for deleted users | Duplicate ids are de-duplicated before the downstream API call, and with several practices the first non-empty permission set wins rather than a union. | Unit | [L23]($A/PracticeUsersServiceTests.cs#L23) |

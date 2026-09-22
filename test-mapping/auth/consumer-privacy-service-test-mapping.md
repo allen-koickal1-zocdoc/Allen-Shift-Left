@@ -10,7 +10,7 @@ scope: whole repo
 granularity: one row per test method
 -->
 
-> Source: [`Zocdoc/consumer-privacy-service`](https://github.com/Zocdoc/consumer-privacy-service/tree/91dad97f786147f976cce0f666e409e17a73fe48) @ `91dad97` (branch `master`)
+> **Source:** [`Zocdoc/consumer-privacy-service`](https://github.com/Zocdoc/consumer-privacy-service/tree/91dad97f786147f976cce0f666e409e17a73fe48) @ `91dad97` (branch `master`) · mapped 2026-08-21 · one row per test
 
 The CCPA/CPA service: patient and provider requests to access, delete, or opt out of the sale/sharing of their data, plus the SPI ("sensitive personal information") opt-out. 308 tests across 34 files, xUnit throughout. Two files carry over half the suite — `PublicApiImplTests` (the consumer-facing API) and `InternalApiImplTests` (the Service Ops fulfilment API).
 
@@ -18,7 +18,7 @@ The CCPA/CPA service: patient and provider requests to access, delete, or opt ou
 
 The public API: request submission, eligibility, 2-factor PIN verification, and the opt-out status endpoints the marketplace calls on every page load.
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 1 | SubmitPatientAccessRequestV2_READMEUploadFails_ShouldReturnServerError | S3 README failure | Submit a patient access request where the README upload fails | 500 — the request is not created if its S3 folder could not be seeded. | Unit | [L201](https://github.com/Zocdoc/consumer-privacy-service/blob/91dad97f786147f976cce0f666e409e17a73fe48/tests/UnitTests/ConsumerPrivacy.Web/PublicApiImplTests.cs#L201) |
 | 2 | SubmitPatientAccessRequestV2_SuccessfullyCallsCreateRequest | Happy path | Submit a valid patient access request | The request is persisted. | Unit | [L222](https://github.com/Zocdoc/consumer-privacy-service/blob/91dad97f786147f976cce0f666e409e17a73fe48/tests/UnitTests/ConsumerPrivacy.Web/PublicApiImplTests.cs#L222) |
@@ -99,7 +99,7 @@ The public API: request submission, eligibility, 2-factor PIN verification, and 
 
 The internal fulfilment API used by Service Ops and the Salesforce integration: verifying, cancelling, and completing requests, uploading each team's data contribution, and the machine-driven patient delete.
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 73 | CompletePatientRequest_FailsIfNoMatchingId | Identity gate on completion | Complete a patient request with a non-matching id | Fails. | Unit | [L158](https://github.com/Zocdoc/consumer-privacy-service/blob/91dad97f786147f976cce0f666e409e17a73fe48/tests/UnitTests/ConsumerPrivacy.Web/InternalApiImplTests.cs#L158) |
 | 74 | CompletePatientRequest_FailsIfNotVerified | Verification gate | Complete an unverified request | Fails — data is never released to an unverified requester. | Unit | [L176](https://github.com/Zocdoc/consumer-privacy-service/blob/91dad97f786147f976cce0f666e409e17a73fe48/tests/UnitTests/ConsumerPrivacy.Web/InternalApiImplTests.cs#L176) |
@@ -196,7 +196,7 @@ The internal fulfilment API used by Service Ops and the Salesforce integration: 
 
 Resolving a consumer's current opt-out state from the append-only history of opt-out and opt-in records.
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 161 | OptOutService_GivenIds_ReturnsStatusFromDynamoIfBothIdsHaveStatus | Both identifiers have records | Resolve with records against both ids | The correct status is returned. | Unit | [L48](https://github.com/Zocdoc/consumer-privacy-service/blob/91dad97f786147f976cce0f666e409e17a73fe48/tests/UnitTests/ConsumerPrivacy.Infrastructure/OptOutServiceTests.cs#L48) |
 | 162 | OptOutService_GivenIds_ReturnsStatusFromDynamoIfAspNetUserOptedIn | Opted in | Resolve for a user whose latest record is an opt-in | Opted in. | Unit | [L62](https://github.com/Zocdoc/consumer-privacy-service/blob/91dad97f786147f976cce0f666e409e17a73fe48/tests/UnitTests/ConsumerPrivacy.Infrastructure/OptOutServiceTests.cs#L62) |
@@ -218,7 +218,7 @@ Resolving a consumer's current opt-out state from the append-only history of opt
 
 A shadow-read auditor that compares the opt-out answer derived from the user id against the one derived from the patient id, and reports divergence. Migration instrumentation, not a serving path.
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 174 | RecordAudit_NoPatientIdClaim_SkipsReadAndTagsReason | No patient claim | Audit a token with no patient id | The extra read is skipped and the reason is tagged, so skipped audits are visible in metrics rather than invisible. | Unit | [L48](https://github.com/Zocdoc/consumer-privacy-service/blob/91dad97f786147f976cce0f666e409e17a73fe48/tests/UnitTests/ConsumerPrivacy.Web/OptOutPatientIdAuditorTests.cs#L48) |
 | 175 | RecordAudit_PracticeContext_SkipsReadAndTagsReason | Provider context | Audit a practice-scoped token | Skipped and tagged. | Unit | [L59](https://github.com/Zocdoc/consumer-privacy-service/blob/91dad97f786147f976cce0f666e409e17a73fe48/tests/UnitTests/ConsumerPrivacy.Web/OptOutPatientIdAuditorTests.cs#L59) |
@@ -237,7 +237,7 @@ A shadow-read auditor that compares the opt-out answer derived from the user id 
 
 Who is allowed to receive the pre-signed S3 link to a completed access request.
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 184 | Given_Patient_Request_And_Patient_Return_PreSigned_Link | Patient download | Request the link as the owning patient | The pre-signed link is returned. | Unit | [L145](https://github.com/Zocdoc/consumer-privacy-service/blob/91dad97f786147f976cce0f666e409e17a73fe48/tests/UnitTests/ConsumerPrivacy.Web/DownloadImplTests.cs#L145) |
 | 185 | Given_Provider_Request_And_Provider_Return_PreSigned_Link | Provider download | Request as the owning provider | Link returned. | Unit | [L172](https://github.com/Zocdoc/consumer-privacy-service/blob/91dad97f786147f976cce0f666e409e17a73fe48/tests/UnitTests/ConsumerPrivacy.Web/DownloadImplTests.cs#L172) |
@@ -250,7 +250,7 @@ Who is allowed to receive the pre-signed S3 link to a completed access request.
 
 ## `tests/UnitTests/ConsumerPrivacy.Web/RequestHeadersParserTests.cs`
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 190 | GetTrackingId_WhenHeaderExists_ReturnsHeaderValue | Header source | Read the tracking id from a header | Returned. | Unit | [L19](https://github.com/Zocdoc/consumer-privacy-service/blob/91dad97f786147f976cce0f666e409e17a73fe48/tests/UnitTests/ConsumerPrivacy.Web/RequestHeadersParserTests.cs#L19) |
 | 191 | GetTrackingId_WhenHeaderHasDifferentCasing_ReturnsHeaderValue | Case insensitivity | Send the header with different casing | Still read. | Unit | [L30](https://github.com/Zocdoc/consumer-privacy-service/blob/91dad97f786147f976cce0f666e409e17a73fe48/tests/UnitTests/ConsumerPrivacy.Web/RequestHeadersParserTests.cs#L30) |
@@ -264,7 +264,7 @@ Who is allowed to receive the pre-signed S3 link to a completed access request.
 
 The state machine governing when a request is considered verified and completable.
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 195 | Patients_Should_BeVerifiedWith2Factor | Patient verification path (4 cases) | Evaluate patient requests across four states | Patients verify via 2-factor. | Unit | [L21](https://github.com/Zocdoc/consumer-privacy-service/blob/91dad97f786147f976cce0f666e409e17a73fe48/tests/UnitTests/ConsumerPrivacy.Web/ConsumerPrivacyRequestsStateTests.cs#L21) |
 | 196 | Providers_Should_BeVerifiedBy_ServiceOps | Provider verification path (4 cases) | Evaluate provider requests across four states | Providers verify via Service Ops, not 2-factor — the two user types have entirely different verification models. | Unit | [L43](https://github.com/Zocdoc/consumer-privacy-service/blob/91dad97f786147f976cce0f666e409e17a73fe48/tests/UnitTests/ConsumerPrivacy.Web/ConsumerPrivacyRequestsStateTests.cs#L43) |
@@ -276,7 +276,7 @@ The state machine governing when a request is considered verified and completabl
 
 ## `tests/UnitTests/ConsumerPrivacy.Web/Auth/`
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 200 | GetClaimValueTest | Claim extraction (3 cases) | Extract three claim types from a token | The right values come back. The only test of the class that decides whether a caller is a patient, a practice user, or neither. | Unit | [L28](https://github.com/Zocdoc/consumer-privacy-service/blob/91dad97f786147f976cce0f666e409e17a73fe48/tests/UnitTests/ConsumerPrivacy.Web/Auth/ClaimParserTests.cs#L28) |
 | 201 | TestJwtToken | Token generation | Generate a JWT | It has the expected shape. | Unit | [L27](https://github.com/Zocdoc/consumer-privacy-service/blob/91dad97f786147f976cce0f666e409e17a73fe48/tests/UnitTests/ConsumerPrivacy.Web/Auth/JwtTokenGeneratorTests.cs#L27) |
@@ -288,7 +288,7 @@ The state machine governing when a request is considered verified and completabl
 
 The monolith HTTP client. Most of these tests are about mapping monolith error statuses onto typed exceptions, because the delete path branches on which failure it got.
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 203 | HttpCaller_ShouldSuccessfullyDeserializePatientPhoneResponse | Phone response shape | Deserialize the patient-phone response | Binds correctly. | Unit | [L80](https://github.com/Zocdoc/consumer-privacy-service/blob/91dad97f786147f976cce0f666e409e17a73fe48/tests/UnitTests/ConsumerPrivacy.Infrastructure/HttpCallerTests.cs#L80) |
 | 204 | CurrentUserHasSubPatients_GivenResponseReturnsResult | Sub-patient lookup (2 cases) | Ask whether the user has sub-patients | The result is returned — this feeds the California-minors opt-out rule (row 167). | Unit | [L153](https://github.com/Zocdoc/consumer-privacy-service/blob/91dad97f786147f976cce0f666e409e17a73fe48/tests/UnitTests/ConsumerPrivacy.Infrastructure/HttpCallerTests.cs#L153) |
@@ -311,7 +311,7 @@ The monolith HTTP client. Most of these tests are about mapping monolith error s
 
 ## `tests/UnitTests/ConsumerPrivacy.Infrastructure/` (conversion and JSON)
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 219 | DtoConverterExtensionMethods_CreatesIdentical_ConsumerPrivacyRequestDto | Domain → DTO | Convert a request to its Dynamo DTO | Every field survives. | Unit | [L14](https://github.com/Zocdoc/consumer-privacy-service/blob/91dad97f786147f976cce0f666e409e17a73fe48/tests/UnitTests/ConsumerPrivacy.Infrastructure/DtoConverterExtensionMethodsTest.cs#L14) |
 | 220 | DtoConverterExtensionMethods_CreatesIdentical_ConsumerPrivacyRequestFromDto | DTO → domain | Convert back | Round-trips identically. | Unit | [L57](https://github.com/Zocdoc/consumer-privacy-service/blob/91dad97f786147f976cce0f666e409e17a73fe48/tests/UnitTests/ConsumerPrivacy.Infrastructure/DtoConverterExtensionMethodsTest.cs#L57) |
@@ -323,7 +323,7 @@ The monolith HTTP client. Most of these tests are about mapping monolith error s
 
 The Dynamo-stream processor that drives a request through submission, verification, and completion, fanning out to Salesforce and the monolith. Idempotency is the theme — the stream can redeliver.
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 222 | ProcessRequest_GivenNotSubmittedPatientRequest_IgnoresRequest | Not yet submitted | Process a draft request | Ignored. | Unit | [L44](https://github.com/Zocdoc/consumer-privacy-service/blob/91dad97f786147f976cce0f666e409e17a73fe48/tests/UnitTests/ConsumerPrivacy.Lambda/RequestProcessorTests.cs#L44) |
 | 223 | ProcessRequest_GivenNewlySubmittedRequest_ProcessesSuccessfully | Submission | Process a newly submitted request | Downstream side effects fire. | Unit | [L62](https://github.com/Zocdoc/consumer-privacy-service/blob/91dad97f786147f976cce0f666e409e17a73fe48/tests/UnitTests/ConsumerPrivacy.Lambda/RequestProcessorTests.cs#L62) |
@@ -343,7 +343,7 @@ The Dynamo-stream processor that drives a request through submission, verificati
 
 Transactional email through the monolith: submission acknowledgements and verification links.
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 233 | SendPatientVerificationEmail_GivenPatientInfo_SendsSuccessfully | Patient verification email | Send a patient verification email | Sent with the expected payload. | Unit | [L63](https://github.com/Zocdoc/consumer-privacy-service/blob/91dad97f786147f976cce0f666e409e17a73fe48/tests/UnitTests/ConsumerPrivacy.Lambda/Monolith/MonolithCallerTests.cs#L63) |
 | 234 | SendProviderSubmissionEmail_GivenProviderInfo_SendsSuccessfully | Provider submission email | Send a provider submission acknowledgement | Sent. | Unit | [L112](https://github.com/Zocdoc/consumer-privacy-service/blob/91dad97f786147f976cce0f666e409e17a73fe48/tests/UnitTests/ConsumerPrivacy.Lambda/Monolith/MonolithCallerTests.cs#L112) |
@@ -362,7 +362,7 @@ Transactional email through the monolith: submission acknowledgements and verifi
 
 Salesforce is where Service Ops actually works the request. Cases and activities are upserted by a deterministic external id so stream redelivery cannot create duplicates.
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 243 | CreateCpaCaseAsync_GivenConsumerPrivacyCase_CreatesSuccessfully | Case creation | Create a CPA case | Created with the expected fields. | Unit | [L54](https://github.com/Zocdoc/consumer-privacy-service/blob/91dad97f786147f976cce0f666e409e17a73fe48/tests/UnitTests/ConsumerPrivacy.Lambda/Salesforce/SalesforceCallerTests.cs#L54) |
 | 244 | UpdateCpaCaseStatusAsync_GivenCaseStatusUpdate_UpdatesSuccessfully | Case status update | Update a case status | Updated. | Unit | [L128](https://github.com/Zocdoc/consumer-privacy-service/blob/91dad97f786147f976cce0f666e409e17a73fe48/tests/UnitTests/ConsumerPrivacy.Lambda/Salesforce/SalesforceCallerTests.cs#L128) |
@@ -382,7 +382,7 @@ Salesforce is where Service Ops actually works the request. Cases and activities
 
 ## `tests/UnitTests/ConsumerPrivacy.Lambda/` (misc)
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 256 | RecordProcessor_GivenRecord_ProcessesSuccessfully | Stream record entry point | Feed one Dynamo stream record | Processed. The only test of the Lambda's outermost handler. | Unit | [L19](https://github.com/Zocdoc/consumer-privacy-service/blob/91dad97f786147f976cce0f666e409e17a73fe48/tests/UnitTests/ConsumerPrivacy.Lambda/RecordProcessorTests.cs#L19) |
 | 257 | GetParameterValues_GivingExistingParamNames_CreatesParamNameValueDict | SSM parameter fetch | Fetch several parameters | A name→value dictionary is built. | Unit | [L15](https://github.com/Zocdoc/consumer-privacy-service/blob/91dad97f786147f976cce0f666e409e17a73fe48/tests/UnitTests/ConsumerPrivacy.Lambda/Utils/SsmClientTests.cs#L15) |
@@ -391,7 +391,7 @@ Salesforce is where Service Ops actually works the request. Cases and activities
 
 ## `tests/UnitTests/ConsumerPrivacy/` (domain and utilities)
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 258 | SanitizeEmailAddress_GivenGoodEmail_SanitizesSuccessfully | Email sanitisation (4 cases) | Sanitise four valid emails | Normalised. | Unit | [L15](https://github.com/Zocdoc/consumer-privacy-service/blob/91dad97f786147f976cce0f666e409e17a73fe48/tests/UnitTests/ConsumerPrivacy/EmailAddressUtilsTests.cs#L15) |
 | 259 | SanitizeEmailAddress_GivenWhitespaceChars_SanitizesSuccessfully | Whitespace stripping | Sanitise an email padded with whitespace | Trimmed — a pasted email with a trailing space still resolves. | Unit | [L23](https://github.com/Zocdoc/consumer-privacy-service/blob/91dad97f786147f976cce0f666e409e17a73fe48/tests/UnitTests/ConsumerPrivacy/EmailAddressUtilsTests.cs#L23) |
@@ -418,7 +418,7 @@ Salesforce is where Service Ops actually works the request. Cases and activities
 
 Runs against a real Dynamo (LocalStack). Every query the service relies on, including the 12-month lookbacks that back the eligibility rules.
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 276 | GivenTestData_AddRequest_CorrectlyInsertsRequest | Insert | Add a request | Persisted. | Integration | [L51](https://github.com/Zocdoc/consumer-privacy-service/blob/91dad97f786147f976cce0f666e409e17a73fe48/tests/IntegrationTests/ConsumerPrivacy.Infrastructure/DynamoDb/RequestStoreTests.cs#L51) |
 | 277 | GivenOptedOut_Correctly_Returned_Stored_State | Opt-out round-trip | Store and read back an opt-out | State survives. | Integration | [L67](https://github.com/Zocdoc/consumer-privacy-service/blob/91dad97f786147f976cce0f666e409e17a73fe48/tests/IntegrationTests/ConsumerPrivacy.Infrastructure/DynamoDb/RequestStoreTests.cs#L67) |
@@ -447,7 +447,7 @@ Runs against a real Dynamo (LocalStack). Every query the service relies on, incl
 
 Runs against a real S3. The data-export bucket layout and pre-signed link generation.
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 296 | GivenParams_Should_Upload_Files_To_The_Correct_Place | Upload path | Upload a file | It lands at the expected key — the key encodes the request id, so a wrong path is a cross-request data leak. | Integration | [L51](https://github.com/Zocdoc/consumer-privacy-service/blob/91dad97f786147f976cce0f666e409e17a73fe48/tests/IntegrationTests/ConsumerPrivacy.Infrastructure/S3/S3ClientTests.cs#L51) |
 | 297 | Given_Binary_File_Should_Upload_Files_To_The_Correct_Place | Binary upload | Upload a binary file | Correct place, contents intact. | Integration | [L66](https://github.com/Zocdoc/consumer-privacy-service/blob/91dad97f786147f976cce0f666e409e17a73fe48/tests/IntegrationTests/ConsumerPrivacy.Infrastructure/S3/S3ClientTests.cs#L66) |
@@ -463,7 +463,7 @@ Runs against a real S3. The data-export bucket layout and pre-signed link genera
 
 ## Remaining integration and functional tests
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 305 | When_User_Opted_Out_Correct_Value_Returned | End-to-end opt-out read | Drive `IsOptedIn` through a real `RequestStore` and Dynamo | The stored opt-out is reflected. The single integration test covering the public API against real persistence. | Integration | [L87](https://github.com/Zocdoc/consumer-privacy-service/blob/91dad97f786147f976cce0f666e409e17a73fe48/tests/IntegrationTests/ConsumerPrivacy.Web/PublicApiImplTests.cs#L87) |
 | 306 | GetParameterValues_GivingExistingParamNames_CreatesParamNameValueDict | SSM against a real store | Fetch parameters | Dictionary built. | Integration | [L28](https://github.com/Zocdoc/consumer-privacy-service/blob/91dad97f786147f976cce0f666e409e17a73fe48/tests/IntegrationTests/ConsumerPrivacy.Lambda/Utils/SsmClientTests.cs#L28) |
