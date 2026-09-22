@@ -10,7 +10,7 @@ scope: whole repo
 granularity: one row per test method
 -->
 
-> Source: [`Zocdoc/auth-service`](https://github.com/Zocdoc/auth-service/tree/fa9a039b0709e34f520baa1323897360b6719603) @ `fa9a039` (branch `main`)
+> **Source:** [`Zocdoc/auth-service`](https://github.com/Zocdoc/auth-service/tree/fa9a039b0709e34f520baa1323897360b6719603) @ `fa9a039` (branch `main`) · mapped 2026-08-21 · one row per test
 
 The Auth team's largest service: patient and provider login, OTP and passwordless flows, Auth0 orchestration across three tenants, refresh tokens, service-to-service auth, phone ownership, and the event stream that feeds login analytics. **1,172 tests across 101 files.**
 
@@ -24,7 +24,7 @@ Three test projects:
 
 The patient-facing API surface: OTP send and verify, passwordless start, phone lookup, and the CSR-only block/unblock and user-account-id endpoints.
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 1 | PatientSendOtpToPhone_Success | OTP send happy path (2 cases) | Send an OTP to a phone as an authenticated patient | Succeeds. | API | [L42](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/ApiTests/PatientApi/PatientApiTests.cs#L42) |
 | 2 | PatientSendOtpToPhone_FailureBecauseNotPatient | Role gate | Send an OTP with a non-patient token | Rejected. | API | [L56](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/ApiTests/PatientApi/PatientApiTests.cs#L56) |
@@ -109,7 +109,7 @@ The patient-facing API surface: OTP send and verify, passwordless start, phone l
 
 Builds the v1 login-analytics events. Every event family is checked the same six ways — wrapper fields, exactly one event-data element, the core payload, a GUID event id, logged-in user null, logged-in user set — plus family-specific type/description/booking-id assertions. The repetition is the point: a missing field on one family is what breaks a funnel dashboard.
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 77 | GetPatientLoginSuccessEvent_SetsTheFieldsOnTheWrapper | Patient login success, wrapper | Build the event | Wrapper fields set. | Unit | [L62](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/UnitTests/EventLogging/LoggingEventFactoryTests.cs#L62) |
 | 78 | GetPatientLoginSuccessEvent_CreatesASingleEventData | Cardinality | Build the event | Exactly one event-data element — no duplicate counting downstream. | Unit | [L73](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/UnitTests/EventLogging/LoggingEventFactoryTests.cs#L73) |
@@ -174,7 +174,7 @@ Builds the v1 login-analytics events. Every event family is checked the same six
 
 The v2 factory, tested with the same six-way shape as v1 (rows 77–132) over a renamed and slightly reorganised set of event families: refresh, patient login, a single generic login-failure event replacing v1's separate failure events, send-OTP, and create-account. Both factories are live; v2 is not a replacement that retired v1.
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 133 | GetRefreshSuccessEvent_SetsTheFieldsOnTheWrapper | Refresh success, wrapper | Build the event | Wrapper fields set. | Unit | [L54](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/UnitTests/EventLogging/LoggingEventFactoryV2Tests.cs#L54) |
 | 134 | GetRefreshSuccessEvent_EventData_SetsTheCoreFields | Core payload (2 cases) | Build for two variants | Core fields set. | Unit | [L66](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/UnitTests/EventLogging/LoggingEventFactoryV2Tests.cs#L66) |
@@ -239,7 +239,7 @@ The v2 factory, tested with the same six-way shape as v1 (rows 77–132) over a 
 
 Turns an Auth0 post-login payload into Datadog tags and histograms. Two things dominate: every field has an explicit unknown/null fallback so a missing attribute never drops the metric, and the provider tenant deliberately omits high-cardinality tags the patient tenant keeps.
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 189 | Platform_UsesParserTag | Platform tag | Emit with a parsed platform | The parser's value is used. | Unit | [L93](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/UnitTests/PostLoginMetricsServiceTests.cs#L93) |
 | 190 | Platform_NullOrEmpty_ReturnsUnknown | Platform fallback (2 cases) | Null and empty | `unknown`. | Unit | [L105](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/UnitTests/PostLoginMetricsServiceTests.cs#L105) |
@@ -300,7 +300,7 @@ Turns an Auth0 post-login payload into Datadog tags and histograms. Two things d
 
 The patient login orchestrator: passwordless start by SMS and email, token exchange, refresh, and the OAuth authorize/callback pair. Roughly half the file exists to prove that every failure branch still emits an analytics event — a silent failure is treated as a defect in its own right.
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 241 | Login_RequestsOfflineAccessScope_ToGetBackARefreshToken | Scope request | Log in | `offline_access` is requested — without it there is no refresh token and every session dies at access-token expiry. | Unit | [L244](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/UnitTests/PatientLoginServiceTests.cs#L244) |
 | 242 | Login_WhenTokenIsSms_LookupPhoneNumber | SMS login | Log in with an SMS token | The phone number is looked up. | Unit | [L260](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/UnitTests/PatientLoginServiceTests.cs#L260) |
@@ -358,7 +358,7 @@ The patient login orchestrator: passwordless start by SMS and email, token excha
 
 Patient account creation over the API, run three times over: phone start, email start, and the completion call — each with the same rejection matrix (bad email, Zocdoc-internal email, disposable domain, existing provider email, existing patient email, practice-SSO domain). Web and mobile are exercised separately because the realm differs.
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 290 | CreatePasswordlessPatientUserStart_BlocksInternational_ThenBlocksUser | Abuse response | Attempt with an international number | Blocked, and the user is then blocked — the escalation, not just the rejection. | API | [L47](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/ApiTests/PatientApi/CreatePatientAccountApiTests.cs#L47) |
 | 291 | CreatePasswordlessPatientUserStart_BadEmail_ReturnsBadRequest | Email validation (2 cases) | Two malformed emails | 400. | API | [L80](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/ApiTests/PatientApi/CreatePatientAccountApiTests.cs#L80) |
@@ -414,7 +414,7 @@ Patient account creation over the API, run three times over: phone start, email 
 
 The provider-side mirror of `PatientLoginServiceTests`: password vs SSO routing, the identity-provider login, and the OAuth authorize/callback pair. Two things are unique to this file — a large `login_hint` sanitising block (rows 357–363), and the monolith JWT exchange that only database-connection users go through (373–375).
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 337 | PracticeLoginStart_BadEmail | Email validation | Start with a malformed email | Rejected. | Unit | [L120](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/UnitTests/Login/PracticeLoginServiceTests.cs#L120) |
 | 338 | PracticeLoginStart_PasswordLogin | Password routing (4 cases) | Four password-login emails | Routed to the password flow. | Unit | [L132](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/UnitTests/Login/PracticeLoginServiceTests.cs#L132) |
@@ -464,7 +464,7 @@ The provider-side mirror of `PatientLoginServiceTests`: password vs SSO routing,
 
 The Auth0 Management/Authentication API wrapper. The largest block is passwordless account creation across three starting states — the phone is unlinked, already linked to another passwordless user, or linked to an email user — each with a correct-OTP and a wrong-OTP variant.
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 378 | CreateEmailUser_Success | Email user creation | Create an email user | Succeeds. | Unit | [L41](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/UnitTests/Auth0/Auth0ServiceTests.cs#L41) |
 | 379 | UpdatePhone_NoOneOwnsPhone | Phone update, free number | Update to an unowned phone | Succeeds. | Unit | [L52](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/UnitTests/Auth0/Auth0ServiceTests.cs#L52) |
@@ -503,7 +503,7 @@ The Auth0 Management/Authentication API wrapper. The largest block is passwordle
 
 Real DynamoDB. Phone ownership is the hardest piece of state in the service — a phone number is unique across patients, gets recycled by carriers, and its transferability is tied to whether the owner has MFA. Most of this file is the transfer state machine.
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 408 | PatientPhoneDynamoDto_SatisfiesNullConstraints | Schema contract | Inspect the DTO | Null constraints hold. | Integration | [L37](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/IntegrationTests/PatientPhoneDynamoPersistenceTests.cs#L37) |
 | 409 | GetPhoneAsync_CreatesNewPhoneForPatient | Read-through create | Get a phone for a new patient | A record is created. | Integration | [L56](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/IntegrationTests/PatientPhoneDynamoPersistenceTests.cs#L56) |
@@ -538,7 +538,7 @@ Real DynamoDB. Phone ownership is the hardest piece of state in the service — 
 
 Account creation orchestration, symmetric across SMS and email. The recurring theme is that monolith failures do not fail creation (rows 444, 445, 452, 453) while Auth0 or profile failures do. Rows 447 and 455 are large tables pinning which inputs are recognised as test patients.
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 434 | SmsPasswordlessAccountCreationStart_ValidUsername_ValidSendOtpResult_Success | SMS start | Valid username, OTP sent | Succeeds. | Unit | [L97](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/UnitTests/User/UserCreationServiceTests.cs#L97) |
 | 435 | SmsPasswordlessAccountCreationStart_InvalidUsername | SMS start, bad username (6 cases) | Six invalid usernames | Rejected. | Unit | [L124](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/UnitTests/User/UserCreationServiceTests.cs#L124) |
@@ -569,7 +569,7 @@ Account creation orchestration, symmetric across SMS and email. The recurring th
 
 The browser login and refresh endpoints — cookie issuance, expiry, and the Auth0 parameter pass-through. Four tests are `RealOnly` because they assert on events that only the deployed stack produces.
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 456 | OauthToken_ReturnsErrorMessages | Error messages (3 cases) | Three failing token requests | The expected messages come back. | API | [L26](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/ApiTests/PatientApi/WebSiteLoginAndRefreshTests.cs#L26) |
 | 457 | OauthToken_ReturnsErrorCodes | Error codes (3 cases) | Three failing requests | The expected codes come back. | API | [L48](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/ApiTests/PatientApi/WebSiteLoginAndRefreshTests.cs#L48) |
@@ -599,7 +599,7 @@ The browser login and refresh endpoints — cookie issuance, expiry, and the Aut
 
 The reconciliation endpoints that back-office jobs use to sync patients, provider usernames, MFA status, and phone records. Every endpoint has its unauthorized and forbidden case pinned before its success case — these are privileged bulk-mutation routes.
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 477 | ReconcilePatients_TestResponseStatus | Response codes (4 cases) | Four request shapes | Correct statuses. | API | [L27](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/ApiTests/ReconciliatorApiTests.cs#L27) |
 | 478 | ReconcilePatients_Success | Patient reconciliation | Reconcile patients | Succeeds. | API | [L51](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/ApiTests/ReconciliatorApiTests.cs#L51) |
@@ -627,7 +627,7 @@ The reconciliation endpoints that back-office jobs use to sync patients, provide
 
 The user-lookup and user-deletion API. `GetCurrentUser` is patient-only — a practice or CSR token is explicitly rejected rather than resolved to whatever the token happens to identify.
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 496 | BatchGetUsers_TestNotFound | Missing users (2 cases) | Two not-found shapes | Handled. | API | [L23](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/ApiTests/UserApi/UserApiTests.cs#L23) |
 | 497 | BatchGetUsersByPatientId_TestUnhappyPaths | Unhappy paths (2 cases) | Two bad requests | Rejected. | API | [L47](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/ApiTests/UserApi/UserApiTests.cs#L47) |
@@ -655,7 +655,7 @@ The user-lookup and user-deletion API. `GetCurrentUser` is patient-only — a pr
 
 The authorization layer over phone reads. Note rows 519–521: a patient may read only their own, a practice may read only patients it has a relationship with, and a mixed batch is filtered per item rather than refused outright.
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 515 | GetPatientPhones_Works | Read | Read phones | Returned. | Unit | [L27](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/UnitTests/Phone/PhoneRepositoryTests.cs#L27) |
 | 516 | GetPatientPhones_ReturnsNullPhoneWhenUserExistsWithoutPhoneRecord | No phone record | The user exists with no phone | A null phone, not an omission. | Unit | [L69](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/UnitTests/Phone/PhoneRepositoryTests.cs#L69) |
@@ -683,7 +683,7 @@ The authorization layer over phone reads. Note rows 519–521: a patient may rea
 
 Staff login through the internal-services Auth0 tenant (workforce connection). The distinguishing behaviour is how `returnTo` failures are handled: unlike the patient and practice flows, an invalid `returnTo` here falls back to a default rather than failing the login (rows 537, 551).
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 534 | InitiateOAuthFlow_StoresStateInDynamoUnderTheInternalServicesTenant | Tenant tagging | Start the flow | The state is stored under the internal-services tenant. | Unit | [L67](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/UnitTests/InternalUserLoginServiceTests.cs#L67) |
 | 535 | InitiateOAuthFlow_ValidReturnTo_StoresTheValidatedFormOfIt | Normalisation | Valid `returnTo` | The validated form is stored, not the raw input. | Unit | [L85](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/UnitTests/InternalUserLoginServiceTests.cs#L85) |
@@ -710,7 +710,7 @@ Staff login through the internal-services Auth0 tenant (workforce connection). T
 
 The provider browser login end to end: redirect, pre-auth cookie, callback, role assignment. Rows 564–566 and 568 pin the role side-effect per user kind — a Zo SSO user and a database user get no roles set, while a practice SSO user is granted full admin on every practice they map to.
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 552 | PracticeLoginStart_InvalidReturnTo_Returns400 | Open-redirect guard | Off-site `returnTo` | 400. | API | [L29](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/ApiTests/IdentityProvider/PracticeOAuthLoginApiTests.cs#L29) |
 | 553 | PracticeLoginStart_MissingReturnTo_Returns400 | Required parameter | No `returnTo` | 400 — unlike the internal flow (row 536), the provider flow requires it. | API | [L40](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/ApiTests/IdentityProvider/PracticeOAuthLoginApiTests.cs#L40) |
@@ -736,7 +736,7 @@ The provider browser login end to end: redirect, pre-auth cookie, callback, role
 
 The webhook Auth0 calls after a login. Authentication is a shared secret, and there is one secret per tenant — row 581 pins that an unconfigured provider secret rejects provider calls while row 580 pins that it does not break patient calls.
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 569 | MissingSecret_ReturnsUnauthorized | Auth gate | No secret | 401. | Unit | [L82](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/UnitTests/Auth0WebhookControllerTests.cs#L82) |
 | 570 | InvalidSecret_ReturnsUnauthorized | Wrong secret | An invalid secret | 401. | Unit | [L89](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/UnitTests/Auth0WebhookControllerTests.cs#L89) |
@@ -762,7 +762,7 @@ The webhook Auth0 calls after a login. Authentication is a shared secret, and th
 
 Account deletion, MFA status, and the user-account-id lifecycle behind the API tests in rows 53–65.
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 586 | DeletePatientAccount_UserExists | Deletion | Delete an existing account | Deleted. | Unit | [L28](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/UnitTests/PatientAccountServiceTests.cs#L28) |
 | 587 | DeletePatientAccount_UserHasAnonTokenData_ThrowsException | Anonymous-token guard | The user carries anon token data | Throws rather than deleting — a guard against destroying a partially-migrated record. | Unit | [L39](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/UnitTests/PatientAccountServiceTests.cs#L39) |
@@ -788,7 +788,7 @@ Account deletion, MFA status, and the user-account-id lifecycle behind the API t
 
 Assembles the per-request context that every event and metric is tagged with. Each field is read from a header first and a cookie second, and every one has an explicit "absent" case — a missing header must produce null, not an empty string that pollutes analytics.
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 603 | Context_GivenNoTrackingHeadersOrCookies_ReturnsNullValue | Tracking absent | Neither header nor cookie | Null. | Unit | [L42](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/UnitTests/RequestContext/RequestContextServiceTests.cs#L42) |
 | 604 | Context_GivenTrackingIdInHeader_SetsIt | Tracking from header (2 cases) | Two header forms | Set. | Unit | [L51](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/UnitTests/RequestContext/RequestContextServiceTests.cs#L51) |
@@ -814,7 +814,7 @@ Assembles the per-request context that every event and metric is tagged with. Ea
 
 The provider-tenant Auth0 client. Rows 625–629 are the practice-staff-id write rules: setting it when absent or null is fine, setting it to the same value is a no-op, and overwriting a different value throws.
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 620 | GetUserByAuth0UserId_Success | User read | Read by Auth0 id | Returned. | Unit | [L38](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/UnitTests/Auth0/ProviderTenantAuth0ServiceTests.cs#L38) |
 | 621 | GetUserByAuth0UserId_UserNotFoundDoesNotLog | Expected miss | User not found | No exception logged — a miss is normal, not an incident. | Unit | [L50](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/UnitTests/Auth0/ProviderTenantAuth0ServiceTests.cs#L50) |
@@ -839,7 +839,7 @@ The provider-tenant Auth0 client. Rows 625–629 are the practice-staff-id write
 
 The staff login flow over HTTP. Note rows 646–647: an allowlisted `returnTo` deep-links, an off-allowlist one silently lands on the default page rather than erroring.
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 636 | InternalUserLoginStart_Returns302ToTheInternalServicesTenantAuthorizeUrl | Redirect | Start the flow | 302 to the internal-services authorize URL. | API | [L28](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/ApiTests/InternalServicesApi/InternalUserOauthLoginApiTests.cs#L28) |
 | 637 | InternalUserLoginStart_ScopeSupplied_ForwardsItToTheAuthorizeUrl | Scope | Supply a scope | Forwarded. | API | [L65](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/ApiTests/InternalServicesApi/InternalUserOauthLoginApiTests.cs#L65) |
@@ -863,7 +863,7 @@ The staff login flow over HTTP. Note rows 646–647: an allowlisted `returnTo` d
 
 The controller half of the staff flow — cookie planting, metric recording, and the division of labour with the service. Row 652 is the notable one: the controller deliberately does not validate `returnTo`, leaving that entirely to the service.
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 651 | InternalUserLoginStart_RedirectsToTheAuthorizeUrlTheServiceBuilt | Redirect | Start | The service's URL is used verbatim. | Unit | [L44](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/UnitTests/InternalUserLoginControllerTests.cs#L44) |
 | 652 | InternalUserLoginStart_PassesTheCallerSuppliedReturnToThroughUnvalidated | Layer boundary | Start with any `returnTo` | Passed through unvalidated — validation lives in one place, the service. | Unit | [L55](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/UnitTests/InternalUserLoginControllerTests.cs#L55) |
@@ -886,7 +886,7 @@ The controller half of the staff flow — cookie planting, metric recording, and
 
 The user-mapping repository and its authorization checks. Rows 668 and 670 pin that an unauthorized batch read returns the ids as *forbidden* entries rather than failing the whole call.
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 665 | ReconcilePatientUserMappings_Success | Reconciliation | Reconcile mappings | Succeeds. | Unit | [L26](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/UnitTests/User/UserRepositoryTests.cs#L26) |
 | 666 | ReconcilePatientUserMappings_Unauthorized | Auth gate | Unauthorized reconcile | Rejected. | Unit | [L71](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/UnitTests/User/UserRepositoryTests.cs#L71) |
@@ -909,7 +909,7 @@ The user-mapping repository and its authorization checks. Rows 668 and 670 pin t
 
 CRUD on a practice's identity provider — the record that decides whether that practice's users log in with a password or through SSO. Row 689's 11-case table is the domain restriction list: an IdP claiming a public mail domain would let anyone with such an address into the practice.
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 679 | GetIdentityProviderByPracticeId_NoJwt_Unauthorized | Auth gate | No token | 401. | API | [L26](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/ApiTests/IdentityProvider/PracticeIdentityProviderApiTests.cs#L26) |
 | 680 | GetIdentityProviderByPracticeId_WrongRole_Forbidden | Role gate | Wrong role | 403. | API | [L35](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/ApiTests/IdentityProvider/PracticeIdentityProviderApiTests.cs#L35) |
@@ -931,7 +931,7 @@ CRUD on a practice's identity provider — the record that decides whether that 
 
 Provider login over HTTP: the password-vs-SSO fork, the IdP callback, and refresh. Row 696 verifies the full-admin role is granted only on the SSO path — its comment notes the assertion runs through the user-permissions fake, which is why it is `RealOnly`.
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 692 | PracticeLoginStart_BadEmail_ReturnsBadRequest | Email validation | Malformed email | 400. | API | [L35](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/ApiTests/IdentityProvider/PracticeLoginApiTests.cs#L35) |
 | 693 | PracticeLoginStart_NoIdPForDomain_ReturnsPasswordLogin | Password fork (3 cases) | Three domains with no IdP | Password login. | API | [L59](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/ApiTests/IdentityProvider/PracticeLoginApiTests.cs#L59) |
@@ -953,7 +953,7 @@ Provider login over HTTP: the password-vs-SSO fork, the IdP callback, and refres
 
 Service-auth client registration. Most of the file is the key-ARN credential rules — how many credentials a client ends up with after repeated create/update calls, and when an ambiguous ARN must throw rather than guess which credential to rotate.
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 705 | CreateUpdateClient_LegacyWithoutKeyArn_Success | Legacy client | Create/update without a key ARN | Succeeds. | API | [L28](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/ApiTests/InternalServicesApi/InternalServicesApiTests.cs#L28) |
 | 706 | CreateClient_ThrowsException | Failure path | A failing create | Throws. | API | [L68](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/ApiTests/InternalServicesApi/InternalServicesApiTests.cs#L68) |
@@ -975,7 +975,7 @@ Service-auth client registration. Most of the file is the key-ARN credential rul
 
 Which practices a provider user may switch between, and the switch itself. The allowed set comes from SAML connection metadata; rows 720–723 pin that every way of not having that metadata yields an empty list, never an unrestricted one.
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 718 | GetMultiPracticeAccess_WithSamlConnection_ReturnsPracticeIdsFromMetadata | Allowed set | A SAML connection with practice ids | The ids from the metadata. | API | [L27](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/ApiTests/MultiPractice/MultiPracticeApiTests.cs#L27) |
 | 719 | GetMultiPracticeAccess_WithSamlConnection_SinglePracticeId_ReturnsSinglePracticeId | Single practice | One id in the metadata | One id. | API | [L63](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/ApiTests/MultiPractice/MultiPracticeApiTests.cs#L63) |
@@ -997,7 +997,7 @@ Which practices a provider user may switch between, and the switch itself. The a
 
 The endpoint the Auth0 Universal Login page posts interaction events to. It is called from an unauthenticated login page, so the contract is strict validation plus tenant routing to the right Firehose stream.
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 731 | LogPageEvent_WithValidPageView_ReturnsNoContent | Page view | Post a page view | 204. | API | [L21](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/ApiTests/UniversalLoginEvent/UniversalLoginEventApiTests.cs#L21) |
 | 732 | LogPageEvent_WithButtonClick_ReturnsNoContent | Button click | Post a click | 204. | API | [L38](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/ApiTests/UniversalLoginEvent/UniversalLoginEventApiTests.cs#L38) |
@@ -1019,7 +1019,7 @@ The endpoint the Auth0 Universal Login page posts interaction events to. It is c
 
 The metric side of the same endpoint. Every event field has an enumerated case table because these become Datadog tag values — an unbounded value here is a cardinality incident.
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 744 | Tenant_Patient_EmitsPatient | Tenant tag | Patient tenant | `patient`. | Unit | [L58](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/UnitTests/UniversalLoginMetricsServiceTests.cs#L58) |
 | 745 | Tenant_Provider_EmitsProvider | Tenant tag | Provider tenant | `provider`. | Unit | [L65](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/UnitTests/UniversalLoginMetricsServiceTests.cs#L65) |
@@ -1041,7 +1041,7 @@ The metric side of the same endpoint. Every event field has an enumerated case t
 
 Credential rotation and retrieval for external API clients. Three independent conditions must all hold beyond the role check: the management client id must match, the client must be owned by the external API, and the metadata must exist — any one missing is a 403, not a 404.
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 757 | RotateCredential_ReturnsUnauthorized_WithNoToken | Auth gate | No token | 401. | API | [L30](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/ApiTests/ExternalClient/ExternalClientCredentialTests.cs#L30) |
 | 758 | RotateCredential_ReturnsForbidden_WithoutCorrectRole | Role gate | Wrong role | 403. | API | [L39](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/ApiTests/ExternalClient/ExternalClientCredentialTests.cs#L39) |
@@ -1062,7 +1062,7 @@ Credential rotation and retrieval for external API clients. Three independent co
 
 The native-app counterpart to `WebSiteLoginAndRefreshTests` (rows 456–476) — same flows, tokens in the body instead of cookies. The iOS and Android cases assert a one-year `expires_in`, much longer than the web session.
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 769 | OauthToken_ReturnsErrorMessages | Error messages (3 cases) | Three failing requests | The expected messages. | API | [L24](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/ApiTests/PatientApi/OauthTokenLoginAndRefreshTests.cs#L24) |
 | 770 | OauthToken_ReturnsErrorCodes | Error codes (3 cases) | Three failing requests | The expected codes. | API | [L47](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/ApiTests/PatientApi/OauthTokenLoginAndRefreshTests.cs#L47) |
@@ -1083,7 +1083,7 @@ The native-app counterpart to `WebSiteLoginAndRefreshTests` (rows 456–476) —
 
 Builds the events sourced from Auth0 itself (the webhook and Universal Login page), as distinct from the service-sourced events in rows 77–188. Patient is the default user type when no tenant is supplied.
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 781 | GetLoginSuccessEvent_SetsAllFieldsCorrectly | Login success | Build the event | All fields set. | Unit | [L33](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/UnitTests/EventLogging/Auth0LoggingEventFactoryTests.cs#L33) |
 | 782 | GetLoginSuccessEvent_GivenNullOptionalFields_SetsThemToNull | Optional fields | Omit the optional fields | Null, not empty strings. | Unit | [L88](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/UnitTests/EventLogging/Auth0LoggingEventFactoryTests.cs#L88) |
@@ -1104,7 +1104,7 @@ Builds the events sourced from Auth0 itself (the webhook and Universal Login pag
 
 The service behind rows 757–768. Same three ownership conditions, asserted here as validation exceptions rather than HTTP codes, plus the propagate-vs-translate rule for Auth0 failures (rows 803, 804).
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 793 | RotateClientSecret_ReturnsNewSecret_WhenMetadataIsValid | Rotation | Valid metadata | A new secret. | Unit | [L30](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/UnitTests/ExternalClientCredentialServiceTests.cs#L30) |
 | 794 | RotateClientSecret_ThrowsValidationException_WhenManagementClientIdMismatch | Client binding | Mismatched management client id | Validation exception. | Unit | [L45](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/UnitTests/ExternalClientCredentialServiceTests.cs#L45) |
@@ -1125,7 +1125,7 @@ The service behind rows 757–768. Same three ownership conditions, asserted her
 
 Packs the tracking and session GUIDs into a single Auth0-safe correlation string so a login can be traced end to end. The constraints are tight: Auth0 caps the length and the character set, and the value must round-trip back to the original GUIDs.
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 805 | Build_ValidInputs_ProducesCompositeOfMaxAllowedLength | Length bound | Build from valid inputs | The composite is exactly at Auth0's maximum. | Unit | [L20](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/UnitTests/Login/CorrelationIdFactoryTests.cs#L20) |
 | 806 | Build_ValidInputs_OnlyContainsAuth0AllowedCharacters | Character set | Build | Only allowed characters — anything else is rejected by Auth0 at request time. | Unit | [L31](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/UnitTests/Login/CorrelationIdFactoryTests.cs#L31) |
@@ -1146,7 +1146,7 @@ Packs the tracking and session GUIDs into a single Auth0-safe correlation string
 
 Refresh across the three user types. Row 819 is the key boundary: a monolith token carrying an identity is rejected with `InvalidUserType` rather than refreshed down the normal path.
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 817 | RefreshAccessToken_PatientTokenSuccessfulRefresh_ReturnsTokenAndLogsV2Events | Patient refresh | Refresh a patient token | Token returned and v2 events logged. | Unit | [L41](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/UnitTests/Login/RefreshTokenServiceTests.cs#L41) |
 | 818 | RefreshAccessToken_PracticeUserTokenSuccessfulRefresh_ReturnsTokenAndLogsV2Events | Practice refresh | Refresh a practice token | Token returned and events logged. | Unit | [L85](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/UnitTests/Login/RefreshTokenServiceTests.cs#L85) |
@@ -1167,7 +1167,7 @@ Refresh across the three user types. Row 819 is the key boundary: a monolith tok
 
 Real DynamoDB coverage for the patient-id ↔ user-name mapping. Row 833 is the notable one: a duplicate patient mapping throws rather than picking one, because silently choosing would attach a login to the wrong patient record.
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 829 | InsertPatientUserMapping_Success | Insert | Insert a mapping | Persisted. | Integration | [L34](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/IntegrationTests/PatientUserMappingDynamoPersistenceTests.cs#L34) |
 | 830 | BatchWritePatientUserMappings_Success | Batch insert | Batch-write mappings | All persisted. | Integration | [L57](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/IntegrationTests/PatientUserMappingDynamoPersistenceTests.cs#L57) |
@@ -1187,7 +1187,7 @@ Real DynamoDB coverage for the patient-id ↔ user-name mapping. Row 833 is the 
 
 The batching processor that ships login events to Firehose. Its whole job is not to lose events, so most of the file is failure handling: partial batch failures requeue only the failed items (row 844), retries are capped (847), and shutdown drops rather than requeues (849, 850).
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 840 | MissingEnvironmentVariable_LogsErrorAndRequeuesItems | Misconfiguration | No stream name configured | Error logged and items requeued, not dropped. | Unit | [L104](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/UnitTests/EventLogging/AuthServiceEventProcessorTests.cs#L104) |
 | 841 | SuccessPath_SendsBatchToFirehoseAndLogsMetrics | Happy path | Process a batch | Sent to Firehose with metrics. | Unit | [L131](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/UnitTests/EventLogging/AuthServiceEventProcessorTests.cs#L131) |
@@ -1207,7 +1207,7 @@ The batching processor that ships login events to Firehose. Its whole job is not
 
 The DynamoDB-stream lambda that mirrors phone and user-mapping changes downstream. A record with no recognisable type throws (rows 852, 853) rather than being skipped, so a schema change fails loudly.
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 851 | Verify_EntryPoint_Sets_Up_Correctly | Wiring | Construct the lambda | Dependencies resolve. | Unit | [L38](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/UnitTests/LambdaTests/StreamProcessorLambdaTests.cs#L38) |
 | 852 | Verify_Handler_ThrowsExceptionWhenRecordTypeIsMissingFromPhoneRecord | Unknown phone record | No record type | Throws. | Unit | [L82](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/UnitTests/LambdaTests/StreamProcessorLambdaTests.cs#L82) |
@@ -1227,7 +1227,7 @@ The DynamoDB-stream lambda that mirrors phone and user-mapping changes downstrea
 
 Logs a hashed fingerprint of a refresh token so failures can be correlated without the token itself ever reaching a log. Half the file asserts that no logging path can throw — diagnostics must never break a login (rows 867–872).
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 862 | Fingerprint_NullToken_ReturnsEmpty | Null token | Fingerprint null | Empty. | Unit | [L17](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/UnitTests/Login/RefreshTokenDiagnosticLoggerTests.cs#L17) |
 | 863 | Fingerprint_EmptyString_ReturnsEmpty | Empty token | Fingerprint an empty string | Empty. | Unit | [L23](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/UnitTests/Login/RefreshTokenDiagnosticLoggerTests.cs#L23) |
@@ -1247,7 +1247,7 @@ Logs a hashed fingerprint of a refresh token so failures can be correlated witho
 
 Which practices an SSO user may act on. The allow-list comes from the SAML connection's metadata, and every non-SAML shape returns an empty list rather than a permissive default (rows 876–880).
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 873 | GetAllowedPracticeIdsForUser_WithSamlConnection_ReturnsPracticeIdsFromMetadata | Allow-list | A SAML connection with metadata | The practice ids. | Unit | [L24](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/UnitTests/MultiPractice/MultiPracticeServiceTests.cs#L24) |
 | 874 | GetAllowedPracticeIdsForUser_WithSamlConnection_SinglePracticeId_ReturnsSinglePracticeId | Single entry | One practice id | Returned. | Unit | [L39](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/UnitTests/MultiPractice/MultiPracticeServiceTests.cs#L39) |
@@ -1267,7 +1267,7 @@ Which practices an SSO user may act on. The allow-list comes from the SAML conne
 
 The deployed counterpart to rows 851–861: the same lambda, but asserted through real SNS/SQS side effects. Every test is `[Category("RealOnly")]` with `Retry(4)`, because the assertions poll a real queue. Row 887 is the phone-stealing case — one patient claiming a number another patient holds must emit events for both.
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 884 | SendEventToLambda_WithEmptyEventList_DoesNotPropagateMessagesToSns | Empty batch | Send no events | Nothing published. | API (RealOnly) | [L47](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/ApiTests/Lambdas/Auth.Lambdas.StreamProcessor/StreamProcessorLambdaTests.cs#L47) |
 | 885 | SendEventToLambda_WithValidEventListForPhone_PropagatesMessagesToSns | Publish (2 cases) | A phone record and a user-mapping record | Each publishes its own update type. | API (RealOnly) | [L74](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/ApiTests/Lambdas/Auth.Lambdas.StreamProcessor/StreamProcessorLambdaTests.cs#L74) |
@@ -1286,7 +1286,7 @@ The deployed counterpart to rows 851–861: the same lambda, but asserted throug
 
 Blocking a patient in Auth0. The file's theme is refusing to report success it cannot confirm: Auth0 accepting the patch is not enough, the returned user must actually show the new blocked state (rows 901, 903), and an ambiguous multi-user search throws (898).
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 894 | SetUserBlockedStatus_SingleUserFound_BlocksSuccessfully | Block | One matching user | Blocked. | Unit | [L20](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/UnitTests/Auth0/PatientTenantAuth0ServiceSetBlockedTests.cs#L20) |
 | 895 | SetUserBlockedStatus_SingleUserFound_UnblocksSuccessfully | Unblock | One matching user | Unblocked. | Unit | [L53](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/UnitTests/Auth0/PatientTenantAuth0ServiceSetBlockedTests.cs#L53) |
@@ -1305,7 +1305,7 @@ Blocking a patient in Auth0. The file's theme is refusing to report success it c
 
 The write path for the events built in rows 77–188 and 781–792. V2 hands off to a background queue (row 905) so logging never sits on the login's critical path, and retries are narrowed to service-unavailable only (911, 912).
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 904 | LogActivity_UsesLegacyImplementation | V1 path | Call `LogActivity` | Routes to the legacy implementation. | Unit | [L93](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/UnitTests/EventLogging/UserActivityLoggingServiceTests.cs#L93) |
 | 905 | LogActivityV2_EnqueuesToBackgroundQueue | V2 path | Call `LogActivityV2` | Enqueued, not sent inline. | Unit | [L106](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/UnitTests/EventLogging/UserActivityLoggingServiceTests.cs#L106) |
@@ -1324,7 +1324,7 @@ The write path for the events built in rows 77–188 and 781–792. V2 hands off
 
 OTP send and verify for patient phone numbers. Row 923 is the anti-abuse test and the most interesting in the file: it drives 500 usernames × 5 attempts against an international number to fill the reputation cache, then proves a fresh username is still blocked on that international number while a US number succeeds.
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 914 | PatientSendOtpToPhone_SendCodeIfTransferable | Send OTP (5 cases) | Five transferability states | A code is sent only when the number is transferable. | Unit | [L48](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/UnitTests/Phone/PhoneServiceTests.cs#L48) |
 | 915 | PatientSendOtpToPhone_Auth0ClientException | Auth0 failure (2 cases) | Two Auth0 client exceptions | Surfaced as errors. | Unit | [L89](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/UnitTests/Phone/PhoneServiceTests.cs#L89) |
@@ -1343,7 +1343,7 @@ OTP send and verify for patient phone numbers. Row 923 is the anti-abuse test an
 
 Whether an email may become a new account. Row 930 is the precedence rule that matters: a practice-SSO domain normally means "existing provider", but if that email is already a patient, the patient answer wins.
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 924 | GetUsernameValidationAndLogResults_IsValid | Valid emails (8 cases) | Eight acceptable emails | Valid for account creation. | Unit | [L30](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/UnitTests/User/UsernameEmailServiceTests.cs#L30) |
 | 925 | IsValidNewUsername_IsInvalidFormat | Format (5 cases) | Five malformed emails | Invalid format. | Unit | [L42](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/UnitTests/User/UsernameEmailServiceTests.cs#L42) |
@@ -1362,7 +1362,7 @@ Whether an email may become a new account. Row 930 is the precedence rule that m
 
 The patient OAuth authorize/callback pair end to end. Row 941 covers the case that breaks naive preauth-cookie designs: two tabs starting a login in the same browser, where the second overwrites the first's cookie — both must still complete.
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 934 | PatientLoginStart_WithValidReturnTo_Returns302AndSetsCookie | Authorize | Start with a valid `return_to` | 302 plus the preauth cookie. | API | [L24](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/ApiTests/PatientApi/PatientOauthLoginApiTests.cs#L24) |
 | 935 | PatientLoginStart_WithInvalidReturnTo_Returns400 | Open redirect | An off-site `return_to` | 400. | API | [L69](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/ApiTests/PatientApi/PatientOauthLoginApiTests.cs#L69) |
@@ -1380,7 +1380,7 @@ The patient OAuth authorize/callback pair end to end. Row 941 covers the case th
 
 The client for the monolith's privileged auth endpoints — creating practice staff users and minting monolith cookies from an Auth0 JWT. Every HTTP status the monolith can return is mapped to a distinct result so a 401 is never mistaken for a 403 (rows 948, 949).
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 943 | CreatePracticeStaffUser_Success | Create user | The monolith returns success | Success. | Unit | [L50](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/UnitTests/ApiCallers/MonolithAuthBackdoorApiCallerTests.cs#L50) |
 | 944 | CreatePracticeStaffUser_BadRequest | 400 | The monolith returns 400 | Mapped to a bad-request result. | Unit | [L80](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/UnitTests/ApiCallers/MonolithAuthBackdoorApiCallerTests.cs#L80) |
@@ -1398,7 +1398,7 @@ The client for the monolith's privileged auth endpoints — creating practice st
 
 The patient API implementation layer. Rows 956–958 are the audit-trail tests: reading phone numbers in bulk must record a read action with the right object ids, and must not emit an audit entry when no phones were returned.
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 952 | PatientSendOtpToPhone_Success | Send OTP | A valid request | Success. | Unit | [L30](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/UnitTests/PatientImpllTests.cs#L30) |
 | 953 | PatientSendOtpToPhone_TransferFailure | Transfer blocked (6 cases) | Six blocked-transfer shapes | Each returns its own error. | Unit | [L51](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/UnitTests/PatientImpllTests.cs#L51) |
@@ -1416,7 +1416,7 @@ The patient API implementation layer. Rows 956–958 are the audit-trail tests: 
 
 The management-API token cache. Three of eight tests (963–965) exist purely for the thundering-herd case: many parallel callers on a missing or expired token must produce exactly one fetch. Row 966 pins the proactive refresh at 83% of lifetime, and 967–968 keep serving a still-valid token when a refresh fails.
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 961 | GetManagementApiToken_FirstTime_ReturnsToken | Cold cache | First call | A token. | Unit | [L44](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/UnitTests/Auth0/BaseAuth0AdministrationTokenCacheTests.cs#L44) |
 | 962 | GetManagementApiToken_MultipleSequentialCalls_UsesCachedToken | Warm cache | Sequential calls | One fetch, cached thereafter. | Unit | [L57](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/UnitTests/Auth0/BaseAuth0AdministrationTokenCacheTests.cs#L57) |
@@ -1433,7 +1433,7 @@ The management-API token cache. Three of eight tests (963–965) exist purely fo
 
 Pulls identifiers out of an access token. Half the file (rows 970, 971, 973, 974) asserts the parser never throws on a malformed or claim-less token — a parse failure must degrade to null, not 500 a request.
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 969 | ParseXsrfIdentifier | XSRF claim (2 cases) | Two tokens | The identifier parsed. | Unit | [L22](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/UnitTests/Login/AccessTokenParsingServiceTests.cs#L22) |
 | 970 | ParseXsrfIdentifier_DoesNotThrow_BadAccessToken | Malformed | A bad token | No throw. | Unit | [L29](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/UnitTests/Login/AccessTokenParsingServiceTests.cs#L29) |
@@ -1450,7 +1450,7 @@ Pulls identifiers out of an access token. Half the file (rows 970, 971, 973, 974
 
 The cookie writer. Row 980 pins an easily-missed detail — when XSRF parsing is off the cookie is set to a literal dash rather than omitted, so downstream code always sees the cookie. Row 982 is the logout guarantee: clearing removes pre-existing cookies as well as the JWT and refresh token.
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 977 | SetCookies_SetsJwtCookie | JWT cookie | Set cookies | The JWT cookie is set. | Unit | [L42](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/UnitTests/Login/WebCookieServiceTests.cs#L42) |
 | 978 | SetCookies_SetsRefreshToken | Refresh cookie | Set cookies | The refresh token is set. | Unit | [L60](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/UnitTests/Login/WebCookieServiceTests.cs#L60) |
@@ -1467,7 +1467,7 @@ The cookie writer. Row 980 pins an easily-missed detail — when XSRF parsing is
 
 The deployed phone-verification endpoints. Rows 985 and 989 are the authorization tests — no user, no verification. Row 988 maps Twilio's own error codes to distinct API errors so a carrier rejection is not reported as a Zocdoc bug.
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 985 | SendVerificationCode_WithNoUser_ReturnsUnauthorized | Authorization (3 cases) | Three unauthenticated shapes | 401. | API | [L22](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/ApiTests/PhoneVerification/PhoneVerificationApiTests.cs#L22) |
 | 986 | SendVerificationCode_Success | Send (3 cases) | Three valid requests | Code sent. | API | [L38](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/ApiTests/PhoneVerification/PhoneVerificationApiTests.cs#L38) |
@@ -1483,7 +1483,7 @@ The deployed phone-verification endpoints. Rows 985 and 989 are the authorizatio
 
 The non-essential half of the monolith backdoor — user creation and patient linking that a login can survive without. Compare rows 943–951: same status-mapping discipline, but these calls are the ones whose failures do not block account creation (rows 316, 317).
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 992 | CreateUser_Success | Create | Success from the monolith | Success. | Unit | [L70](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/UnitTests/ApiCallers/MonolithAuthNonEssentialBackdoorApiCallerTests.cs#L70) |
 | 993 | CreateUser_BadRequest | 400 | The monolith returns 400 | Bad request. | Unit | [L84](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/UnitTests/ApiCallers/MonolithAuthNonEssentialBackdoorApiCallerTests.cs#L84) |
@@ -1499,7 +1499,7 @@ The non-essential half of the monolith backdoor — user creation and patient li
 
 The client for the patient vault, called during account creation. Row 1005 is the privacy hook: the SPI opt-out cookie must be forwarded on, so a patient's opt-out choice reaches the vault at the moment the profile is created rather than later.
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 999 | CreatePatientProfile_Success | Create (4 cases) | Four valid requests | Profile created. | Unit | [L29](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/UnitTests/ApiCallers/PatientVaultApiCallerTests.cs#L29) |
 | 1000 | CreatePatientProfile_BadRequest | 400 | The vault returns 400 | Bad request. | Unit | [L64](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/UnitTests/ApiCallers/PatientVaultApiCallerTests.cs#L64) |
@@ -1515,7 +1515,7 @@ The client for the patient vault, called during account creation. Row 1005 is th
 
 Maps an email domain to a practice's SSO connection — the lookup that decides whether a provider login is redirected to a customer IdP. Rows 1008 and 1009 block the two domains that would be catastrophic to register: a public mail domain (which would hijack every gmail user) and zocdoc.com itself.
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 1006 | GetIdentityProviderByEmailDomainTest | Lookup (4 cases) | Four domains | The matching provider. | Unit | [L26](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/UnitTests/IdentityProvider/PracticeIdentityProviderServiceTests.cs#L26) |
 | 1007 | InsertIdentityProviderConfigTest | Insert (4 cases) | Four valid configs | Stored. | Unit | [L48](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/UnitTests/IdentityProvider/PracticeIdentityProviderServiceTests.cs#L48) |
@@ -1531,7 +1531,7 @@ Maps an email domain to a practice's SSO connection — the lookup that decides 
 
 Bulk deletion of provider usernames, with a flag that extends the delete into Auth0. Rows 1017 and 1018 are the important pair: under the flag the Auth0 user is deleted from a constructed id for every requested id, so a missing Dynamo row does not leave an orphaned Auth0 account behind. Row 1019 makes an Auth0 delete failure loud rather than partial.
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 1013 | BatchDelete_HappyPath_DeletesEachInParallel | Bulk delete | Several usernames | Each deleted in parallel. | Unit | [L25](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/UnitTests/ProviderUsername/ProviderUsernameServiceTests.cs#L25) |
 | 1014 | BatchDelete_SomeRowsMissing_DeletesFoundOnes | Partial | Some rows absent | The found ones are deleted. | Unit | [L70](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/UnitTests/ProviderUsername/ProviderUsernameServiceTests.cs#L70) |
@@ -1547,7 +1547,7 @@ Bulk deletion of provider usernames, with a flag that extends the delete into Au
 
 The endpoint Auth0 itself calls. Row 1023 is the one that matters for exposure: the webhook is a public URL, so a missing or wrong shared secret must return 401 rather than accepting forged login events into the analytics stream.
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 1020 | LogUserActivityEvent_LogsLoginSuccessEvent | Login event | Post a login-success payload | The event is logged. | API (RealOnly) | [L29](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/ApiTests/Auth0Webhook/Auth0WebhookApiTests.cs#L29) |
 | 1021 | LogUserActivityEvent_WithRefreshProtocol_LogsRefreshIntent | Refresh intent | Post a refresh-protocol payload | Logged with refresh intent. | API (RealOnly) | [L119](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/ApiTests/Auth0Webhook/Auth0WebhookApiTests.cs#L119) |
@@ -1562,7 +1562,7 @@ The endpoint Auth0 itself calls. Row 1023 is the one that matters for exposure: 
 
 The persisted OAuth state that ties an authorize call to its callback. Row 1027 is deliberate: the state is readable more than once, which is what makes the multi-tab case in row 941 work. Rows 1028 and 1031 bound the exposure with a ten-minute TTL.
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 1026 | InsertAuthFlowState_Success | Insert | Store a flow state | Persisted. | Integration | [L32](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/IntegrationTests/AuthFlowStateDynamoPersistenceTests.cs#L32) |
 | 1027 | GetAuthFlowStateByOAuthState_CanBeReadMultipleTimes | Repeat read | Read the same state twice | Both succeed — not single-use, which is what allows concurrent tabs. | Integration | [L71](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/IntegrationTests/AuthFlowStateDynamoPersistenceTests.cs#L71) |
@@ -1577,7 +1577,7 @@ The persisted OAuth state that ties an authorize call to its callback. Row 1027 
 
 The Auth0-to-ASP.NET identity mapping for provider users, over real DynamoDB. Row 1037 mirrors row 833 — a duplicate cloud id throws rather than resolving to one of the two, since guessing here would log a user into the wrong provider identity.
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 1032 | GetPracticeUserAuthIdentityByAuth0UserId_WhenAuth0UserIdIsNotInTable_ReturnsNull | Missing Auth0 id | Unknown id | Null. | Integration | [L32](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/IntegrationTests/PracticeUserAuthIdentityDynamoPersistenceTests.cs#L32) |
 | 1033 | GetPracticeUserAuthIdentityByAspnetUserId_WhenAspnetUserIdIsNotInTable_ReturnsNull | Missing ASP.NET id | Unknown id | Null. | Integration | [L42](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/IntegrationTests/PracticeUserAuthIdentityDynamoPersistenceTests.cs#L42) |
@@ -1592,7 +1592,7 @@ The Auth0-to-ASP.NET identity mapping for provider users, over real DynamoDB. Ro
 
 The post-login redirect decision. Every degenerate input — no state, a null return path, an invalid path — resolves to a safe default rather than an error page, so a broken redirect never blocks a completed login.
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 1038 | ValidateAndGetRedirectPath_NoState_ReturnsAppropriateDefault | No state (4 cases) | Four state-less shapes | The default path. | Unit | [L26](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/UnitTests/Login/RedirectStateValidatorTests.cs#L26) |
 | 1039 | ValidateAndGetRedirectPath_NullReturnPath_ReturnsAppropriateDefault | Null path (2 cases) | Two null return paths | The default. | Unit | [L36](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/UnitTests/Login/RedirectStateValidatorTests.cs#L36) |
@@ -1607,7 +1607,7 @@ The post-login redirect decision. Every degenerate input — no state, a null re
 
 Pure authorization coverage: each of the three repository operations is run once with the `AuthServiceReconciliatorApiWrite` JWT role and once with no roles. The negative cases assert both the `UnauthorizedAccessException` and that the persistence layer was never called — a caller without the role cannot reach Dynamo at all.
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 1044 | InsertProviderUsername_WithCorrectRole_Success | Insert, authorized | The reconciliator write role | Inserted. | Unit | [L19](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/UnitTests/ProviderUsername/ProviderUsernameRepositoryTests.cs#L19) |
 | 1045 | InsertProviderUsername_WithWrongRole_Failure | Insert, denied | No roles | `UnauthorizedAccessException` and no persistence call. | Unit | [L34](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/UnitTests/ProviderUsername/ProviderUsernameRepositoryTests.cs#L34) |
@@ -1622,7 +1622,7 @@ Pure authorization coverage: each of the three repository operations is run once
 
 The service-to-service token cache. Same six-shape contract as the Auth0 management cache (rows 961–968), but the refresh threshold is halfway to expiry rather than 83% (row 1053).
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 1050 | GetAccessTokenAsync_FirstTime_ReturnsToken | Cold cache | First call | A token. | Unit | [L36](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/UnitTests/ServiceAuthV2/SimpleServiceAuthTokenProviderTests.cs#L36) |
 | 1051 | GetAccessTokenAsync_MultipleSequentialCalls_UsesCachedToken | Warm cache | Sequential calls | One fetch. | Unit | [L49](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/UnitTests/ServiceAuthV2/SimpleServiceAuthTokenProviderTests.cs#L49) |
@@ -1637,7 +1637,7 @@ The service-to-service token cache. Same six-shape contract as the Auth0 managem
 
 The deploy-time lambda that writes a service's roles into the service-auth config. Rows 1058 and 1059 cover the fallback path — a failed write retries against a secondary target, and the test that both fail exists so a release does not silently ship a service with no roles.
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 1056 | InvokeLambda_Success_ChangeRoles_Success | Role change | Invoke with new roles | Applied. | API (RealOnly) | [L33](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/ApiTests/Lambdas/ServiceAuthRelease.Lambda/ServiceAuthReleaseLambdaTests.cs#L33) |
 | 1057 | InvokeLambda_Success_NullRoles_Success | Null roles | Invoke with no roles | Succeeds. | API (RealOnly) | [L59](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/ApiTests/Lambdas/ServiceAuthRelease.Lambda/ServiceAuthReleaseLambdaTests.cs#L59) |
@@ -1651,7 +1651,7 @@ The deploy-time lambda that writes a service's roles into the service-auth confi
 
 Forwards the caller's `ZD-User-Agent` to Auth0 so Auth0's own anomaly detection sees the real client rather than the service. Row 1064 is the defensive one: a non-RFC-compliant header is sanitised and still forwarded instead of failing the token call.
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 1061 | OauthToken_WithZdUserAgent_ForwardsItToAuth0AsUserAgent | Forwarding | Send the header | Forwarded to Auth0. | API | [L20](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/ApiTests/PatientApi/UserAgentForwardingTests.cs#L20) |
 | 1062 | OauthToken_WithoutZdUserAgent_DoesNotOverrideUserAgent | Absent header | No header | The default is left alone. | API | [L45](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/ApiTests/PatientApi/UserAgentForwardingTests.cs#L45) |
@@ -1665,7 +1665,7 @@ Forwards the caller's `ZD-User-Agent` to Auth0 so Auth0's own anomaly detection 
 
 The call that grants roles on SSO login (the behaviour asserted end to end at rows 565, 566, 696). Rows 1066 and 1067 are the guards: a non-SAML connection or a user with no practice id is an `ArgumentException`, not a silent no-grant.
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 1066 | SetSsoUserRoles_ThrowsArgumentException_ForNonSamlpConnections | Connection guard | A non-SAML connection | `ArgumentException`. | Unit | [L25](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/UnitTests/ApiCallers/PracticeUserPermissionsApiCallerTests.cs#L25) |
 | 1067 | SetSsoUserRoles_ThrowsArgumentException_ForUserWithoutPracticeId | Practice guard | No practice id | `ArgumentException`. | Unit | [L38](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/UnitTests/ApiCallers/PracticeUserPermissionsApiCallerTests.cs#L38) |
@@ -1679,7 +1679,7 @@ The call that grants roles on SSO login (the behaviour asserted end to end at ro
 
 Classifies the Auth0 `protocol` field as a login or a refresh, which is what keeps refreshes out of the login funnel. Row 1073 is the choice worth noting: a null or blank protocol is classified as a *login*, so an unlabelled event inflates logins rather than disappearing.
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 1071 | Classify_RefreshProtocol_ReturnsRefreshIntentRecognized | Refresh (3 cases) | Three refresh protocols | Refresh intent, recognised. | Unit | [L17](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/UnitTests/Auth0ProtocolIntentMapperTests.cs#L17) |
 | 1072 | Classify_KnownLoginProtocol_ReturnsLoginIntentRecognized | Login (15 cases) | Fifteen known login protocols | Login intent, recognised. | Unit | [L41](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/UnitTests/Auth0ProtocolIntentMapperTests.cs#L41) |
@@ -1693,7 +1693,7 @@ Classifies the Auth0 `protocol` field as a login or a refresh, which is what kee
 
 The internal-services variant of the redirect allow-list, which accepts absolute HTTPS URLs rather than paths. Row 1078 is the subtle one — percent-encoding inside a nested return URL must survive validation untouched, or the inner redirect breaks.
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 1076 | TryValidate_AcceptsAllowlistedHttpsUrls | Allow-list (4 cases) | Four allow-listed URLs | Accepted. | Unit | [L24](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/UnitTests/OAuth/InternalUserReturnToUrlValidatorTests.cs#L24) |
 | 1077 | TryValidate_AcceptsADeepLinkAndKeepsItsQueryString | Query string | A deep link with a query | Accepted with the query intact. | Unit | [L33](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/UnitTests/OAuth/InternalUserReturnToUrlValidatorTests.cs#L33) |
@@ -1707,7 +1707,7 @@ The internal-services variant of the redirect allow-list, which accepts absolute
 
 The three-way write of a phone number to Auth0, DynamoDB and the monolith. Rows 1082, 1083 and 1085 each fail one leg — the point is that a partial write is reported as a failure rather than a success.
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 1081 | UpdatePhone_Success | Happy path | Update everywhere | Success. | Unit | [L35](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/UnitTests/Phone/PhoneNumberUpdaterServiceTests.cs#L35) |
 | 1082 | UpdatePhone_FailedAuth0 | Auth0 leg | Auth0 fails | Failure. | Unit | [L45](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/UnitTests/Phone/PhoneNumberUpdaterServiceTests.cs#L45) |
@@ -1721,7 +1721,7 @@ The three-way write of a phone number to Auth0, DynamoDB and the monolith. Rows 
 
 Fetching a service-auth JWT. Rows 1088 and 1089 are diagnostics tests — the error must name the URL on a 404 and include the response body otherwise, because this failure surfaces at service startup with no other context.
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 1086 | Ctor_ThrowsIfMissingSettings | Configuration | Construct without settings | Throws. | Unit | [L54](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/UnitTests/ServiceAuthV2/JwtFetcherTests.cs#L54) |
 | 1087 | Ctor_ThrowsIfBadEndpoint | Configuration | A malformed endpoint | Throws. | Unit | [L66](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/UnitTests/ServiceAuthV2/JwtFetcherTests.cs#L66) |
@@ -1735,7 +1735,7 @@ Fetching a service-auth JWT. Rows 1088 and 1089 are diagnostics tests — the er
 
 Provider logout. Row 1094 is the deliberate design point: logout requires no authentication, so an expired or broken session can still be cleared. Row 1093 is the guarantee that pairs with it — every auth cookie expires, not just the JWT.
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 1091 | PracticeLogout_RedirectsToAuth0V2Logout | Redirect | Call logout | Redirects to Auth0's v2 logout. | API | [L29](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/ApiTests/IdentityProvider/PracticeLogoutApiTests.cs#L29) |
 | 1092 | PracticeLogout_LocationHeaderIsUrlEncoded | Encoding | Call logout | The location header is correctly encoded. | API | [L48](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/ApiTests/IdentityProvider/PracticeLogoutApiTests.cs#L48) |
@@ -1748,7 +1748,7 @@ Provider logout. Row 1094 is the deliberate design point: logout requires no aut
 
 The Dynamo layer beneath rows 1044–1049, over real storage.
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 1095 | BatchInsertProviderUsernames_Single_Success | Single insert | Insert one | Persisted. | Integration | [L34](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/IntegrationTests/ProviderUsernameDynamoPersistenceTests.cs#L34) |
 | 1096 | BatchInsertProviderUsernames_Multiple_Success | Batch insert (3 cases) | Three batch sizes | All persisted. | Integration | [L62](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/IntegrationTests/ProviderUsernameDynamoPersistenceTests.cs#L62) |
@@ -1761,7 +1761,7 @@ The Dynamo layer beneath rows 1044–1049, over real storage.
 
 Email search in the provider tenant. Unlike the patient path (row 898), a multi-match here returns all of them (row 1101) — provider emails legitimately span practices. Row 1102 guards the search query itself against special characters.
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 1099 | SearchUserByEmail_SingleMatch_ReturnsIt | Single match | One user | Returned. | Unit | [L49](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/UnitTests/Auth0/ProviderTenantAuth0ClientSearchTests.cs#L49) |
 | 1100 | SearchUserByEmail_NoMatches_ReturnsEmpty | No match | No users | Empty. | Unit | [L63](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/UnitTests/Auth0/ProviderTenantAuth0ClientSearchTests.cs#L63) |
@@ -1774,7 +1774,7 @@ Email search in the provider tenant. Unlike the patient path (row 898), a multi-
 
 The API surface over the blocking service in rows 894–903, asserting status codes rather than exceptions.
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 1103 | SetUserBlockedStatus_InvalidUserAccountId_Returns400 | Validation (5 cases) | Five malformed account ids | 400. | Unit | [L23](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/UnitTests/PatientImplSetBlockedTests.cs#L23) |
 | 1104 | SetUserBlockedStatus_Success_ReturnsOkWithUserDetails | Block | A valid block | 200 with the user details. | Unit | [L40](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/UnitTests/PatientImplSetBlockedTests.cs#L40) |
@@ -1787,7 +1787,7 @@ The API surface over the blocking service in rows 894–903, asserting status co
 
 The rule that decides whether a phone number can move to a new patient — the check driven end to end at rows 914, 916, 953. Row 1109 is the anti-abuse link: a locked patient's number cannot be transferred away, so locking an account also protects its phone.
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 1107 | IsTransferable_GeneralCases | Transfer rules (4 cases) | Four ownership states | Transferable or not per the rule. | Unit | [L23](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/UnitTests/Phone/PhoneTransferabilityCheckerTests.cs#L23) |
 | 1108 | IsTransferable_CanNotTransferPhoneToSelf | Self-transfer | The same patient | Not transferable. | Unit | [L45](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/UnitTests/Phone/PhoneTransferabilityCheckerTests.cs#L45) |
@@ -1800,7 +1800,7 @@ The rule that decides whether a phone number can move to a new patient — the c
 
 Creating and updating the Auth0 client that backs a service-auth identity. Row 1112 pins the detail that makes rotation work — an update saves the KMS key ARN alongside the client.
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 1111 | PutAuth0Client_CreatesClient | Create | A new client | Created. | Unit | [L19](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/UnitTests/ServiceAuthClientServiceTests.cs#L19) |
 | 1112 | PutAuth0Client_UpdatesClient_SavesKeyArn | Update | An existing client | Updated and the key ARN saved. | Unit | [L45](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/UnitTests/ServiceAuthClientServiceTests.cs#L45) |
@@ -1813,7 +1813,7 @@ Creating and updating the Auth0 client that backs a service-auth identity. Row 1
 
 The unit-level counterpart to rows 1056–1060. Row 1117 keeps null and empty role entries from being written as roles.
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 1115 | TestValidRoles | Valid roles (2 cases) | Two valid role sets | Applied. | Unit | [L22](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/UnitTests/ServiceAuthLambdaTests/ServiceAuthLambdaTests.cs#L22) |
 | 1116 | TestInvalidRole | Invalid role (2 cases) | Two unrecognised roles | Rejected. | Unit | [L58](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/UnitTests/ServiceAuthLambdaTests/ServiceAuthLambdaTests.cs#L58) |
@@ -1826,7 +1826,7 @@ The unit-level counterpart to rows 1056–1060. Row 1117 keeps null and empty ro
 
 Builds the signed assertion a service presents to get a token. Row 1122 covers the local-development escape hatch — with the fake-signature setting on, KMS is never called, which is what lets the suite run without AWS credentials.
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 1119 | CreateNewJwtAssertion_Jwt_Has_Correct_Claims | Claims | Create an assertion | The expected claims. | Unit | [L64](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/UnitTests/ServiceAuthV2/AssertionJwtCreatorTests.cs#L64) |
 | 1120 | CreateNewJwtAssertion_Jwt_Claims_Includes_ExpectedRoles | Roles | Create an assertion | The roles are present. | Unit | [L97](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/UnitTests/ServiceAuthV2/AssertionJwtCreatorTests.cs#L97) |
@@ -1839,7 +1839,7 @@ Builds the signed assertion a service presents to get a token. Row 1122 covers t
 
 A diagnostic endpoint that produces a Kafka message. Rows 1123 and 1124 are the authorization pair — unauthenticated is rejected, and so is an authenticated non-CSR user, so the tool is gated on role rather than merely on login.
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 1123 | ProduceTestMessage_FailureBecauseNoAuth | Authentication | No credentials | Rejected. | API | [L20](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/ApiTests/InternalServicesApi/KafkaProduceTestApiTests.cs#L20) |
 | 1124 | ProduceTestMessage_FailureBecauseNotCsr | Authorization | An authenticated non-CSR user | Rejected. | API | [L31](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/ApiTests/InternalServicesApi/KafkaProduceTestApiTests.cs#L31) |
@@ -1851,7 +1851,7 @@ A diagnostic endpoint that produces a Kafka message. Rows 1123 and 1124 are the 
 
 The monolith refresh endpoint. Row 1128 is the one that matters — an expired JWT returns 403 rather than being refreshed, so an expired session cannot be extended indefinitely.
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 1126 | MonolithUserRefreshToken_Success_ReturnsCookiesWithCorrectClaims | Refresh | A valid token | Cookies with the expected claims. | API | [L25](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/ApiTests/UserApi/MonolithUserRefreshApiTests.cs#L25) |
 | 1127 | MonolithUserRefreshToken_LogsEventOnSuccess | Event | A successful refresh | The event is logged. | API (RealOnly) | [L70](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/ApiTests/UserApi/MonolithUserRefreshApiTests.cs#L70) |
@@ -1863,7 +1863,7 @@ The monolith refresh endpoint. Row 1128 is the one that matters — an expired J
 
 Real-storage coverage for the SSO domain mapping validated at rows 1006–1012.
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 1129 | InsertIdentityProviderConfig_Success | Insert | Store a config | Persisted. | Integration | [L33](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/IntegrationTests/PracticeIdentityProviderDynamoPersistenceTests.cs#L33) |
 | 1130 | DeleteIdentityProviderByEmailDomain_Success | Delete | Delete by domain | Removed. | Integration | [L62](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/IntegrationTests/PracticeIdentityProviderDynamoPersistenceTests.cs#L62) |
@@ -1875,7 +1875,7 @@ Real-storage coverage for the SSO domain mapping validated at rows 1006–1012.
 
 The URL built by the logout in rows 1091–1094: the provider tenant's v2 logout, carrying the client id and a URL-encoded final redirect.
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 1132 | BuildLogoutUrl_TargetsProviderTenantV2Logout | Target | Build the URL | Points at the provider tenant's v2 logout. | Unit | [L36](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/UnitTests/Login/PracticeAuth0LogoutUrlFactoryTests.cs#L36) |
 | 1133 | BuildLogoutUrl_IncludesClientId | Client id | Build the URL | The client id is present. | Unit | [L44](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/UnitTests/Login/PracticeAuth0LogoutUrlFactoryTests.cs#L44) |
@@ -1887,7 +1887,7 @@ The URL built by the logout in rows 1091–1094: the provider tenant's v2 logout
 
 The patient allow-list behind rows 934–936: relative paths only, with seven rejection cases (row 1137) covering the open-redirect shapes.
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 1135 | TryValidate_AcceptsValidRelativePaths | Accept (2 cases) | Two relative paths | Accepted. | Unit | [L16](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/UnitTests/OAuth/PatientReturnToPathValidatorTests.cs#L16) |
 | 1136 | TryValidate_RejectsNullOrEmptyPaths | Empty (3 cases) | Null and empty | Rejected. | Unit | [L27](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/UnitTests/OAuth/PatientReturnToPathValidatorTests.cs#L27) |
@@ -1899,7 +1899,7 @@ The patient allow-list behind rows 934–936: relative paths only, with seven re
 
 The provider equivalent, with a much wider accept list (20 cases at row 1138) because the provider app has many valid landing pages.
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 1138 | TryValidate_AcceptsValidRelativePaths | Accept (20 cases) | Twenty provider paths | Accepted. | Unit | [L37](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/UnitTests/OAuth/PracticeReturnToPathValidatorTests.cs#L37) |
 | 1139 | TryValidate_RejectsNullOrEmptyPaths | Empty (3 cases) | Null and empty | Rejected. | Unit | [L52](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/UnitTests/OAuth/PracticeReturnToPathValidatorTests.cs#L52) |
@@ -1911,7 +1911,7 @@ The provider equivalent, with a much wider accept list (20 cases at row 1138) be
 
 The controller behind rows 1091–1094. Row 1143 pins that the Auth0 logout URL is built exactly once — building it twice would produce a second state and break the redirect.
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 1141 | Logout_RedirectsToAuth0LogoutUrl | Redirect | Call logout | Redirects to the Auth0 logout URL. | Unit | [L34](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/UnitTests/PracticeLogoutControllerTests.cs#L34) |
 | 1142 | Logout_ClearsCookies | Cookies | Call logout | Cookies cleared. | Unit | [L43](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/UnitTests/PracticeLogoutControllerTests.cs#L43) |
@@ -1923,7 +1923,7 @@ The controller behind rows 1091–1094. Row 1143 pins that the Auth0 logout URL 
 
 Row 1145 is the notable one: deleting a user that does not exist locally still calls through to delete the practice user, so a half-created account can be cleaned up rather than becoming undeletable.
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 1144 | DeletePracticeUserAccount_UserExists | Delete | An existing user | Deleted. | Unit | [L25](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/UnitTests/PracticeUserAccountServiceTests.cs#L25) |
 | 1145 | DeletePracticeUserAccount_UserDoesNotExist_StillCallsDeletePracticeUser_Succeeds | Orphan cleanup | No local user | The downstream delete still runs and succeeds. | Unit | [L35](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/UnitTests/PracticeUserAccountServiceTests.cs#L35) |
@@ -1935,7 +1935,7 @@ Row 1145 is the notable one: deleting a user that does not exist locally still c
 
 The three domain classifiers behind rows 926, 927 and 1008: disposable, public, and protected-Zocdoc.
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 1147 | IsDisposableEmailDomain_IsCorrect | Disposable | A table of domains | Classified. | Unit | [L30](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/UnitTests/User/UserEmailValidationServiceTests.cs#L30) |
 | 1148 | IsPublicEmailDomain_IsCorrect | Public (9 cases) | Nine domains | Classified. | Unit | [L45](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/UnitTests/User/UserEmailValidationServiceTests.cs#L45) |
@@ -1947,7 +1947,7 @@ The three domain classifiers behind rows 926, 927 and 1008: disposable, public, 
 
 The fetch beneath the cache in rows 961–968.
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 1150 | FetchToken_Success | Fetch | A successful call | A token. | Unit | [L48](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/UnitTests/Auth0/Auth0AdministrationTokenFetcherTests.cs#L48) |
 | 1151 | FetchToken_Failure | Failure | A failed call | Handled. | Unit | [L71](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/UnitTests/Auth0/Auth0AdministrationTokenFetcherTests.cs#L71) |
@@ -1958,7 +1958,7 @@ The fetch beneath the cache in rows 961–968.
 
 The third Auth0 tenant — internal services. Only the two write operations are covered.
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 1152 | CreateAuth0Client_Success | Create client | Create a client | Created. | Unit | [L26](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/UnitTests/Auth0/InternalServicesTenantAuth0ServiceTests.cs#L26) |
 | 1153 | UpdateAuth0ClientRoles_Success | Update roles | Update client roles | Applied. | Unit | [L82](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/UnitTests/Auth0/InternalServicesTenantAuth0ServiceTests.cs#L82) |
@@ -1969,7 +1969,7 @@ The third Auth0 tenant — internal services. Only the two write operations are 
 
 The sanitiser behind rows 1061–1065.
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 1154 | GetValidUserAgent_ReturnsRfcCompliantValue | Sanitising (5 cases) | Five header values | An RFC-compliant value. | Unit | [L27](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/UnitTests/Auth0/UserAgentForwardingUnitTests.cs#L27) |
 | 1155 | GetValidUserAgent_ReturnsNull_WhenNullOrWhitespace | Blank (3 cases) | Null and whitespace | Null, so the default is kept. | Unit | [L45](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/UnitTests/Auth0/UserAgentForwardingUnitTests.cs#L45) |
@@ -1980,7 +1980,7 @@ The sanitiser behind rows 1061–1065.
 
 The controller behind rows 1123–1125. Row 1157 records a failure metric and rethrows, so a broken Kafka path is visible on a dashboard rather than only in a caller's response.
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 1156 | ProduceTestMessage_ProducesHardcodedMessageAndReturnsOk | Produce | Call the endpoint | The fixed message is produced, 200. | Unit | [L27](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/UnitTests/KafkaProduceTestControllerTests.cs#L27) |
 | 1157 | ProduceTestMessage_ProduceThrows_RecordsFailureMetricAndRethrows | Failure | The produce throws | Metric then rethrow. | Unit | [L73](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/UnitTests/KafkaProduceTestControllerTests.cs#L73) |
@@ -1991,7 +1991,7 @@ The controller behind rows 1123–1125. Row 1157 records a failure metric and re
 
 The two funnel metrics — OAuth flow start and callback — that make an authorize-without-callback drop-off measurable.
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 1158 | RecordOAuthFlowStartResult_EmitsCorrectTags | Start metric | Record a flow start | The expected tags. | Unit | [L15](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/UnitTests/MetricFunnelServiceTests.cs#L15) |
 | 1159 | RecordOAuthFlowCallbackResult_EmitsCorrectTags | Callback metric | Record a callback | The expected tags. | Unit | [L31](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/UnitTests/MetricFunnelServiceTests.cs#L31) |
@@ -2002,7 +2002,7 @@ The two funnel metrics — OAuth flow start and callback — that make an author
 
 Persists the tenant type by member name rather than ordinal, so reordering the enum cannot silently reinterpret stored flow states.
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 1160 | TenantType_PersistsAsMemberName | Serialization (3 cases) | Three tenant types | Stored as the member name, not an ordinal. | Unit | [L17](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/UnitTests/OAuthFlowTenantTypeTests.cs#L17) |
 | 1161 | TenantType_RoundTripsThroughDynamoConverter | Round trip | Write then read | The same value. | Unit | [L26](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/UnitTests/OAuthFlowTenantTypeTests.cs#L26) |
@@ -2013,7 +2013,7 @@ Persists the tenant type by member name rather than ordinal, so reordering the e
 
 The masked-phone value type — the form a phone number takes in logs and responses.
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 1162 | MaskedPhoneNumber_InstantiatesFine | Construction (3 cases) | Three valid numbers | Constructed. | Unit | [L14](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/UnitTests/Phone/MaskedPhoneNumberTests.cs#L14) |
 | 1163 | MaskedPhoneNumber_FailsToInstantiates | Validation | An invalid number | Rejected. | Unit | [L21](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/UnitTests/Phone/MaskedPhoneNumberTests.cs#L21) |
@@ -2024,7 +2024,7 @@ The masked-phone value type — the form a phone number takes in logs and respon
 
 The two flags that gate behaviour elsewhere in the suite — the internal-user response shape and practice Universal Login.
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 1164 | ShouldReturnInternalUserResponse_ReturnsBasedOnAssignment | Internal-user flag (4 cases) | Four assignments | Follows the assignment. | Unit | [L27](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/UnitTests/Service/FeatureFlagServiceTests.cs#L27) |
 | 1165 | IsPracticeUniversalLoginEnabled_ReturnsBasedOnAssignment | Universal Login flag (4 cases) | Four assignments | Follows the assignment. | Unit | [L44](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/UnitTests/Service/FeatureFlagServiceTests.cs#L44) |
@@ -2035,7 +2035,7 @@ The two flags that gate behaviour elsewhere in the suite — the internal-user r
 
 Seven files hold one test each. Two of them (rows 1166, 1168) are scaffolds for the practice-user Auth0 synchroniser lambda that assert only that the handler logs and emits a test metric — the synchroniser's actual behaviour is untested. Row 1171 is not a test at all but a developer script for generating an assertion JWT from a locally-created key pair.
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 1166 | VerifyLambda | Synchroniser lambda | Invoke the deployed lambda | It runs — a smoke check, not a behaviour assertion. | Integration | [L44](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/Auth.Lambdas.PracticeUserAuth0Synchronizer.IntegrationTests/LambdaTests.cs#L44) |
 | 1167 | InsertServiceAuthClient_Success | Service-auth config (2 cases) | Insert two client configs | Persisted. | Integration | [L28](https://github.com/Zocdoc/auth-service/blob/fa9a039b0709e34f520baa1323897360b6719603/tests/IntegrationTests/ServiceAuthConfigDynamoPersistenceTests.cs#L28) |

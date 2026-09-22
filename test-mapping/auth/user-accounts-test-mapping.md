@@ -10,13 +10,17 @@ scope: whole repo
 granularity: one row per test method
 -->
 
-> Source: [`Zocdoc/user-accounts`](https://github.com/Zocdoc/user-accounts/tree/0271f52ad6dad76a543b6c9aa991835eb271f53e) @ `0271f52` (branch `main`)
+> **Source:** [`Zocdoc/user-accounts`](https://github.com/Zocdoc/user-accounts/tree/0271f52ad6dad76a543b6c9aa991835eb271f53e) @ `0271f52` (branch `main`) · mapped 2026-08-21 · one row per test
+
+The account-record service: it stores a user's account and the identities (Auth0, monolith, legacy) that resolve to it, and answers identity lookups. **85 tests** — unit, integration against real DynamoDB, and API tests.
+
+**Covers:** the whole repo.
 
 ## `tests/UserAccounts.Web.ApiTests/AccountsApiTests.cs`
 
 Black-box tests against the running `/user-accounts/v1/accounts` API. 14 of the 23 are tagged `[Category("FakeOnly")]`, so they run only against the in-memory fake persistence; the 9 untagged ones are the auth cases, which run everywhere.
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 1 | GetAccount_Missing_Returns404 | Read of an unknown account id | GET `/accounts/{randomId}` with a CSR JWT holding `UserAccountRead` | Unknown account id returns 404, not 500 or an empty 200. | API (FakeOnly) | [L20](https://github.com/Zocdoc/user-accounts/blob/0271f52ad6dad76a543b6c9aa991835eb271f53e/tests/UserAccounts.Web.ApiTests/AccountsApiTests.cs#L20) |
 | 2 | GetAccount_NoToken_Returns401 | Unauthenticated read | GET `/accounts/{id}` with no Authorization header | Anonymous read is rejected 401. | API | [L27](https://github.com/Zocdoc/user-accounts/blob/0271f52ad6dad76a543b6c9aa991835eb271f53e/tests/UserAccounts.Web.ApiTests/AccountsApiTests.cs#L27) |
@@ -48,7 +52,7 @@ Black-box tests against the running `/user-accounts/v1/accounts` API. 14 of the 
 
 Service-layer tests with `IUserAccountDynamoPersistence` mocked, covering status-code selection, error-message shape, cancellation propagation, and audit tagging.
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 24 | GetAccount_ExistingAccount_ReturnsOkWithPopulatedFields | Read maps the aggregate to the wire model | Mock persistence to return an anchor plus identity for `acc1`, call `GetAccount` | Returns 200 with every `Account` field populated from the DTOs. | Unit | [L27](https://github.com/Zocdoc/user-accounts/blob/0271f52ad6dad76a543b6c9aa991835eb271f53e/tests/UserAccounts.Web.UnitTests/AccountsImplTests.cs#L27) |
 | 25 | GetAccount_MissingAccount_ReturnsNotFound | Read miss | Mock persistence to return null, call `GetAccount("nope")` | Returns 404. | Unit | [L72](https://github.com/Zocdoc/user-accounts/blob/0271f52ad6dad76a543b6c9aa991835eb271f53e/tests/UserAccounts.Web.UnitTests/AccountsImplTests.cs#L72) |
@@ -71,7 +75,7 @@ Service-layer tests with `IUserAccountDynamoPersistence` mocked, covering status
 
 Pure mapping tests between the Dynamo DTOs, the internal domain enums, and the Plinth wire model. The six `[Values]` round-trip tests take no explicit arguments, so NUnit expands them over every member of the enum — a value added later with no switch case fails instead of passing silently.
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 38 | ToIdentity_MapsAllFields | DTO → wire identity, fully populated | Build a social-login identity DTO with every field set, call `ToIdentity()` | All 12 fields map across, including `AuditObjectId`, connection metadata, contact values, and both timestamps converted to UTC offsets. | Unit | [L17](https://github.com/Zocdoc/user-accounts/blob/0271f52ad6dad76a543b6c9aa991835eb271f53e/tests/UserAccounts.Web.UnitTests/ConversionExtensionsTests.cs#L17) |
 | 39 | ToIdentity_NullConnectionFields_MapsToNull | Null connection id and name | Map a DTO with `connectionId`/`connectionName` null | Both stay null rather than becoming empty strings. | Unit | [L48](https://github.com/Zocdoc/user-accounts/blob/0271f52ad6dad76a543b6c9aa991835eb271f53e/tests/UserAccounts.Web.UnitTests/ConversionExtensionsTests.cs#L48) |
@@ -99,7 +103,7 @@ Pure mapping tests between the Dynamo DTOs, the internal domain enums, and the P
 
 Tests of the in-memory fake used by the FakeOnly API tests. Because 14 of the 23 API tests run only against this fake, its fidelity to real Dynamo behaviour is what those tests actually rest on.
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 57 | Seed_ThenGetUserAccount_RoundTrips | Seeding stores what it is given | Seed an anchor plus one identity, read the account back | Anchor and the single identity come back equivalent to what was seeded. | Unit | [L20](https://github.com/Zocdoc/user-accounts/blob/0271f52ad6dad76a543b6c9aa991835eb271f53e/tests/UserAccounts.UnitTests/FakeUserAccountDynamoPersistenceTests.cs#L20) |
 | 58 | Seed_ExistingAccount_ThrowsAndLeavesOriginalAccount | Seed is not an upsert | Seed the same account id twice | Throws `AccountConflictException` and the original account is unchanged. | Unit | [L44](https://github.com/Zocdoc/user-accounts/blob/0271f52ad6dad76a543b6c9aa991835eb271f53e/tests/UserAccounts.UnitTests/FakeUserAccountDynamoPersistenceTests.cs#L44) |
@@ -127,7 +131,7 @@ Tests of the in-memory fake used by the FakeOnly API tests. Because 14 of the 23
 
 Read-path tests against real DynamoDB. Only reads are covered here — the write path (`PutAccount`) is exercised against the fake, not against Dynamo.
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 76 | SeededAccount_RoundTripsCompleteAggregate | Full aggregate read from Dynamo | Seed an anchor plus identities into the table, call `GetUserAccount` | The returned `UserAccountItems` matches the seeded anchor and identity set. | Integration | [L41](https://github.com/Zocdoc/user-accounts/blob/0271f52ad6dad76a543b6c9aa991835eb271f53e/tests/UserAccounts.IntegrationTests/DynamoUserAccountDynamoPersistenceTests.cs#L41) |
 | 77 | MissingAnchor_ReturnsNull | Read miss | `GetUserAccount` for an id with no anchor row | Returns null. | Integration | [L68](https://github.com/Zocdoc/user-accounts/blob/0271f52ad6dad76a543b6c9aa991835eb271f53e/tests/UserAccounts.IntegrationTests/DynamoUserAccountDynamoPersistenceTests.cs#L68) |
@@ -144,7 +148,7 @@ Read-path tests against real DynamoDB. Only reads are covered here — the write
 
 Scaffold placeholders left by the service template. Neither exercises product code.
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 84 | TokenTest.TokenEmptyTest (IntegrationTests) | Nothing — template scaffold | Assert `(1 + 1) == 2` | Placeholder from the service template. | Scaffold | [L9](https://github.com/Zocdoc/user-accounts/blob/0271f52ad6dad76a543b6c9aa991835eb271f53e/tests/UserAccounts.IntegrationTests/ExampleTests.cs#L9) |
 | 85 | TokenTest.TokenEmptyTest (Web.IntegrationTests) | Nothing — template scaffold | Assert `(1 + 1) == 2` | Placeholder from the service template. | Scaffold | [L9](https://github.com/Zocdoc/user-accounts/blob/0271f52ad6dad76a543b6c9aa991835eb271f53e/tests/UserAccounts.Web.IntegrationTests/ExampleTests.cs#L9) |

@@ -10,7 +10,7 @@ scope: whole repo
 granularity: one row per test method
 -->
 
-> Source: [`Zocdoc/auth0-infrastructure`](https://github.com/Zocdoc/auth0-infrastructure/tree/cac1149f3d5ba84956f257824a96d57b8035e174) @ `cac1149` (branch `main`)
+> **Source:** [`Zocdoc/auth0-infrastructure`](https://github.com/Zocdoc/auth0-infrastructure/tree/cac1149f3d5ba84956f257824a96d57b8035e174) @ `cac1149` (branch `main`) · mapped 2026-08-21 · one row per test
 
 Two independent suites live here:
 
@@ -23,7 +23,7 @@ The JS half is the higher-stakes one: those scripts execute in Auth0's runtime o
 
 The log-stream Lambda: routing Auth0 tenant-log events onto the login-success and login-failure Kafka topics, emitting matched/processed/ignored/dropped metrics, and parsing the composite correlation id.
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 1 | FunctionHandler_SuccessfulLogin_ProducesLoginSuccessWithMappedFields | Success routing | Handle a successful-login event | The success producer is called with the mapped payload; the failure producer is not. | Unit | [L44](https://github.com/Zocdoc/auth0-infrastructure/blob/cac1149f3d5ba84956f257824a96d57b8035e174/tests/UnitTests/EventProducerHandlerTests.cs#L44) |
 | 2 | FunctionHandler_FailedLogin_ProducesLoginFailureWithMappedFields | Failure routing (3 cases) | Handle each failed-login event type | The failure producer is called with the mapped payload; the success producer is not. | Unit | [L78](https://github.com/Zocdoc/auth0-infrastructure/blob/cac1149f3d5ba84956f257824a96d57b8035e174/tests/UnitTests/EventProducerHandlerTests.cs#L78) |
@@ -64,7 +64,7 @@ The log-stream Lambda: routing Auth0 tenant-log events onto the login-success an
 
 Maps Auth0's two- and three-letter log codes onto Datadog metric names and tags, and pins the deserialization of the tenant-log JSON.
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 33 | Test_GetPopulatedDataForDatadog | The full Auth0 log-code → metric-name table (48 cases) | Call the helper once per Auth0 log code | Every known code — `s`, `f`, `ss`, `fs`, `sce`, `fce`, `seccft`, `limit_mu`, `api_limit`, `slo`, `scpr`, and so on — maps to its documented metric name and tag set, and unknown or null codes fall through to `auth0.unhandled_event`. | Unit | [L122](https://github.com/Zocdoc/auth0-infrastructure/blob/cac1149f3d5ba84956f257824a96d57b8035e174/tests/UnitTests/PopulateDataForDatadogHelperTests.cs#L122) |
 | 34 | GetPopulatedDataForDatadog_WithCorrelationId_TagsHasCorrelationIdTrue | Correlation-id presence tag | Map an event carrying a correlation id | Tags include `has_correlation_id:true`, which is how correlation-id coverage is tracked in Datadog. | Unit | [L139](https://github.com/Zocdoc/auth0-infrastructure/blob/cac1149f3d5ba84956f257824a96d57b8035e174/tests/UnitTests/PopulateDataForDatadogHelperTests.cs#L139) |
@@ -87,7 +87,7 @@ Maps Auth0's two- and three-letter log codes onto Datadog metric names and tags,
 
 DI wiring behind the Kafka-producer feature flag.
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 47 | AddProducers_FlagOff_RegistersFakeProducers | Flag off registers fakes | Build the service collection with the flag off | Fake producers are registered. | Unit | [L39](https://github.com/Zocdoc/auth0-infrastructure/blob/cac1149f3d5ba84956f257824a96d57b8035e174/tests/UnitTests/EventProducerServicesTests.cs#L39) |
 | 48 | AddProducers_FlagOffWithNoKafkaConfig_RegistersFakeProducersAndDoesNotThrow | Flag off tolerates missing config | Build with the flag off and no Kafka configuration | Fakes are registered and startup does not throw — the Lambda boots without Kafka credentials. | Unit | [L49](https://github.com/Zocdoc/auth0-infrastructure/blob/cac1149f3d5ba84956f257824a96d57b8035e174/tests/UnitTests/EventProducerServicesTests.cs#L49) |
@@ -98,7 +98,7 @@ DI wiring behind the Kafka-producer feature flag.
 
 ## `tests/UnitTests/Auth0TenantResolverTests.cs`
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 51 | GetTenant_MapsSourceToTenant | EventBridge source → tenant (10 cases) | Resolve each `aws.partner/auth0.com/...` source string | The seven real tenants (CI, production, production sandbox, CI/production provider, CI/production internal services) each resolve; an unrecognised source, an empty string, and whitespace all resolve to `Unknown`. | Unit | [L19](https://github.com/Zocdoc/auth0-infrastructure/blob/cac1149f3d5ba84956f257824a96d57b8035e174/tests/UnitTests/Auth0TenantResolverTests.cs#L19) |
 | 52 | GetTenantType_MapsEveryKnownTenantExplicitly | Tenant → tenant type (7 cases) | Resolve the type of every known tenant | Patient, Provider, and Internal are each assigned explicitly rather than by a default branch. | Unit | [L31](https://github.com/Zocdoc/auth0-infrastructure/blob/cac1149f3d5ba84956f257824a96d57b8035e174/tests/UnitTests/Auth0TenantResolverTests.cs#L31) |
@@ -110,7 +110,7 @@ DI wiring behind the Kafka-producer feature flag.
 
 The Datadog-metric Lambda handler.
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 54 | Verify_Handler_Success_Cases | Handler emits the mapped metric (4 cases) | Handle CloudWatch events from the CI, production, and sandbox tenants, including one unknown event type | The metric recorder is incremented with the mapped Datadog metric name and tags for each. | Unit | [L26](https://github.com/Zocdoc/auth0-infrastructure/blob/cac1149f3d5ba84956f257824a96d57b8035e174/tests/UnitTests/HandlerTests.cs#L26) |
 | 55 | Verify_Handler_Exception_Case | Handler surfaces failures | Handle an event that causes the helper to fail | The exception propagates out of `FunctionHandler`. | Unit | [L59](https://github.com/Zocdoc/auth0-infrastructure/blob/cac1149f3d5ba84956f257824a96d57b8035e174/tests/UnitTests/HandlerTests.cs#L59) |
@@ -119,7 +119,7 @@ The Datadog-metric Lambda handler.
 
 ## `tests/IntegrationTests/SsmConfigSourceIntegrationTests.cs`
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 56 | AddKafkaSsmParameters_MapsSeededSsmParamsOntoKafkaKeys | SSM → configuration binding | Seed SSM parameters in LocalStack, build the configuration | All six Kafka keys — bootstrap servers, schema registry URL, SASL username and password, schema registry API key and secret — bind from their SSM parameters. | Integration | [L28](https://github.com/Zocdoc/auth0-infrastructure/blob/cac1149f3d5ba84956f257824a96d57b8035e174/tests/IntegrationTests/SsmConfigSourceIntegrationTests.cs#L28) |
 
@@ -127,7 +127,7 @@ The Datadog-metric Lambda handler.
 
 ## `tests/UnitTests/FakeTests.cs`
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 57 | Startup_IFake_ServiceProvider_ShouldReturnFakeServices | Fake service provider wiring | Resolve the test service from the fake startup | Returns `"Fake!"` — a scaffold check that the fake DI wiring is in place. | Scaffold | [L13](https://github.com/Zocdoc/auth0-infrastructure/blob/cac1149f3d5ba84956f257824a96d57b8035e174/tests/UnitTests/FakeTests.cs#L13) |
 
@@ -137,7 +137,7 @@ The Datadog-metric Lambda handler.
 
 Exercises `actions/provider/challenge_mfa.js` — the Auth0 Action that decides, on every provider login, whether to challenge for MFA and with which factor. The only test coverage this decision has.
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 58 | challenges with email factor when alias matches mfa-test | Test-user email challenge | Log in as `...+mfa-test@zocdoctest.com` | Email MFA is challenged. | Unit | [L38](https://github.com/Zocdoc/auth0-infrastructure/blob/cac1149f3d5ba84956f257824a96d57b8035e174/__tests__/unit/challenge-mfa-tests.js#L38) |
 | 59 | challenges when alias starts with mfa-test prefix (e.g. mfa-test1) | Prefix matching | Log in with alias `mfa-test1` | Still challenged — the match is a prefix, not equality. | Unit | [L46](https://github.com/Zocdoc/auth0-infrastructure/blob/cac1149f3d5ba84956f257824a96d57b8035e174/__tests__/unit/challenge-mfa-tests.js#L46) |
@@ -183,7 +183,7 @@ Exercises `actions/provider/challenge_mfa.js` — the Auth0 Action that decides,
 
 Exercises `actions/internal_services/add_role_claims.js` — the Action that computes which role scopes land in an internal-services access token. The scope decision is a three-way intersection of what the user holds, what the application is allowed, and what the request asked for.
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 95 | issues only what the user holds, the app allows, and the request asked for | The core intersection | Log in with overlapping held / allowed / requested scope sets | Only the three-way intersection is issued. | Unit | [L91](https://github.com/Zocdoc/auth0-infrastructure/blob/cac1149f3d5ba84956f257824a96d57b8035e174/__tests__/unit/add-internal-services-role-claims-tests.js#L91) |
 | 96 | does not grant a requested scope the user does not hold | Request cannot escalate | Request a scope the user lacks | Not issued. | Unit | [L111](https://github.com/Zocdoc/auth0-infrastructure/blob/cac1149f3d5ba84956f257824a96d57b8035e174/__tests__/unit/add-internal-services-role-claims-tests.js#L111) |
@@ -223,7 +223,7 @@ Exercises `actions/internal_services/add_role_claims.js` — the Action that com
 
 Exercises `actions/patient/add_external_api_user_metadata.js` — the Action that validates a partner's client-assertion JWT during an external-API login and records per-client metadata on the user.
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 126 | skips for zocdoc application | First-party bypass | Log in through a Zocdoc application | The Action is a no-op — it only applies to external partners. | Unit | [L69](https://github.com/Zocdoc/auth0-infrastructure/blob/cac1149f3d5ba84956f257824a96d57b8035e174/__tests__/unit/add-external-api-user-metadata-tests.js#L69) |
 | 127 | handles new user with no jwt | New user, no assertion | Log in as a new user with no client-assertion JWT | Handled without error. | Unit | [L78](https://github.com/Zocdoc/auth0-infrastructure/blob/cac1149f3d5ba84956f257824a96d57b8035e174/__tests__/unit/add-external-api-user-metadata-tests.js#L78) |
@@ -247,7 +247,7 @@ Exercises `actions/patient/add_external_api_user_metadata.js` — the Action tha
 
 Exercises `actions/provider/add_claims.js` — which practice a provider user is scoped to in their token. Getting `practice_id` wrong here is a cross-practice data-exposure bug, so most of these tests pin the resolution precedence.
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 141 | adds expected claims to access token | Access-token claims | Complete a provider login | The expected claims are on the access token. | Unit | [L39](https://github.com/Zocdoc/auth0-infrastructure/blob/cac1149f3d5ba84956f257824a96d57b8035e174/__tests__/unit/add-provider-claims-tests.js#L39) |
 | 142 | adds expected claims to id token | ID-token claims | Same | The expected claims are on the id token. | Unit | [L52](https://github.com/Zocdoc/auth0-infrastructure/blob/cac1149f3d5ba84956f257824a96d57b8035e174/__tests__/unit/add-provider-claims-tests.js#L52) |
@@ -271,7 +271,7 @@ Exercises `actions/provider/add_claims.js` — which practice a provider user is
 
 Exercises `actions/provider/database_get_user_by_email_action_script.js` — the custom-database script Auth0 runs to look a provider user up in the monolith. This is the migration seam between the monolith's user store and Auth0.
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 156 | should fail when token acquisition fails | Service-token failure | Make the token call throw | The script reports failure rather than returning a partial user. | Unit | [L21](https://github.com/Zocdoc/auth0-infrastructure/blob/cac1149f3d5ba84956f257824a96d57b8035e174/__tests__/unit/database-get-user-by-email-action-script-tests.js#L21) |
 | 157 | should fail when token response is not 200 | Non-200 token response | Return a non-200 from the token endpoint | Failure. | Unit | [L39](https://github.com/Zocdoc/auth0-infrastructure/blob/cac1149f3d5ba84956f257824a96d57b8035e174/__tests__/unit/database-get-user-by-email-action-script-tests.js#L39) |
@@ -293,7 +293,7 @@ Exercises `actions/provider/database_get_user_by_email_action_script.js` — the
 
 Exercises `actions/provider/database_login_action_script.js` — the custom-database script that verifies a provider password against the monolith. Mirrors the lookup script above, with the same MFA-forwarding contract.
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 169 | should fail when token acquisition fails | Service-token failure | Make the token call throw | Login fails. | Unit | [L31](https://github.com/Zocdoc/auth0-infrastructure/blob/cac1149f3d5ba84956f257824a96d57b8035e174/__tests__/unit/database-login-action-script-tests.js#L31) |
 | 170 | should fail when token response is not 200 | Non-200 token response | Non-200 from the token endpoint | Login fails. | Unit | [L50](https://github.com/Zocdoc/auth0-infrastructure/blob/cac1149f3d5ba84956f257824a96d57b8035e174/__tests__/unit/database-login-action-script-tests.js#L50) |
@@ -315,7 +315,7 @@ Exercises `actions/provider/database_login_action_script.js` — the custom-data
 
 Exercises `actions/patient/add_zocdoc_claims.js` — first-party-only patient claims.
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 182 | adds no claims if metadata does not have "is_zocdoc_application" | Flag absent | Log in through a client with no such flag | No claims — third-party clients never receive them. | Unit | [L39](https://github.com/Zocdoc/auth0-infrastructure/blob/cac1149f3d5ba84956f257824a96d57b8035e174/__tests__/unit/add-zocdoc-claims-tests.js#L39) |
 | 183 | adds no claims if metadata "is_zocdoc_application" is false | Flag false | Flag explicitly false | No claims. | Unit | [L47](https://github.com/Zocdoc/auth0-infrastructure/blob/cac1149f3d5ba84956f257824a96d57b8035e174/__tests__/unit/add-zocdoc-claims-tests.js#L47) |
@@ -330,7 +330,7 @@ Exercises `actions/patient/add_zocdoc_claims.js` — first-party-only patient cl
 
 Exercises `actions/patient/log_post_login_event.js` — the patient post-login webhook.
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 188 | posts event data to the webhook endpoint | Payload shape | Complete a login | The webhook receives the expected event payload. | Unit | [L41](https://github.com/Zocdoc/auth0-infrastructure/blob/cac1149f3d5ba84956f257824a96d57b8035e174/__tests__/unit/log-post-login-event-tests.js#L41) |
 | 189 | does not throw when the webhook call succeeds | Happy path | Webhook returns success | No throw. | Unit | [L73](https://github.com/Zocdoc/auth0-infrastructure/blob/cac1149f3d5ba84956f257824a96d57b8035e174/__tests__/unit/log-post-login-event-tests.js#L73) |
@@ -344,7 +344,7 @@ Exercises `actions/patient/log_post_login_event.js` — the patient post-login w
 
 Exercises `actions/provider/log_post_login_event.js` — the provider post-login webhook into auth-service.
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 193 | sends POST to auth-service webhook endpoint with full payload | Endpoint and payload | Complete a provider login | A POST reaches the auth-service webhook with the full payload. | Unit | [L36](https://github.com/Zocdoc/auth0-infrastructure/blob/cac1149f3d5ba84956f257824a96d57b8035e174/__tests__/unit/log-provider-post-login-event-tests.js#L36) |
 | 194 | uses webhookSecret from event.secrets for X-Webhook-Secret header | Shared-secret auth | Complete a login with a configured secret | The secret is read from `event.secrets` and sent as `X-Webhook-Secret`, not hardcoded. | Unit | [L66](https://github.com/Zocdoc/auth0-infrastructure/blob/cac1149f3d5ba84956f257824a96d57b8035e174/__tests__/unit/log-provider-post-login-event-tests.js#L66) |
@@ -358,7 +358,7 @@ Exercises `actions/provider/log_post_login_event.js` — the provider post-login
 
 Exercises `actions/internal_services/add_claims.js`.
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 198 | adds role claim from client metadata | Role claim from metadata | Log in through a client carrying a role in metadata | The role claim is added. | Unit | [L33](https://github.com/Zocdoc/auth0-infrastructure/blob/cac1149f3d5ba84956f257824a96d57b8035e174/__tests__/unit/add-internal-services-claims-tests.js#L33) |
 | 199 | adds no claims if role is not present | No role configured | Client with no role in metadata | No claims. | Unit | [L40](https://github.com/Zocdoc/auth0-infrastructure/blob/cac1149f3d5ba84956f257824a96d57b8035e174/__tests__/unit/add-internal-services-claims-tests.js#L40) |
@@ -367,7 +367,7 @@ Exercises `actions/internal_services/add_claims.js`.
 
 ## `__tests__/cypress/e2e/3-auth0-tests/auth0-smoke-tests.cy.js`
 
-| # | Test Name | What It Tests | Steps | Summary | Scope | Source Code |
+| # | Test Name | Area | Steps | Expected Result | Type | Source |
 |---|---|---|---|---|---|---|
 | 200 | Auth0 Login — logs in for authorization code | Authorization-code login smoke test | Drive a real Auth0 login and complete the authorization-code flow | The login succeeds end to end. The single browser-level test in the repo. | E2E | [L3](https://github.com/Zocdoc/auth0-infrastructure/blob/cac1149f3d5ba84956f257824a96d57b8035e174/__tests__/cypress/e2e/3-auth0-tests/auth0-smoke-tests.cy.js#L3) |
 
