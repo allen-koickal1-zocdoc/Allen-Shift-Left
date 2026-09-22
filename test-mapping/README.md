@@ -21,30 +21,22 @@ The **Not Covered** column is the point of the whole exercise: a row that looks 
 
 Slack `#auth` · Jira `AUTH` · `technology-auth@zocdoc.com` · QA owner Allen K.
 
-| Repo | What it does | Tests |
-|------|--------------|-------|
-| [auth-service](auth/auth-service-test-mapping.md) | Patient + provider login, OTP, Auth0, refresh tokens, service-to-service auth | 1,172 |
-| [zocdoc_web](auth/zocdoc-web-test-mapping.md) *(auth-owned paths only)* | Monolith security, practice authorization, user roles | 188 classes / 2,180 methods |
-| [consumer-privacy-service](auth/consumer-privacy-service-test-mapping.md) | CCPA/CPA — access, delete, and opt-out requests | 308 |
-| [auth0-infrastructure](auth/auth0-infrastructure-test-mapping.md) | Auth0 Actions that run on every live login, plus the log-stream lambda | 200 |
-| [ServiceMockEndpoints](auth/service-mock-endpoints-test-mapping.md) | Mock endpoints other services test against | 99 |
-| [user-accounts](auth/user-accounts-test-mapping.md) | Account records and identity lookup | 85 |
-| [user-locking](auth/user-locking-test-mapping.md) | Locking accounts out of login and booking | 80 |
-| [audit-logging-service](auth/audit-logging-service-test-mapping.md) | Authorization + permission-change audit logs → S3 → legal reporting | 56 |
-| [legal-agreement](auth/legal-agreement-test-mapping.md) | Practice User Agreement signatures | 52 |
-| [sandbox](auth/sandbox-test-mapping.md) | Browser (Playwright) tests for sign-in, password reset, sign-up | 24 |
-| [external-developer-api-auth](auth/external-developer-api-auth-test-mapping.md) | Partner Auth0 app-client roster | 4 |
+| Mapping | Source | Tests | Granularity | Status |
+|---------|--------|-------|-------------|--------|
+| [sandbox-test-mapping.md](auth/sandbox-test-mapping.md) | `Zocdoc/sandbox` · `playwright/BU/Infrastructure/Auth` | 6 files / 24 tests | per test | Done |
+| [legal-agreement-test-mapping.md](auth/legal-agreement-test-mapping.md) | `Zocdoc/legal-agreement` | 8 files / 52 tests | per method | Done |
+| [audit-logging-service-test-mapping.md](auth/audit-logging-service-test-mapping.md) | `Zocdoc/audit-logging-service` | 17 files / 56 tests | per method | Done |
+| [auth0-infrastructure](auth/auth0-infrastructure-test-mapping.md) | `Zocdoc/auth0-infrastructure` @ `cac1149` | 57 C# + 143 JS tests | per method | Done |
+| [user-locking-test-mapping.md](auth/user-locking-test-mapping.md) | `Zocdoc/user-locking` | 8 files / 80 tests | per method | Done |
+| [user-accounts](auth/user-accounts-test-mapping.md) | `Zocdoc/user-accounts` @ `0271f52` | 85 tests | per method | Done |
+| [ServiceMockEndpoints](auth/service-mock-endpoints-test-mapping.md) | `Zocdoc/ServiceMockEndpoints` @ `90eacfb` | 99 tests | per method | Done |
+| [consumer-privacy-service](auth/consumer-privacy-service-test-mapping.md) | `Zocdoc/consumer-privacy-service` @ `91dad97` | 308 tests | per method | Done |
+| [auth-service](auth/auth-service-test-mapping.md) | `Zocdoc/auth-service` @ `fa9a039` | 1172 tests | per method | Done |
+| [external-developer-api-auth-test-mapping.md](auth/external-developer-api-auth-test-mapping.md) | `Zocdoc/external-developer-api-auth` | 1 file / 4 tests | per test | Done |
+| [zocdoc_web (auth-owned paths)](auth/zocdoc-web-test-mapping.md) | `Zocdoc/zocdoc_web` @ `eed912c` · `ZocDoc.Security`, `PracticeAuthorization`, `Apis/PracticeUserRolesPrivate` | 188 test classes / 2,180 methods | per class | Done |
 
-Two things to know about the numbers. Counts are **distinct test methods**, not `[TestCase]` attributes — a parametrized test counts once, and that's why some figures are lower than a naive grep suggests. And `zocdoc_web` is mapped one row per **class** rather than per method: at 2,180 methods a per-method table would be unreadable.
+**Coverage gaps:** [auth/GAPS.md](auth/GAPS.md) — 220 proposed tests derived by diffing these mappings against each repo's production surface at HEAD. Includes verified corrections to the mapping rows themselves.
 
-## How scope was decided
-
-Mappings cover whole repos, except `zocdoc_web` (only the auth-owned paths) and `sandbox` (only `playwright/BU/Infrastructure/Auth`). Ownership came from each repo's `plinth.yaml`, from `CODEOWNERS` for monolith paths, and from `OWNERSHIP.md` for the browser tests.
-
-This repo list is targeted, not exhaustive — it was built by searching for the Auth team in config files, because the GitHub teams API isn't reachable with the token available here. A repo the team owns but never labelled could be missing.
-
-## Dashboard
-
-[dashboard.html](dashboard.html) — per-repo and per-file breakdowns, a treemap of where tests live, and a searchable index of all 2,268 rows. Clone the repo and open it in a browser; GitHub won't render it inline.
+Repo ownership was resolved by code search for `team: auth` / `technology-auth@zocdoc.com` in `plinth.yaml`, cross-checked against the org `team-directory.yaml`. The GitHub teams API is not reachable with the available token, so this list is targeted rather than exhaustively enumerated.
 
 Version history: [CHANGELOG.md](CHANGELOG.md).
