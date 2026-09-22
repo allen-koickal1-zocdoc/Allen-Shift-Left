@@ -2,6 +2,25 @@
 
 Identity key for a row: `<repo-relative-path>::<MethodName>[ (CaseName)]`.
 
+## 2026-09-23 — plain-language intro for GAPS.md
+
+No gap rows, priorities, or numbers changed — the entire technical body below the Summary table is byte-identical.
+
+- Added an **"In plain terms"** section to [auth/GAPS.md](auth/GAPS.md), between the companion blockquote and "Method and confidence". Written for a non-technical stakeholder: what the document is, why an untested code path matters, what the 220 figure does (and does not) mean, and a plain-meaning table for the P1/P2/P3 tags.
+- Restates the "interface mocked, implementation never run" theme in one sentence and points non-technical readers at the Summary table as their stopping point. The engineer-facing detail is unchanged and untouched.
+
+## 2026-09-22 — readability pass: columns, README, headers
+
+No test rows added, removed, or renumbered. **2,268 rows before and after**, with every test name and every source link byte-identical — verified by diffing row-for-row against the previous commit.
+
+- **The 11 mappings were using the `Scope` column for two different things.** Five of them (`sandbox`, `legal-agreement`, `audit-logging-service`, `user-locking`, `external-developer-api-auth` — 216 rows) put `In: … Out: …` prose there. The other six (`auth-service`, `zocdoc_web`, `consumer-privacy-service`, `auth0-infrastructure`, `ServiceMockEndpoints`, `user-accounts` — 2,052 rows) put a test-type label there (`Unit`, `API`, `Integration (SQL)`). Identical headers, incompatible contents.
+- **The five prose mappings go from 7 columns to 5:** `| # | Test | What It Verifies | Steps | Not Covered | Source |`. The `Summary` column is folded away and the `Out:` half of `Scope` becomes an explicit **`Not Covered`** column, which is the column readers actually need — it records what a row does *not* prove.
+- **The six label mappings keep their cells byte-identical**; only the header changes, `Scope` → `Type`. An earlier plan to merge `Summary` into `What It Tests` across all 11 files was dropped after measuring: median word overlap between the two columns is 0.00 in the six largest mappings, where the cells are terse and genuinely distinct (`What: "Role gate"` / `Summary: "Rejected."`). Merging there would have destroyed information, not deduplicated it.
+- **`In:` clauses: 23 of 208 kept, 185 dropped as restatement.** Kept where the clause named something the sentence beside it did not — a status code, a count, an identifier (`Asserts 1000-iteration cap`, `Asserts 6 URL shapes incl. empty and null`, ``Asserts tag values `isUserLoggedIn`…``). Dropped where it paraphrased its own row (`In: 403 path.` beside "A read-only role cannot lock."). This is the only lossy edit in this pass; the drop was scripted, and a random sample of 14 was hand-checked.
+- **`README.md` rewritten for a first-time reader:** opens with what the inventory is for, a table explaining each column, and a one-line description per repo. Jargon that assumed context is gone or explained — "SHA-pinned", "granularity", `plinth.yaml`. The two counting caveats that were previously buried in this changelog are now stated on the landing page: counts are distinct test *methods* rather than `[TestCase]` attributes, and `zocdoc_web` is mapped one row per *class* because 2,180 method rows would be unreadable.
+- **File headers:** every mapping repeated its repo/commit/date twice, once in the `test-mapping-meta` comment and again in a `> Source:` blockquote; collapsed to a single line. Each file now states its scope in words. The `test-mapping-meta` comment is deliberately preserved — `dashboard.html` reads `test-type` and `granularity` out of it.
+- **`dashboard.html` is unaffected but will drift.** It embeds its own JSON copy of the rows carrying only `n`/`name`/`what`/`type`; it never stored the `Summary` or `Scope` prose, so nothing breaks. Its wording no longer tracks the markdown, and regenerating it would resync.
+
 ## 2026-08-27 — gap analysis: Infrastructure / Auth (all 11 mappings)
 
 New [auth/GAPS.md](auth/GAPS.md). Method: enumerate each repo's production surface at current `HEAD` (API operation impls, controllers, lambda handlers, workers, Auth0 action scripts, CDK stacks, service classes) and diff it against the test surface. A unit counts as uncovered only after three checks agree — word-boundary scan, substring scan (to catch `FooTests.cs` naming and `IFoo` mentions), and a read of the source to confirm the class is concrete and behaves as claimed. **220 proposed tests** plus 9 hygiene items, prioritised P1-P3.

@@ -9,6 +9,26 @@ method: mapped tests diffed against each repo's production surface at HEAD
 -->
 > Companion to the [Auth test mappings](README.md). The mappings answer *what is tested*; this answers *what is not*.
 
+## In plain terms
+
+**What this document is.** The Auth team owns the code that logs people in, keeps them out of accounts that aren't theirs, and records who did what. We went through that code piece by piece and asked one question of each piece: *is there an automated test that checks it still works?* Where the answer was no, we wrote it down. This document is that list — the parts of the login-and-security system that currently have no safety net.
+
+**Why it matters.** An automated test is a tripwire: it runs on every code change and shouts if something breaks. Code with no test can break silently — a bad change ships, and the first sign of trouble is a real person unable to log in, or worse, someone getting into an account they shouldn't. The gaps below are exactly the places where that could happen unnoticed. Closing them means the system tells *us* it's broken before a patient or provider ever does.
+
+**What the numbers mean.** We counted **220 specific tests worth writing**, spread across 11 codebases. That's not 220 bugs — it's 220 spots where we're currently flying blind. The [Summary table](#summary) below ranks the codebases by how many gaps each has and names the single biggest one in each.
+
+**How urgent each gap is.** Every gap is tagged with a priority:
+
+| Tag | Plain meaning | Example |
+|-----|---------------|---------|
+| **P1** | A security or correctness line with *no* safety net. Fix these first. | Nothing checks the rule that stops an outside app from minting its own login token. |
+| **P2** | Real behavior that today can only be checked by testing against the live system — slow, expensive, and easy to skip. | The screen that decides whether a locked-out patient is let back in. |
+| **P3** | Cleanup and tidiness. Worth doing, not urgent. | Renaming a confusingly-named file; deleting a test that doesn't actually test anything. |
+
+**One recurring theme, in one sentence:** in many places we have a test for a *stand-in* (a fake, simplified copy used during development) but no test for the *real thing* it stands in for — so nothing confirms the two actually behave the same. That pattern accounts for a large share of the list.
+
+The rest of this document is the detailed, engineer-facing breakdown: how each gap was confirmed, the exact class or file involved, and the specific test proposed. Non-technical readers can stop after the Summary table.
+
 ## Method and confidence
 
 For every repo in the Auth mapping index the production surface at current `HEAD` was enumerated (API operation
