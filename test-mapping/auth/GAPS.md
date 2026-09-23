@@ -22,7 +22,7 @@ method: mapped tests diffed against each repo's production surface at HEAD
 | Tag | Plain meaning | Example |
 |-----|---------------|---------|
 | **P1** | A security or correctness line with *no* safety net. Fix these first. | Nothing checks the rule that stops an outside app from minting its own login token. |
-| **P2** | Real behavior that today can only be checked by testing against the live system — slow, expensive, and easy to skip. | The screen that decides whether a locked-out patient is let back in. |
+| **P2** | Real behavior that today can only be checked by testing against the live system — slow, expensive, and easy to skip. | Confirming a provider who belongs to several practices can log in and switch between them. |
 | **P3** | Cleanup and tidiness. Worth doing, not urgent. | Renaming a confusingly-named file; deleting a test that doesn't actually test anything. |
 
 **One recurring theme, in one sentence:** in many places we have a test for a *stand-in* (a fake, simplified copy used during development) but no test for the *real thing* it stands in for — so nothing confirms the two actually behave the same. That pattern accounts for a large share of the list.
