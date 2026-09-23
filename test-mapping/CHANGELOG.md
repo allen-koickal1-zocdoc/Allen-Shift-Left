@@ -2,12 +2,14 @@
 
 Identity key for a row: `<repo-relative-path>::<MethodName>[ (CaseName)]`.
 
-## 2026-09-23 — plain-language intro for GAPS.md
+## 2026-09-23 — GAPS.md: three-column gap tables + plain-language intro
 
-No gap rows, priorities, or numbers changed — the entire technical body below the Summary table is byte-identical.
+Restructures every gap table in [auth/GAPS.md](auth/GAPS.md) and adds a stakeholder intro. **No gap rows added, removed, or renumbered** — still 1–220 contiguous (verified), all P1/P2/P3 priorities byte-identical to the prior commit, all 9 P3 hygiene dash-rows and all 6 ⚠ correction markers preserved.
 
-- Added an **"In plain terms"** section to [auth/GAPS.md](auth/GAPS.md), between the companion blockquote and "Method and confidence". Written for a non-technical stakeholder: what the document is, why an untested code path matters, what the 220 figure does (and does not) mean, and a plain-meaning table for the P1/P2/P3 tags.
-- Restates the "interface mocked, implementation never run" theme in one sentence and points non-technical readers at the Summary table as their stopping point. The engineer-facing detail is unchanged and untouched.
+- **All 14 gap tables (11 sections) reshaped from a single `Why` column into three:** `What's missing | What we lose | Why add`. The `zocdoc_web` table keeps its numeric `LOC` column. The old `Covers`/`Why` prose was split and rephrased into the three columns; every load-bearing identifier, source-line reference (`Handler.cs:157`, `UserLockingImpl.cs:335–372`), and verified note was carried across verbatim — spot-checked. Where a row did not state a specific consequence, the "What we lose" cell falls back to the priority's own definition (P1 = boundary left unguarded, P2 = regression only caught in a deployed env, P3 = misleading coverage / hygiene) rather than inventing one.
+- The final **"Corrections to the mappings"** table is unchanged — it is a mapping-accuracy list (`Mapping | Correction`), not a gap list.
+- **"In plain terms" intro** (added earlier today) updated so its closing line describes the new three-column layout. It still translates the P1/P2/P3 tags and the 220 figure for a non-technical reader and points them at the Summary table as their stopping point.
+- **Not re-verified against source this session:** Glean and the network MCP servers were unavailable and no local `auth0-infrastructure`/service checkouts exist, so this pass is a faithful restructure of the existing 2026-08-27 verified claims, not a fresh source diff. The Auth0 action-script claims (rows 67–95) in particular should be re-confirmed against current `HEAD` before being relied on.
 
 ## 2026-09-22 — readability pass: columns, README, headers
 

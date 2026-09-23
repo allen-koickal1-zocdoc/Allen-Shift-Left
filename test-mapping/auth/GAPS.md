@@ -27,7 +27,7 @@ method: mapped tests diffed against each repo's production surface at HEAD
 
 **One recurring theme, in one sentence:** in many places we have a test for a *stand-in* (a fake, simplified copy used during development) but no test for the *real thing* it stands in for — so nothing confirms the two actually behave the same. That pattern accounts for a large share of the list.
 
-The rest of this document is the detailed, engineer-facing breakdown: how each gap was confirmed, the exact class or file involved, and the specific test proposed. Non-technical readers can stop after the Summary table.
+The rest of this document is the detailed, engineer-facing breakdown, one row per gap. Each row is laid out the same way as the priority table above — **what's missing**, **what we lose** if it breaks unnoticed, and **why the test is worth adding** — alongside the exact class or file and how the gap was confirmed. Non-technical readers can stop after the Summary table.
 
 ## Method and confidence
 
@@ -80,21 +80,21 @@ Verified: each of the nine impls has a matching `tests/ApiTests/**` file, so the
 total blind spots. There is a strong in-repo precedent for controller unit tests — `InternalUserLoginControllerTests`,
 `KafkaProduceTestControllerTests`, `Auth0WebhookControllerTests`, and `PracticeLogoutControllerTests` all exist.
 
-| # | P | Proposed test file | Covers | Why |
+| # | P | What's missing | What we lose | Why add |
 |---|---|---|---|---|
-| 1–9 | P2 | `PhoneVerificationImplTests`, `ReconciliatorImplTests`, `UserImplTests`, `UniversalLoginEventsImplTests`, `ExternalClientImplTests`, `PracticeIdentityProviderImplTests`, `PracticeLoginImplTests`, `ServiceAuthImplTests`, `MultiPracticeImplTests` | The nine API operation impls | `PhoneVerificationImpl` alone is 259 lines of branch logic; its response-code mapping is only ever observed over HTTP |
-| 10–14 | P2 | `PatientLoginControllerTests`, `PracticeLoginControllerTests`, `UserLoginControllerTests`, `MultiPracticeLoginControllerTests`, `CreatePatientAccountControllerTests` (+ `CreateAccountUtils`) | Five untested login controllers | Note `UserLoginController` is a distinct class from the already-tested `InternalUserLoginController` |
-| 15–17 | P1 | `MonolithAuthorizationApiCallerTests`, `ProviderGroupingApiCallerTests`, `UserLockingApiCallerTests` | Status mapping, timeouts, non-200 bodies | Each interface is mocked in exactly one consumer test; the concrete caller is untested, so nothing checks the mock matches reality. `MonolithAuthBackdoorApiCallerTests` is the precedent |
-| 18 | P1 | `InternalServicesTenantManagementApiTokenCacheTests` | Cache hit, expiry, refresh, concurrent refresh, refresh failure | A stale or thundering-herd management token breaks every internal-services login |
-| 19–20 | P2 | `InternalServicesTenantAuth0ClientTests`, `PatientTenantUniversalLoginWebClientTests` | Auth0 client wrappers | |
-| 21–23 | P1 | `TwilioVerifyServiceTests`, `TwilioClientWrapperTests`, `FakeTwilioClientWrapperTests` | Send/check verification, Twilio error codes, fake-vs-real parity | Neither `ITwilioVerifyService` nor `ITwilioClientWrapper` is even mocked in a test; phone verification has no unit coverage of the Twilio edge at all |
-| 24–27 | P1 | `EmailFormatValidatorTests`, `PhoneUtilityTests`, `SpiCookieServiceTests`, `GuidFactoryTests` | Pure helpers — `EmailFormatValidator` is a static class with `IsValidEmailFormat` / `IsBareEmailFormat` | Cheapest tests in the repo; the email-format rules currently rest on nothing |
-| 28 | P2 | `RequestContextMiddlewareTests` | Context population, missing headers, exception pass-through | Runs on every request |
-| 29–31 | P2 | `KmsServiceTests`, `ServiceAuthRelease.AuthServiceApiCallerTests`, `EndpointSettingsTests` | The service-auth release lambda | `IKmsService` is mocked in `ServiceAuthLambdaTests`; the concrete `KmsService` is untested and its 5 ApiTests are all `RealOnly` |
-| 32 | P1 | Real `PracticeUserAuth0SynchronizerLambdaHandlerTests` | Actual synchronisation behaviour | Verified: the sole unit test is `Verify_Handler_RecordsTestLog_AndFiresTestMetric` — it asserts a log line and a `test_metric`. The integration test only asserts the lambda returns HTTP 200 with no `FunctionError` |
-| 33 | P2 | `DateTimeConverterTests` (StreamProcessor) | The millisecond-epoch `Read` path | ⚠ Softened: `StreamProcessorLambdaTests` exercises the converter implicitly via `LambdaSerializer.Serialize`, so the **write** path runs. The millisecond-epoch **read** — the only reason this copy of the AWS converter exists — is never exercised |
-| 34 | P2 | `TickerTests`, `BackgroundServiceAuthTokenProviderTests`, `AmazonKinesisFirehoseClientFactoryTests`, `ServiceAuthExtensions` DI-registration test | Remaining unnamed classes | `ServiceAuthExtensions` is extension-method-only; verified its methods (`AddZocdocServiceAuthForEcs`/`ForLambdas`) appear in no test |
-| — | P3 | Delete or relabel `tests/UnitTests/ServiceAuthProofOfConcept.cs` | Verified: a `[Test]`-annotated developer script for minting an assertion JWT, with one assertion and no subject under test | |
+| 1–9 | P2 | Unit tests for the nine API operation impls: `PhoneVerificationImplTests`, `ReconciliatorImplTests`, `UserImplTests`, `UniversalLoginEventsImplTests`, `ExternalClientImplTests`, `PracticeIdentityProviderImplTests`, `PracticeLoginImplTests`, `ServiceAuthImplTests`, `MultiPracticeImplTests` | Their branch logic runs only over HTTP against a deployed instance — a regression in e.g. `PhoneVerificationImpl`'s 259-line response-code mapping is caught nowhere before deploy | Shifts coverage left off the deployed `ApiTests`; each impl already has a matching `ApiTests` file, so these are unit-test gaps, not blind spots |
+| 10–14 | P2 | Unit tests for five untested login controllers: `PatientLoginControllerTests`, `PracticeLoginControllerTests`, `UserLoginControllerTests`, `MultiPracticeLoginControllerTests`, `CreatePatientAccountControllerTests` (+ `CreateAccountUtils`) | Login-controller regressions surface only in a deployed run | Strong in-repo precedent (`InternalUserLoginControllerTests` etc.); note `UserLoginController` is a distinct class from the already-tested `InternalUserLoginController` |
+| 15–17 | P1 | `MonolithAuthorizationApiCallerTests`, `ProviderGroupingApiCallerTests`, `UserLockingApiCallerTests` — status mapping, timeouts, non-200 bodies | Each interface is mocked in exactly one consumer test but the concrete caller is untested, so nothing checks the mock matches reality | Pins the real caller to its mock; `MonolithAuthBackdoorApiCallerTests` is the precedent |
+| 18 | P1 | `InternalServicesTenantManagementApiTokenCacheTests` — cache hit, expiry, refresh, concurrent refresh, refresh failure | A stale or thundering-herd management token breaks every internal-services login | Protects a token cache every internal-services login depends on |
+| 19–20 | P2 | `InternalServicesTenantAuth0ClientTests`, `PatientTenantUniversalLoginWebClientTests` — the Auth0 client wrappers | The Auth0 client wrappers are exercised only in a deployed env | Brings the Auth0 client wrappers under unit coverage |
+| 21–23 | P1 | `TwilioVerifyServiceTests`, `TwilioClientWrapperTests`, `FakeTwilioClientWrapperTests` — send/check verification, Twilio error codes, fake-vs-real parity | Neither `ITwilioVerifyService` nor `ITwilioClientWrapper` is even mocked; phone verification has no unit coverage of the Twilio edge at all | Gives phone verification its first unit coverage of the Twilio edge |
+| 24–27 | P1 | `EmailFormatValidatorTests`, `PhoneUtilityTests`, `SpiCookieServiceTests`, `GuidFactoryTests` — pure helpers; `EmailFormatValidator` is a static class with `IsValidEmailFormat` / `IsBareEmailFormat` | The email-format rules currently rest on nothing | Cheapest tests in the repo, guarding rules with no net today |
+| 28 | P2 | `RequestContextMiddlewareTests` — context population, missing headers, exception pass-through | Middleware that runs on every request is unverified before deploy | Covers code on every request path |
+| 29–31 | P2 | `KmsServiceTests`, `ServiceAuthRelease.AuthServiceApiCallerTests`, `EndpointSettingsTests` — the service-auth release lambda | `IKmsService` is mocked in `ServiceAuthLambdaTests` but the concrete `KmsService` is untested, and its 5 ApiTests are all `RealOnly` (never run locally) | Puts the release lambda under coverage that executes off a deployed stack |
+| 32 | P1 | Real `PracticeUserAuth0SynchronizerLambdaHandlerTests` covering actual synchronisation behaviour | Verified: the sole unit test (`Verify_Handler_RecordsTestLog_AndFiresTestMetric`) asserts only a log line and a `test_metric`; the integration test only checks HTTP 200 with no `FunctionError` — the real sync behaviour is asserted nowhere | Replaces a log-only test with one that proves the handler actually synchronises |
+| 33 | P2 | `DateTimeConverterTests` (StreamProcessor) for the millisecond-epoch `Read` path | ⚠ Softened: the **write** path runs via `LambdaSerializer.Serialize` in `StreamProcessorLambdaTests`; the millisecond-epoch **read** — the only reason this copy of the AWS converter exists — is never exercised | Covers the one path this converter exists for |
+| 34 | P2 | `TickerTests`, `BackgroundServiceAuthTokenProviderTests`, `AmazonKinesisFirehoseClientFactoryTests`, a `ServiceAuthExtensions` DI-registration test | The remaining unnamed classes have no coverage; verified `ServiceAuthExtensions` methods (`AddZocdocServiceAuthForEcs`/`ForLambdas`) appear in no test | Closes the last unnamed-class gaps in the repo |
+| — | P3 | Delete or relabel `tests/UnitTests/ServiceAuthProofOfConcept.cs` | Verified: a `[Test]`-annotated developer script (mints an assertion JWT, one assertion, no subject under test) is counted as coverage | Stops a dev script from inflating the coverage count |
 
 ---
 
@@ -104,25 +104,25 @@ total blind spots. There is a strong in-repo precedent for controller unit tests
 `PracticeAuthorization.Test`, or `Zocdoc.PracticeUserRolesPrivate.Tests`. Every substring hit was checked and is
 a `Mock<IFoo>()` in a consumer's test.
 
-| # | P | Proposed test | LOC | Why |
-|---|---|---|---:|---|
-| 35–37 | P1 | `AspxAuthCookieAuthenticationScheme`, `Auth0JwtAuthenticationScheme`, `OAuthAuthenticationScheme` | 34/34/31 | The schemes that decide *how* a monolith request authenticates. `JwtAuthenticationSchemeTests.cs` exists for the fourth; these three are mocked in `RequireAuthenticationServiceTest` and never executed |
-| 38 | P1 | `PasswordExpirationReuseChecker` | 28 | Password expiry and reuse policy — a direct compliance surface, mocked in `PasswordUtilityTests`, never run |
-| 39 | P1 | `SymmetricEncryptor` — round-trip, wrong key, tampered ciphertext, empty and oversized input | 197 | Zero references of any kind |
-| 40–41 | P1 | `AuthIdentityReconciliatorSql`, `AuthIdentityAuditService` | 302 / 116 | Dual-identity reconciliation — the code path behind `aspnet_cloud_id_mismatch` token-exchange 403s |
-| 42–43 | P1 | `AuthServiceApiCaller` + `FakeAuthServiceApiCaller` | 277 | Monolith → auth-service edge. The fake has no test either, so nothing pins the two together |
-| 44–45 | P1 | `UserLockingServiceApiCaller` + `FakeUserLockingServiceApiCaller` | 114 | Monolith → user-locking edge; decides whether a locked patient is let in |
-| 46 | P1 | `UsernameEmailChangeService` — collision, verification state, Auth0 propagation | 339 | |
-| 47 | P2 | `PracticeUserRolesPrivateImpl` | 247 | The five API operations are untested; the project's test classes cover only the services behind them |
-| 48–49 | P2 | `PracticeAuthorizationUtils`, `PracticeAuthorizationProxyApiClientFactory` | | The only untested files in the FGA proxy layer |
-| 50–51 | P2 | `OAuth2AttributeService`, `AuthorizationServerWrapper` | 190 | ⚠ `OAuth2Client` was dropped from this list — verified `internal abstract class`, so it is not directly testable |
-| 52–53 | P2 | `ResourceServerFactory`, `StandardAccessTokenAnalyzerFactory` | | Token validation and key plumbing |
-| 54 | P2 | `ServiceAuthServiceAuthKmsClientWrapper` + `FakeServiceAuthKmsClientWrapper` | | Neither the real wrapper nor its fake is referenced by a test |
-| 55–57 | P2 | `MultiProviderLoginMetricsService` and its two SQL persistences, `MultiProviderAuditor`, `MultiProviderMetricsService` | 79 | Multi-provider login metrics are entirely unverified |
-| 58–59 | P2 | `CognitoClient`, `CognitoUserServiceBase` | | Cognito identity-provider path; `ICognitoClient` is mocked in three service tests |
-| 60–62 | P2 | `FormsAuthenticationWrapper`, `AuthFormSqlProvider`, `ExtendedSessionSqlFactory` | | Session and cookie issuance |
-| 63–66 | P3 | `ZDMembership` (96), `ZDRoles`, `Pbkdf2ConcurrencyLock`, `SecuritySensitiveCodeAttribute`, `ScopedDataAuthUserNameAttribute` | | `ZDMembershipSqlTests` covers `ZDMembershipSql`, a different class |
-| — | P3 | Remove the stale `CODEOWNERS` entry for `/Zocdoc.AuditLogging/` | | Directory no longer exists; already noted in the mapping changelog |
+| # | P | What's missing | LOC | What we lose | Why add |
+|---|---|---|---:|---|---|
+| 35–37 | P1 | `AspxAuthCookieAuthenticationScheme`, `Auth0JwtAuthenticationScheme`, `OAuthAuthenticationScheme` | 34/34/31 | The schemes that decide *how* a monolith request authenticates run untested — mocked in `RequireAuthenticationServiceTest` but never executed | Covers three of the four auth schemes (the fourth, `JwtAuthenticationSchemeTests.cs`, already exists) |
+| 38 | P1 | `PasswordExpirationReuseChecker` | 28 | Password expiry and reuse policy — a direct compliance surface — is mocked in `PasswordUtilityTests` but never run | Puts a compliance-relevant policy check under real coverage |
+| 39 | P1 | `SymmetricEncryptor` — round-trip, wrong key, tampered ciphertext, empty and oversized input | 197 | Zero references of any kind: encryption behaviour is entirely unguarded | Guards a crypto primitive that nothing currently tests |
+| 40–41 | P1 | `AuthIdentityReconciliatorSql`, `AuthIdentityAuditService` | 302 / 116 | Dual-identity reconciliation — the code path behind `aspnet_cloud_id_mismatch` token-exchange 403s — is untested | Covers the path behind real login-403 incidents |
+| 42–43 | P1 | `AuthServiceApiCaller` + `FakeAuthServiceApiCaller` | 277 | The monolith → auth-service edge is untested on both sides; the fake has no test either, so nothing pins the two together | Locks the monolith's auth-service edge and its fake to the same behaviour |
+| 44–45 | P1 | `UserLockingServiceApiCaller` + `FakeUserLockingServiceApiCaller` | 114 | The monolith → user-locking edge — which decides whether a locked patient is let in — is untested | Guards the gate that admits or blocks a locked patient |
+| 46 | P1 | `UsernameEmailChangeService` — collision, verification state, Auth0 propagation | 339 | A security/correctness boundary (email change + Auth0 propagation) with no coverage | Pins collision, verification, and Auth0-propagation behaviour |
+| 47 | P2 | `PracticeUserRolesPrivateImpl` | 247 | The five API operations are untested; the project's test classes cover only the services behind them | Covers the API operations, not just their dependencies |
+| 48–49 | P2 | `PracticeAuthorizationUtils`, `PracticeAuthorizationProxyApiClientFactory` | | The only untested files in the FGA proxy layer, exercised only in a deployed env | Completes coverage of the FGA proxy layer |
+| 50–51 | P2 | `OAuth2AttributeService`, `AuthorizationServerWrapper` | 190 | Untested OAuth2 attribute/authorization-server plumbing | ⚠ `OAuth2Client` was dropped from this list — verified `internal abstract class`, so it is not directly testable |
+| 52–53 | P2 | `ResourceServerFactory`, `StandardAccessTokenAnalyzerFactory` | | Token validation and key plumbing is unverified | Covers token validation and key plumbing |
+| 54 | P2 | `ServiceAuthServiceAuthKmsClientWrapper` + `FakeServiceAuthKmsClientWrapper` | | Neither the real wrapper nor its fake is referenced by a test | Pins the KMS wrapper to its fake |
+| 55–57 | P2 | `MultiProviderLoginMetricsService` and its two SQL persistences, `MultiProviderAuditor`, `MultiProviderMetricsService` | 79 | Multi-provider login metrics are entirely unverified | Brings multi-provider login metrics under coverage |
+| 58–59 | P2 | `CognitoClient`, `CognitoUserServiceBase` | | The Cognito identity-provider path is untested; `ICognitoClient` is mocked in three service tests | Covers the concrete Cognito path behind the mocks |
+| 60–62 | P2 | `FormsAuthenticationWrapper`, `AuthFormSqlProvider`, `ExtendedSessionSqlFactory` | | Session and cookie issuance is unverified | Covers session and cookie issuance |
+| 63–66 | P3 | `ZDMembership` (96), `ZDRoles`, `Pbkdf2ConcurrencyLock`, `SecuritySensitiveCodeAttribute`, `ScopedDataAuthUserNameAttribute` | | These classes are uncovered; `ZDMembershipSqlTests` covers `ZDMembershipSql`, a different class | Hygiene: closes the remaining uncovered membership/role classes |
+| — | P3 | Remove the stale `CODEOWNERS` entry for `/Zocdoc.AuditLogging/` | | A CODEOWNERS entry points at a directory that no longer exists | Hygiene: already noted in the mapping changelog |
 
 ---
 
@@ -136,70 +136,70 @@ decisions. The Jest harness already covers the other ten, so these are drop-in a
 
 The whole action is three nested `if`s and one `api.access.deny`.
 
-| # | P | Proposed test | Why |
-|---|---|---|---|
-| 67 | P1 | marketplace audience + `is_zocdoc_application !== "true"` → `api.access.deny("Invalid audience for application")` | The only thing stopping a third-party client from minting a marketplace token |
-| 68 | P1 | marketplace audience + `"true"` → no deny | Guards against over-denying first-party apps |
-| 69 | P1 | non-marketplace audience → no deny, whatever the client metadata | Confirms the rule is audience-scoped |
-| 70 | P2 | `event.resource_server` undefined → no deny, no throw | Non-API logins must pass through |
-| 71 | P1 | `event.client.metadata` undefined → currently throws `TypeError` | Verified: no optional chaining on `event.client.metadata`. Undefined metadata is a plausible client state; a test settles whether the action fails open or the login errors |
-| 72 | P2 | `is_zocdoc_application` boolean `true` rather than the string → denies | The comparison is strict-equality against `"true"`; pin it or fix it |
+| # | P | What's missing | What we lose | Why add |
+|---|---|---|---|---|
+| 67 | P1 | Test: marketplace audience + `is_zocdoc_application !== "true"` → `api.access.deny("Invalid audience for application")` | This deny is the only thing stopping a third-party client from minting a marketplace token; nothing guards it | Locks the audience check so a refactor can't silently open it |
+| 68 | P1 | Test: marketplace audience + `"true"` → no deny | Without it, a fix to row 67 could start over-denying legitimate first-party apps | Guards against over-denying first-party apps |
+| 69 | P1 | Test: non-marketplace audience → no deny, whatever the client metadata | Nothing confirms the rule is scoped to the marketplace audience only | Confirms the rule is audience-scoped |
+| 70 | P2 | Test: `event.resource_server` undefined → no deny, no throw | Non-API logins must pass through, and nothing proves they do | Pins pass-through for non-API logins |
+| 71 | P1 | Test: `event.client.metadata` undefined → currently throws `TypeError` | Verified: no optional chaining on `event.client.metadata`. Undefined metadata is a plausible client state that could break the login with an unhandled error | A test settles whether the action should fail open or the login errors |
+| 72 | P2 | Test: `is_zocdoc_application` boolean `true` rather than the string → denies | The comparison is strict-equality against `"true"`, so a boolean silently denies | Pins the string-vs-boolean behaviour (or forces a fix) |
 
 ### `actions/patient/redirect.js` → `__tests__/unit/redirect-tests.js`
 
-| # | P | Proposed test | Why |
-|---|---|---|---|
-| 73 | P2 | `is_zocdoc_application === "true"` → returns before signing or fetching | First-party short-circuit |
-| 74 | P1 | `event.client.metadata` undefined → throws | Verified: this dereference sits **before** the `try`, so it escapes the `api.access.deny` catch entirely and fails the login with an unhandled error |
-| 75 | P2 | `externalApiBaseUrl` not `https://api-developer.zocdoc.com/` → returns without a fetch | Nothing tests that non-prod stays inert |
-| 76 | P1 | terms fetch returns non-200 → `api.access.deny` | Fail-closed on a dependency error |
-| 77 | P1 | terms fetch rejects → `api.access.deny` | Same, for a transport failure |
-| 78 | P1 | `requires_terms_of_use && !has_signed_terms_of_use` → `PUT v1/user/terms-of-use`, then no redirect | Auto-accept branch |
-| 79 | P2 | `requires_terms_of_use && has_signed_terms_of_use` → no PUT, no redirect | Idempotence |
-| 80 | P1 | `!requires_terms_of_use && requires_active_consent_to_market && !has_active_consent_to_market` → redirect | The consent-page branch |
-| 81 | P2 | same with consent already active → no redirect | |
-| 82 | P2 | neither flag set → no redirect | Default pass-through |
-| 83 | P1 | signed assertion carries `azp` = client id, `scope` and `permissions` = `external.consent.write`, issuer `Auth0ActionIssuer`, subject = `event.user.user_id`, audience `[secrets.audience]`, RS256, 1800s expiry | This JWT authenticates to the external developer API |
-| 84 | P2 | `keyid` falls back to a generated uuid when `secrets.kid` is absent | Key-rotation path |
-| 85 | P2 | redirect query carries `session_token` and `event.transaction.state` | State must survive the round trip |
-| 86 | P2 | `onContinuePostLogin` on resume | Verified: it is an empty function, so nothing re-checks the consent outcome after the redirect returns. A test should pin whether that is intended |
+| # | P | What's missing | What we lose | Why add |
+|---|---|---|---|---|
+| 73 | P2 | Test: `is_zocdoc_application === "true"` → returns before signing or fetching | Nothing proves first-party clients short-circuit before the expensive signing/fetch path | Pins the first-party short-circuit |
+| 74 | P1 | Test: `event.client.metadata` undefined → throws | Verified: this dereference sits **before** the `try`, so it escapes the `api.access.deny` catch entirely and fails the login with an unhandled error | Surfaces an unguarded crash on a plausible input state |
+| 75 | P2 | Test: `externalApiBaseUrl` not `https://api-developer.zocdoc.com/` → returns without a fetch | Nothing tests that non-prod environments stay inert | Confirms non-prod does not fire the external call |
+| 76 | P1 | Test: terms fetch returns non-200 → `api.access.deny` | Nothing proves the action fails closed when the terms dependency errors | Guarantees fail-closed on a dependency error |
+| 77 | P1 | Test: terms fetch rejects → `api.access.deny` | Same, for a transport failure — currently unverified | Guarantees fail-closed on a transport failure |
+| 78 | P1 | Test: `requires_terms_of_use && !has_signed_terms_of_use` → `PUT v1/user/terms-of-use`, then no redirect | The auto-accept branch that records terms consent is untested | Pins the auto-accept branch |
+| 79 | P2 | Test: `requires_terms_of_use && has_signed_terms_of_use` → no PUT, no redirect | Nothing proves the action is idempotent for already-signed users | Pins idempotence |
+| 80 | P1 | Test: `!requires_terms_of_use && requires_active_consent_to_market && !has_active_consent_to_market` → redirect | The consent-page redirect branch is untested | Pins the consent-page branch |
+| 81 | P2 | Test: same as row 80 with consent already active → no redirect | Nothing proves an already-consented user skips the redirect | Pins the no-redirect case |
+| 82 | P2 | Test: neither flag set → no redirect | Default pass-through is unverified | Pins default pass-through |
+| 83 | P1 | Test: signed assertion carries `azp` = client id, `scope` and `permissions` = `external.consent.write`, issuer `Auth0ActionIssuer`, subject = `event.user.user_id`, audience `[secrets.audience]`, RS256, 1800s expiry | This JWT authenticates to the external developer API; its exact shape is unverified | Locks the shape of a token that grants API access |
+| 84 | P2 | Test: `keyid` falls back to a generated uuid when `secrets.kid` is absent | The key-rotation fallback path is untested | Covers the key-rotation path |
+| 85 | P2 | Test: redirect query carries `session_token` and `event.transaction.state` | Nothing proves login state survives the redirect round trip | Ensures state survives the round trip |
+| 86 | P2 | Test for `onContinuePostLogin` on resume | Verified: it is an empty function, so nothing re-checks the consent outcome after the redirect returns | A test should pin whether the empty resume handler is intended |
 
 ### `actions/patient/add_patient_role.js` → `__tests__/unit/add-patient-role-tests.js`
 
-| # | P | Proposed test | Why |
-|---|---|---|---|
-| 87 | P2 | user already holds `Patient` → no `ManagementClient` constructed, `assignUsers` not called | Avoids a Management API call on every login |
-| 88 | P1 | no roles → `assignUsers({id: secrets.patientRoleId}, {users:[user_id]})` | Every new patient depends on this |
-| 89 | P2 | `event.authorization` undefined → still assigns | The `?.` branch |
-| 90 | P2 | roles present but not `Patient` → assigns | |
-| 91 | P1 | `assignUsers` rejects → error swallowed, login proceeds | The catch is deliberate fail-open; pin it so nobody "fixes" it into a login outage |
+| # | P | What's missing | What we lose | Why add |
+|---|---|---|---|---|
+| 87 | P2 | Test: user already holds `Patient` → no `ManagementClient` constructed, `assignUsers` not called | Nothing prevents a needless Management API call on every login | Avoids a Management API call on every login |
+| 88 | P1 | Test: no roles → `assignUsers({id: secrets.patientRoleId}, {users:[user_id]})` | Every new patient depends on this role assignment, and it is untested | Guards the assignment every new patient depends on |
+| 89 | P2 | Test: `event.authorization` undefined → still assigns | The `?.` branch is unverified | Covers the optional-chaining branch |
+| 90 | P2 | Test: roles present but not `Patient` → assigns | The assign-when-missing-Patient case is untested | Covers the non-Patient-roles case |
+| 91 | P1 | Test: `assignUsers` rejects → error swallowed, login proceeds | The catch is a deliberate fail-open; without a test someone could "fix" it into a login outage | Pins the intentional fail-open so it isn't broken by a well-meaning change |
 
 ### Rest of the repo
 
-| # | P | Proposed test | Why |
-|---|---|---|---|
-| 92 | P2 | Any test for `cdk/src/auth0LambdaAndEventbridgeStack.ts` and `cdk/src/cdk.ts` | Verified: `cdk/jest.config.js` sets `roots: ['<rootDir>/test']` and `cdk/test/` does not exist — the config is dead and both stack files have zero tests |
-| 93–94 | P2 | `CorrelationIdDecoder`, `Auth0LogErrorJsonConverter` (valid, malformed, absent error payloads) | Zero references of any kind |
-| 95 | P3 | `KafkaSsmConfiguration` | Zero references of any kind |
-| — | P3 | Extend the Cypress smoke beyond the single authorization-code login | One e2e test guards the whole tenant config |
+| # | P | What's missing | What we lose | Why add |
+|---|---|---|---|---|
+| 92 | P2 | Any test for `cdk/src/auth0LambdaAndEventbridgeStack.ts` and `cdk/src/cdk.ts` | Verified: `cdk/jest.config.js` sets `roots: ['<rootDir>/test']` and `cdk/test/` does not exist — the config is dead and both stack files have zero tests | Revives a dead test config and covers two untested CDK stacks |
+| 93–94 | P2 | `CorrelationIdDecoder`, `Auth0LogErrorJsonConverter` (valid, malformed, absent error payloads) | Zero references of any kind: log/correlation decoding is unguarded | Covers log-error and correlation-id decoding |
+| 95 | P3 | `KafkaSsmConfiguration` | Zero references of any kind | Hygiene: closes an uncovered config class |
+| — | P3 | Extend the Cypress smoke beyond the single authorization-code login | A single e2e test guards the whole tenant config | Broadens the one e2e that guards tenant config |
 
 ---
 
 ## audit-logging-service
 
-| # | P | Proposed test | Why |
-|---|---|---|---|
-| 96–101 | P1 | `PatientIdEnqueue.Lambda/HandlerTests`: S3 event with one record; with several; SNS-wrapped S3 event; malformed SNS body; parse failure surfacing; empty object → no DDB writes | Verified: `src/PatientIdEnqueue.Lambda/` holds `Handler.cs` and `Function.cs` with no test file, though `S3LogParser` and `ReportingModelToDdbDtoService` beneath them are covered |
-| 102–105 | P2 | `LastScannedKeyDynamoPersistenceTests` (get / put / delete / missing key) and `LastScannedKeyDdbDtoAttributeServiceTests` | The worker's resume checkpoint. `WorkerTests` mocks both interfaces, so neither implementation ever runs |
-| 106–113 | P1 | `ZvsApiCallerTests` (both `GetPatientDetails` and `GetPaymentPatientDetails`), `ExternalDeveloperApiCallerTests`, `PatientInsuranceLookupApiCallerTests` — id-set batching, non-200, partial results, `PatientCallerResponseStatus` mapping | Three concrete outbound callers with zero tests. `IPatientInsuranceLookupApiCaller` is not even mocked anywhere |
-| 114 | P1 | **⚠ Corrected:** `FirehoseClientWrapper.SaveLogs` with `FailedPutCount == 0` | The first pass claimed the failure branch was untested. It is not — `Test_GetFireHoseResponse` asserts `FailedFirehosePutCount` is incremented by 3. The real gap is the inverse: the only unit test has **every** record failing, so the success path is never asserted |
-| 115 | P1 | `FirehoseClientWrapper.SavePermissionLogs` | The whole method is untested; it duplicates `SaveLogs` against a different stream and tags the failure metric differently |
-| 116 | P1 | `SaveLogs` with more than 500 records | Verified: no chunking anywhere in the wrapper, and `PutRecordBatch` caps at 500 records per call |
-| 117 | P2 | `SaveLogs` where `RequestResponses.Count != logs.Count` | Both methods do `logs.ElementAt(index)` over the response list; a short response throws rather than degrading |
-| 118–121 | P2 | `LogConverter.FlattenPermissionChangeLog` | All five existing converter tests are authorization-log; the permission-change flattener is only ever mocked, in `AuthorizationLogImplTest` |
-| 122 | P2 | `AuthorizationLogImpl`: multi-record batch, and `xAuditLoggingLibraryVersion` propagated into the flattened log | |
-| — | P3 | Rename `ExternalDeveloperDeveloperApiCaller` | Verified typo: the class in `ExternalDeveloperApiCaller.cs` is declared `ExternalDeveloperDeveloperApiCaller` |
-| — | P3 | Delete or convert `monolithInvestigationScripts/BitmaskDecode.cs` | Verified: a `[Test]` with no assertion, counted in the mapping |
+| # | P | What's missing | What we lose | Why add |
+|---|---|---|---|---|
+| 96–101 | P1 | `PatientIdEnqueue.Lambda/HandlerTests`: S3 event with one record; with several; SNS-wrapped S3 event; malformed SNS body; parse failure surfacing; empty object → no DDB writes | Verified: `src/PatientIdEnqueue.Lambda/` holds `Handler.cs` and `Function.cs` with no test file (though `S3LogParser` and `ReportingModelToDdbDtoService` beneath them are covered) — the enqueue handler is unguarded | Covers the S3/SNS enqueue handler's event and failure paths |
+| 102–105 | P2 | `LastScannedKeyDynamoPersistenceTests` (get / put / delete / missing key) and `LastScannedKeyDdbDtoAttributeServiceTests` | The worker's resume checkpoint is untested — `WorkerTests` mocks both interfaces, so neither implementation ever runs | Guards the checkpoint the worker resumes from |
+| 106–113 | P1 | `ZvsApiCallerTests` (both `GetPatientDetails` and `GetPaymentPatientDetails`), `ExternalDeveloperApiCallerTests`, `PatientInsuranceLookupApiCallerTests` — id-set batching, non-200, partial results, `PatientCallerResponseStatus` mapping | Three concrete outbound patient-data callers have zero tests; `IPatientInsuranceLookupApiCaller` is not even mocked anywhere | Covers the three patient API callers and their status mapping |
+| 114 | P1 | **⚠ Corrected:** `FirehoseClientWrapper.SaveLogs` with `FailedPutCount == 0` | The first pass wrongly claimed the failure branch was untested — `Test_GetFireHoseResponse` asserts `FailedFirehosePutCount` += 3. The real gap is the inverse: the only unit test has **every** record failing, so the success path is never asserted | Asserts the success path, which no test currently exercises |
+| 115 | P1 | `FirehoseClientWrapper.SavePermissionLogs` | The whole method is untested; it duplicates `SaveLogs` against a different stream and tags the failure metric differently | Covers a duplicated method that can drift from `SaveLogs` |
+| 116 | P1 | `SaveLogs` with more than 500 records | Verified: no chunking anywhere in the wrapper, and `PutRecordBatch` caps at 500 records per call — a large batch would silently fail | Proves (or forces) correct handling above the 500-record cap |
+| 117 | P2 | `SaveLogs` where `RequestResponses.Count != logs.Count` | Both methods do `logs.ElementAt(index)` over the response list; a short response throws rather than degrading | Guards against a throw on a mismatched response length |
+| 118–121 | P2 | `LogConverter.FlattenPermissionChangeLog` | All five existing converter tests are authorization-log; the permission-change flattener is only ever mocked, in `AuthorizationLogImplTest` | Covers the permission-change flattener directly |
+| 122 | P2 | `AuthorizationLogImpl`: multi-record batch, and `xAuditLoggingLibraryVersion` propagated into the flattened log | Multi-record batching and version propagation are unverified | Covers batch handling and version propagation |
+| — | P3 | Rename `ExternalDeveloperDeveloperApiCaller` | Verified typo: the class in `ExternalDeveloperApiCaller.cs` is declared `ExternalDeveloperDeveloperApiCaller` | Hygiene: fixes a doubled-word class name |
+| — | P3 | Delete or convert `monolithInvestigationScripts/BitmaskDecode.cs` | Verified: a `[Test]` with no assertion is counted in the mapping | Hygiene: removes a no-assertion test from the coverage count |
 
 ---
 
@@ -208,46 +208,46 @@ The whole action is three nested `if`s and one `api.access.deny`.
 Verified: only 4 of the 8 mapped test files contain real tests. `LegalAgreement.UnitTests` and
 `LegalAgreement.Web.IntegrationTests` hold nothing but a scaffold.
 
-| # | P | Proposed test | Why |
-|---|---|---|---|
-| 123–131 | P2 | New `PracticeUserAgreementImplTests`: signature found → OK; not found + `OrganizationType == HealthSystem` → the synthesized `ENTERPRISE_PRACTICE_SIGNATORY_FULL_NAME` / `ENTERPRISE_PRACTICE_VERSION` response; not found + other org type → 404; not found + null org membership → 404; copy with >100 ids → 400; copy with exactly 100 → passes through; `KeyNotFoundException` → 404; backfill with >25 → 400; audit request with a non-`pt_` id → 400 | Five endpoints of branch logic with no unit tests at all. All four limits verified in source (`> 100`, `> 25`, `HealthSystem`, `StartsWith("pt_")`) |
-| 132 | P1 | API test: backfill batch of 26 → 400 `"Max batch size is 25"` | The 25-item cap is asserted nowhere, at any level |
-| 133 | P2 | API test: copy with exactly 100 ids → success | Only the 101 case is tested, so an off-by-one would pass |
-| 134–137 | P1 | `ProviderGroupingApiCallerTests`: HealthSystem, other org type, null membership, caller throws | An exception here surfaces as a 500 on the agreement read |
-| 138–141 | P1 | `SignUserAgreementPracticeUserAuthorizationHandlerTests`: FGA success → `context.Succeed`; FGA denial → requirement left unmet; parameter missing from route or body; FGA throws | Verified: the handler only ever calls `context.Succeed`, which is correct ASP.NET style — but nothing pins it |
-| 142 | P1 | Policy-level test for `allow_practice_user_or_csr_signature_write` | ⚠ Reframed: `AllowPracticeUserOrCsrRolesRequirement` is *both* a `RolesAuthorizationRequirement` and an `ISignUserAgreementPracticeUserRequirement`, so the role handler and the FGA handler both evaluate it and **either** succeeding is enough. That OR is deliberate given the policy name, but a role holder passing despite an FGA denial is significant and untested |
-| 143 | P2 | `AllowPracticeUserOrCsrRolesRequirementTests` | |
-| 144–148 | P1 | Service helpers via the backfill path: identical ids → match; two differing `au_` ids → no match; mixed-type ids → match plus the `AuditAndBackfillUserAgreement.UserIdsAreDifferentTypes` metric; timestamps exactly 5s apart → match; 5.001s apart → no match | Verified in source: `UserIdsAreProbablyEqual` and `IsWithinFiveSeconds` (`<= 5`) decide whether a signature is backfilled or dropped, and the boundary is untested |
-| 149 | P2 | API: sign twice with different versions, then read → newest wins | |
-| — | P3 | Replace the four `ExampleTests` scaffolds | |
+| # | P | What's missing | What we lose | Why add |
+|---|---|---|---|---|
+| 123–131 | P2 | New `PracticeUserAgreementImplTests`: signature found → OK; not found + `OrganizationType == HealthSystem` → the synthesized `ENTERPRISE_PRACTICE_SIGNATORY_FULL_NAME` / `ENTERPRISE_PRACTICE_VERSION` response; not found + other org type → 404; not found + null org membership → 404; copy with >100 ids → 400; copy with exactly 100 → passes through; `KeyNotFoundException` → 404; backfill with >25 → 400; audit request with a non-`pt_` id → 400 | Five endpoints of branch logic have no unit tests at all (all four limits verified in source: `> 100`, `> 25`, `HealthSystem`, `StartsWith("pt_")`) | Puts the agreement impl's five endpoints and their limits under unit coverage |
+| 132 | P1 | API test: backfill batch of 26 → 400 `"Max batch size is 25"` | The 25-item cap is asserted nowhere, at any level | Pins the batch-size cap end to end |
+| 133 | P2 | API test: copy with exactly 100 ids → success | Only the 101 case is tested, so an off-by-one at the boundary would pass unnoticed | Guards the exact-100 boundary against an off-by-one |
+| 134–137 | P1 | `ProviderGroupingApiCallerTests`: HealthSystem, other org type, null membership, caller throws | An exception here surfaces as a 500 on the agreement read, untested | Covers the org-lookup caller behind agreement reads |
+| 138–141 | P1 | `SignUserAgreementPracticeUserAuthorizationHandlerTests`: FGA success → `context.Succeed`; FGA denial → requirement left unmet; parameter missing from route or body; FGA throws | Verified: the handler only ever calls `context.Succeed` (correct ASP.NET style) but nothing pins it | Locks the authorization handler's success/denial behaviour |
+| 142 | P1 | Policy-level test for `allow_practice_user_or_csr_signature_write` | ⚠ Reframed: `AllowPracticeUserOrCsrRolesRequirement` is *both* a `RolesAuthorizationRequirement` and an `ISignUserAgreementPracticeUserRequirement`, so role handler and FGA handler both evaluate it and **either** succeeding is enough — a role holder can pass despite an FGA denial, and that is untested | Pins a deliberate-but-significant OR in the signature-write policy |
+| 143 | P2 | `AllowPracticeUserOrCsrRolesRequirementTests` | The role requirement itself is unverified | Covers the role requirement in isolation |
+| 144–148 | P1 | Service helpers via the backfill path: identical ids → match; two differing `au_` ids → no match; mixed-type ids → match plus the `AuditAndBackfillUserAgreement.UserIdsAreDifferentTypes` metric; timestamps exactly 5s apart → match; 5.001s apart → no match | Verified: `UserIdsAreProbablyEqual` and `IsWithinFiveSeconds` (`<= 5`) decide whether a signature is backfilled or dropped, and the boundary is untested | Guards the exact rule that keeps or drops a backfilled signature |
+| 149 | P2 | API: sign twice with different versions, then read → newest wins | Version-precedence on read is unverified | Confirms newest-version-wins on read |
+| — | P3 | Replace the four `ExampleTests` scaffolds | Four scaffold tests assert nothing yet count as coverage | Hygiene: removes empty scaffolds from the count |
 
 ---
 
 ## user-locking
 
-| # | P | Proposed test | Why |
-|---|---|---|---|
-| 150–158 | P1 | `AuthServiceApiCallerTests`: `GetUserAccountIdByPatientId` and `SetUserAccountIdByPatientId` with null or empty patient id → `ArgumentException`; happy path; 404 → `Auth0UserNotFoundException`; other non-2xx → `InvalidOperationException`; `SetUserBlockedStatus` with an empty account id; block and unblock happy paths | The entire auth-service edge — including the exception the lambda branches on — has zero tests. Only `IAuthServiceApiCaller` is mocked, in `HandlerTests` and `UserLockingImplTests` |
-| 159–163 | P2 | `EnumListConverterTests`: string-list round-trip, legacy numeric read, unknown value, null, empty | Zero references of any kind; only indirectly exercised through one persistence test |
-| 164 | P2 | `Handler`: unrecognised `UserLockAction` → `InvalidOperationException` | Verified at `Handler.cs:157`; the `_ => throw` branch is unreached |
-| 165 | P2 | `Handler`: auth-service returns 5xx → the record lands in `BatchItemFailures` | Only a deserialization failure is tested today |
-| 166–171 | P2 | `UserLockingImplTests` for `UnlockByPatientId`, `GetLockHistoryByPatientId`, and `LockByPatientId` beyond its metric | Verified: the impl exposes 12 operations; the 12 unit tests cover `GetLockReasonCodes`, `GetLockForCurrentUser`, `GetLockByPatientId`, `GetAllLocksByPatientId`, and one metric assertion on `LockByPatientId` |
-| 172 | P3 | Pin the contract of the five published-but-unimplemented operations | Verified: `GetLockByUserAccount`, `LockByUserAccount`, `UnlockByUserAccount`, `LockByUserAccounts`, `DeleteLocksByUserAccounts` all `throw new NotImplementedException()` (`UserLockingImpl.cs:335–372`). A caller sees a 500 and no test records that this is intentional |
-| — | P3 | Replace the three `ExampleTests` scaffolds | |
+| # | P | What's missing | What we lose | Why add |
+|---|---|---|---|---|
+| 150–158 | P1 | `AuthServiceApiCallerTests`: `GetUserAccountIdByPatientId` and `SetUserAccountIdByPatientId` with null or empty patient id → `ArgumentException`; happy path; 404 → `Auth0UserNotFoundException`; other non-2xx → `InvalidOperationException`; `SetUserBlockedStatus` with an empty account id; block and unblock happy paths | The entire auth-service edge — including the exception the lambda branches on — has zero tests; only `IAuthServiceApiCaller` is mocked, in `HandlerTests` and `UserLockingImplTests` | Covers the whole auth-service edge, including the exception the lambda depends on |
+| 159–163 | P2 | `EnumListConverterTests`: string-list round-trip, legacy numeric read, unknown value, null, empty | Zero references of any kind; only indirectly exercised through one persistence test | Covers the converter's edge cases directly |
+| 164 | P2 | `Handler`: unrecognised `UserLockAction` → `InvalidOperationException` | Verified at `Handler.cs:157`; the `_ => throw` branch is unreached by any test | Reaches the default-throw branch |
+| 165 | P2 | `Handler`: auth-service returns 5xx → the record lands in `BatchItemFailures` | Only a deserialization failure is tested today; the 5xx-retry path is not | Covers the 5xx → retry-queue path |
+| 166–171 | P2 | `UserLockingImplTests` for `UnlockByPatientId`, `GetLockHistoryByPatientId`, and `LockByPatientId` beyond its metric | Verified: the impl exposes 12 operations; the 12 unit tests cover only `GetLockReasonCodes`, `GetLockForCurrentUser`, `GetLockByPatientId`, `GetAllLocksByPatientId`, and one metric assertion on `LockByPatientId` | Covers the impl operations that today have no behavioural test |
+| 172 | P3 | Pin the contract of the five published-but-unimplemented operations | Verified: `GetLockByUserAccount`, `LockByUserAccount`, `UnlockByUserAccount`, `LockByUserAccounts`, `DeleteLocksByUserAccounts` all `throw new NotImplementedException()` (`UserLockingImpl.cs:335–372`); a caller sees a 500 and no test records that this is intentional | Documents-by-test that the 500s are deliberate |
+| — | P3 | Replace the three `ExampleTests` scaffolds | Three scaffold tests assert nothing yet count as coverage | Hygiene: removes empty scaffolds from the count |
 
 ---
 
 ## consumer-privacy-service
 
-| # | P | Proposed test | Why |
-|---|---|---|---|
-| 173–177 | P1 | `BasicAuthServiceTests`: header absent → null; `Authorization: Basic` with no parameter → today `Convert.FromBase64String(null)` throws; non-Base64 parameter → `FormatException`; decoded value with no `:` → `credentials[1]` throws `IndexOutOfRangeException`; valid header → username/password split on the **first** colon only | Verified against source. Every one of these is reachable by an unauthenticated caller and yields a 500 rather than a 401. Only `IBasicAuthService` is mocked; the concrete class has no test |
-| 178–179 | P1 | `SalesforceAuthenticatorTests`, `CpaAuthHeaderProviderTests` | Outbound credential handling. `CpaAuthHeaderProvider` has zero references of any kind |
-| 180–182 | P2 | `MessageSenderTests`, `FileRetrieverTests`, `DownloadControllerTests` | The delivery path for a subject-access request. `FileRetriever` and `DownloadController` have zero references |
-| 183–184 | P2 | `FeatureFlagCheckerTests` / `Experiments` | Flag evaluation gates request behaviour |
-| 185 | P3 | `GuidGeneratorTests` | |
-| 186–190 | P1 | Replace `tests/FunctionalTests/ConsumerPrivacyTests.cs` with a real lifecycle: submit access request → generate PIN → verify PIN → download; plus the delete and opt-out equivalents | Verified: `PublicApiImpl` exposes 18 operations (37 paths across `service.yaml`) and the functional test is an empty `[Fact] Test1`. `tests/IntegrationTests/ConsumerPrivacyTests.cs` is the same empty scaffold |
-| — | P3 | Replace `HomeControllerTests.Test1` (`Assert.True(true)`) | |
+| # | P | What's missing | What we lose | Why add |
+|---|---|---|---|---|
+| 173–177 | P1 | `BasicAuthServiceTests`: header absent → null; `Authorization: Basic` with no parameter → today `Convert.FromBase64String(null)` throws; non-Base64 parameter → `FormatException`; decoded value with no `:` → `credentials[1]` throws `IndexOutOfRangeException`; valid header → username/password split on the **first** colon only | Verified: every one of these is reachable by an unauthenticated caller and yields a 500 rather than a 401; only `IBasicAuthService` is mocked, the concrete class has no test | Turns malformed-auth-header 500s into proper 401s under test |
+| 178–179 | P1 | `SalesforceAuthenticatorTests`, `CpaAuthHeaderProviderTests` | Outbound credential handling is unguarded; `CpaAuthHeaderProvider` has zero references of any kind | Covers outbound credential construction |
+| 180–182 | P2 | `MessageSenderTests`, `FileRetrieverTests`, `DownloadControllerTests` | The delivery path for a subject-access request is untested; `FileRetriever` and `DownloadController` have zero references | Covers the request-delivery/download path |
+| 183–184 | P2 | `FeatureFlagCheckerTests` / `Experiments` | Flag evaluation gates request behaviour and is unverified | Covers the flags that gate request behaviour |
+| 185 | P3 | `GuidGeneratorTests` | A trivial generator is uncovered | Hygiene: cheap coverage of the guid generator |
+| 186–190 | P1 | Replace `tests/FunctionalTests/ConsumerPrivacyTests.cs` with a real lifecycle: submit access request → generate PIN → verify PIN → download; plus the delete and opt-out equivalents | Verified: `PublicApiImpl` exposes 18 operations (37 paths across `service.yaml`) but the functional test is an empty `[Fact] Test1`, and `tests/IntegrationTests/ConsumerPrivacyTests.cs` is the same empty scaffold — no CCPA request runs end to end | Gives the CCPA lifecycle real end-to-end coverage |
+| — | P3 | Replace `HomeControllerTests.Test1` (`Assert.True(true)`) | A tautology test counts as coverage | Hygiene: removes an always-true test from the count |
 
 ---
 
@@ -257,31 +257,31 @@ Verified: only 4 of the 8 mapped test files contain real tests. `LegalAgreement.
 since the mapping was generated. Every test stops at a form-validation or error state; none completes an
 account lifecycle.
 
-| # | P | Proposed spec | Why |
-|---|---|---|---|
-| 191 | P1 | Complete a patient sign-up and land signed in | `create-user-page` covers only validation errors; the success path has no E2E |
-| 192 | P1 | `password-recovery-flow`: follow the reset link, set a new password, sign in with it | Today the flow stops at "the email was accepted" |
-| 193 | P1 | `signin-page`: successful MFA challenge | Only the wrong-code error is covered, though `challenge_mfa.js` carries 37 unit tests |
-| 194 | P2 | Patient sign-out, then confirm protected pages redirect to `/signin` | Only the provider spec logs out |
-| 195 | P2 | Deep-link → sign-in → returned to the original URL | Return-URL handling is unverified |
-| 196 | P2 | Booking-locked patient can sign in but is blocked at booking | Both lock specs cover login locks only; the two lock types diverge here |
-| 197 | P2 | Multi-practice provider login and practice switch | `MultiPracticeLoginController` has no E2E |
-| 198 | P2 | First provider login gated on signing the practice user agreement | The legal-agreement gate is invisible to the E2E suite |
-| 199 | P3 | Provider username/email change, then sign in with the new address | Pairs with `UsernameEmailChangeService` (row 46) |
-| 200 | P3 | Passwordless (email/SMS) login start | Supported by auth-service, no E2E |
-| 201 | P3 | Session expiry → re-authentication | |
-| 202 | P3 | Rename one of the two duplicate tests in `password-recovery-flow.spec.ts` | Verified: lines 6 and 25 both read `"Accurate redirection to password reset page - Split Screen Expt ON"`. `-g` cannot select between them and Xray keys results on the title |
+| # | P | What's missing | What we lose | Why add |
+|---|---|---|---|---|
+| 191 | P1 | Spec: complete a patient sign-up and land signed in | `create-user-page` covers only validation errors; the sign-up success path has no E2E | Proves a patient can actually create an account and land in |
+| 192 | P1 | `password-recovery-flow`: follow the reset link, set a new password, sign in with it | Today the flow stops at "the email was accepted"; the actual reset+login is unverified | Proves a password reset end to end |
+| 193 | P1 | `signin-page`: successful MFA challenge | Only the wrong-code error is covered, though `challenge_mfa.js` carries 37 unit tests — the success path has no E2E | Proves a valid MFA challenge lets a user in |
+| 194 | P2 | Spec: patient sign-out, then confirm protected pages redirect to `/signin` | Only the provider spec logs out; patient sign-out is unverified | Confirms patient sign-out revokes access |
+| 195 | P2 | Spec: deep-link → sign-in → returned to the original URL | Return-URL handling is unverified | Confirms post-login return-to-URL works |
+| 196 | P2 | Spec: booking-locked patient can sign in but is blocked at booking | Both lock specs cover login locks only; the two lock types diverge here and that divergence is untested | Covers the booking-lock (vs login-lock) branch |
+| 197 | P2 | Spec: multi-practice provider login and practice switch | `MultiPracticeLoginController` has no E2E; a provider on several practices could be stranded and we'd learn only in prod | Proves multi-practice login and switching work |
+| 198 | P2 | Spec: first provider login gated on signing the practice user agreement | The legal-agreement gate is invisible to the E2E suite | Covers the UA-signature gate on first login |
+| 199 | P3 | Spec: provider username/email change, then sign in with the new address | The change-then-login path has no E2E | Pairs with `UsernameEmailChangeService` (row 46) |
+| 200 | P3 | Spec: passwordless (email/SMS) login start | Supported by auth-service, no E2E | Covers the passwordless entry path |
+| 201 | P3 | Spec: session expiry → re-authentication | Session-expiry re-auth is unverified | Covers the re-authentication path |
+| 202 | P3 | Rename one of the two duplicate tests in `password-recovery-flow.spec.ts` | Verified: lines 6 and 25 both read `"Accurate redirection to password reset page - Split Screen Expt ON"`; `-g` cannot select between them and Xray keys results on the title | Hygiene: de-duplicates a title so runs and Xray results are addressable |
 
 ---
 
 ## external-developer-api-auth
 
-| # | P | Proposed test | Why |
-|---|---|---|---|
-| 203–205 | P2 | `auth0AppClientFrontEndKeysToDynamoRequests`: keys present, none, deleted-key filtering | Verified: the module exports three functions and the Jest file imports only `loadAuth0AppClients` and `auth0AppClientsToDynamoRequests` |
-| 206–208 | P1 | Schema validation: a client missing a required field is rejected; an out-of-enum `rateLimitingGroup` is rejected; a client with no `rateLimitingGroup` is rejected once the schema requires it | Per `docs/superpowers/specs/2026-07-15-require-rate-limiting-group-design.md`, a missing value writes an empty `ApiProduct` and silently drops the consumer to the `standard` Kong group |
-| 209 | P2 | Synth test for `cdk/src/cdk.ts` | |
-| — | P3 | Report `test-sync-clients-to-kong.sh` results in CI | Its 12 assertions exist but run as a standalone script, invisible to the mapping and easy to skip |
+| # | P | What's missing | What we lose | Why add |
+|---|---|---|---|---|
+| 203–205 | P2 | `auth0AppClientFrontEndKeysToDynamoRequests`: keys present, none, deleted-key filtering | Verified: the module exports three functions but the Jest file imports only `loadAuth0AppClients` and `auth0AppClientsToDynamoRequests` — the third is untested | Covers the untested key-to-DynamoDB request builder |
+| 206–208 | P1 | Schema validation: a client missing a required field is rejected; an out-of-enum `rateLimitingGroup` is rejected; a client with no `rateLimitingGroup` is rejected once the schema requires it | Per `docs/superpowers/specs/2026-07-15-require-rate-limiting-group-design.md`, a missing value writes an empty `ApiProduct` and silently drops the consumer to the `standard` Kong group | Stops a malformed client from silently landing in the wrong rate-limit group |
+| 209 | P2 | Synth test for `cdk/src/cdk.ts` | The CDK stack has no synth test | Guards the CDK stack against synth regressions |
+| — | P3 | Report `test-sync-clients-to-kong.sh` results in CI | Its 12 assertions exist but run as a standalone script, invisible to the mapping and easy to skip | Hygiene: surfaces 12 existing assertions in CI |
 
 ---
 
@@ -300,12 +300,12 @@ own tests, marked **deprecated** in `CLAUDE.md` ("do not add features or invest 
 proposed for it. The mapping's line that "all 99 tests live in the single `Zocdoc.Auth.Mock.Tests` project"
 should say the deprecated project was excluded.
 
-| # | P | Proposed test | Why |
-|---|---|---|---|
-| 210 | P1 | A contract test validating mock responses against the same OpenAPI spec the real auth-service publishes | Turns parity from a manual promise into a build failure — and makes `ApiParityTests` mean what it says |
-| 211–215 | P2 | `FgaServiceTests`, `PublicPrivateKeyPairsTests` (kid selection, rotation), `SerializationTests`, `ExamplesImplTests`, `CustomMetadataProviderTests` | Zero references of any kind. `FgaControllerTests` (34 tests) drives the controller over HTTP but never names `FgaService` |
-| 216 | P3 | `AppSettings` binding test | |
-| 217 | P3 | Either finish `ApiParityTests.TestingJwt` or delete it | An `[Ignore]`d test counted as coverage in the index |
+| # | P | What's missing | What we lose | Why add |
+|---|---|---|---|---|
+| 210 | P1 | A contract test validating mock responses against the same OpenAPI spec the real auth-service publishes | Nothing compares this mock's responses to the real auth-service contract, yet downstream suites across the org trust it blindly | Turns parity from a manual promise into a build failure, and makes `ApiParityTests` mean what it says |
+| 211–215 | P2 | `FgaServiceTests`, `PublicPrivateKeyPairsTests` (kid selection, rotation), `SerializationTests`, `ExamplesImplTests`, `CustomMetadataProviderTests` | Zero references of any kind; `FgaControllerTests` (34 tests) drives the controller over HTTP but never names `FgaService` | Covers the mock's service classes behind the HTTP-only tests |
+| 216 | P3 | `AppSettings` binding test | Config binding is unverified | Hygiene: guards config binding |
+| 217 | P3 | Either finish `ApiParityTests.TestingJwt` or delete it | An `[Ignore]`d test is counted as coverage in the index | Hygiene: resolves an ignored test that inflates the count |
 
 ---
 
@@ -314,11 +314,11 @@ should say the deprecated project was excluded.
 Best-covered repo in the set: both `UserAccountServiceTests` and `AccountsImplTests` end with
 `AllPublicMethodsAreTested() => base.EnsureAllPublicMethodsAreTested()` — verified.
 
-| # | P | Proposed test | Why |
-|---|---|---|---|
-| 218 | P2 | Give `UserAccounts.Web.IntegrationTests` real content | The project holds only an `ExampleTests` scaffold asserting `(1 + 1).Should().Be(2)`, so the web layer has no integration coverage |
-| 219 | P3 | Direct `ConversionExtensions` cases for the enum tuples | Reached only implicitly, as extension methods |
-| 220 | P3 | Remove the remaining `ExampleTests` scaffold in `UserAccounts.IntegrationTests` | |
+| # | P | What's missing | What we lose | Why add |
+|---|---|---|---|---|
+| 218 | P2 | Give `UserAccounts.Web.IntegrationTests` real content | The project holds only an `ExampleTests` scaffold asserting `(1 + 1).Should().Be(2)`, so the web layer has no integration coverage | Gives the web layer real integration coverage |
+| 219 | P3 | Direct `ConversionExtensions` cases for the enum tuples | The extension methods are reached only implicitly | Hygiene: covers the enum-tuple conversions directly |
+| 220 | P3 | Remove the remaining `ExampleTests` scaffold in `UserAccounts.IntegrationTests` | A scaffold test counts as coverage | Hygiene: removes an empty scaffold from the count |
 
 ---
 
