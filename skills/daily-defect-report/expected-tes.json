@@ -1,0 +1,33 @@
+{
+ "Daily Regression": {
+  "BOB(Provider) Daily Regression": "Anushka Kumar",
+  "BOB(patient) Daily Regression": "Astha Raghuwanshi",
+  "Branded Directory Daily Regression": "Allen Koickal",
+  "Exploratory Testing - Inbox Daily Regression": "Akash Nair",
+  "Exploratory Testing Instant Add-Ons Daily Regression": "Akash Nair",
+  "Exploratory Testing NonMarketplace (Referral List & White Label) Daily Regression": "Jyoti Bhansali",
+  "Exploratory Testing Patient Transactional Communication Daily Regression": "Yash Meshram",
+  "Marketplace Search Daily Regression": "Astha Singh",
+  "Provider Transactional Communication Daily Regression": "Allen Koickal",
+  "SEM Pages Daily Regression": "Shriya Belsare",
+  "ZVS Daily Regression": "Astha Singh"
+ },
+ "Smoke": {
+  "Android App Smoke": "Anish Oswal",
+  "Authentication Smoke": "Mervis Mascarenhas",
+  "Exploratory Testing Patient Intake Smoke": "Jyoti Bhansali",
+  "Exploratory Testing Provider Pre-Appointment Smoke": "Yash Meshram",
+  "Homepage Smoke": "Shriya Belsare",
+  "Listing Page Smoke": "Shriya Belsare",
+  "Marketplace Search Smoke": "Mervis Mascarenhas",
+  "Patient Booking Smoke": "Imroza Ashrafi",
+  "Patient Pre-Appointment (post-booking) Smoke": "Astha Raghuwanshi",
+  "Practice Configuration Smoke": "Imroza Ashrafi",
+  "Provider Edit Page Smoke": "Anjana Somanath",
+  "Provider Intake Smoke": "Anushka Kumar",
+  "Provider Performance Report Smoke": "Anjana Somanath",
+  "ZVS Smoke": "Mervis Mascarenhas",
+  "Zo 2.0 Smoke": "Astha Singh",
+  "iOS App Smoke": "Harsh Khadde"
+ }
+}

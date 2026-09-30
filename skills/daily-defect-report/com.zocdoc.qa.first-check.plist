@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>com.zocdoc.qa.first-check</string>
+
+  <!-- A LaunchAgent, not a cron job or a LaunchDaemon, specifically for the
+       Keychain: agents run inside the logged-in GUI session, so zd-slack can
+       reach its credentials. cron cannot, which is why the crontab line was
+       only ever worth trying, not trusting. -->
+  <key>ProgramArguments</key>
+  <array>
+    <string>/Users/allen.koickal/.claude/skills/daily-defect-report/scripts/first-check.sh</string>
+  </array>
+
+  <!-- 19:30 and 20:00, Monday(1) to Friday(5). The second entry is the
+       follow-up pass; first-check.sh tells them apart by the state file, not by
+       the clock, so a run that slips does not misdescribe itself. nudge.py
+       refuses weekends independently, so a mistake here cannot produce a
+       Saturday ping. -->
+  <key>StartCalendarInterval</key>
+  <array>
+    <dict>
+      <key>Weekday</key><integer>1</integer>   <!-- Mon -->
+      <key>Hour</key><integer>19</integer>
+      <key>Minute</key><integer>30</integer>
+    </dict>
+    <dict>
+      <key>Weekday</key><integer>2</integer>   <!-- Tue -->
+      <key>Hour</key><integer>19</integer>
+      <key>Minute</key><integer>30</integer>
+    </dict>
+    <dict>
+      <key>Weekday</key><integer>3</integer>   <!-- Wed -->
+      <key>Hour</key><integer>19</integer>
+      <key>Minute</key><integer>30</integer>
+    </dict>
+    <dict>
+      <key>Weekday</key><integer>4</integer>   <!-- Thu -->
+      <key>Hour</key><integer>19</integer>
+      <key>Minute</key><integer>30</integer>
+    </dict>
+    <dict>
+      <key>Weekday</key><integer>5</integer>   <!-- Fri -->
+      <key>Hour</key><integer>19</integer>
+      <key>Minute</key><integer>30</integer>
+    </dict>
+    <dict>
+      <key>Weekday</key><integer>1</integer>
+      <key>Hour</key><integer>20</integer>
+      <key>Minute</key><integer>0</integer>
+    </dict>
+    <dict>
+      <key>Weekday</key><integer>2</integer>
+      <key>Hour</key><integer>20</integer>
+      <key>Minute</key><integer>0</integer>
+    </dict>
+    <dict>
+      <key>Weekday</key><integer>3</integer>
+      <key>Hour</key><integer>20</integer>
+      <key>Minute</key><integer>0</integer>
+    </dict>
+    <dict>
+      <key>Weekday</key><integer>4</integer>
+      <key>Hour</key><integer>20</integer>
+      <key>Minute</key><integer>0</integer>
+    </dict>
+    <dict>
+      <key>Weekday</key><integer>5</integer>
+      <key>Hour</key><integer>20</integer>
+      <key>Minute</key><integer>0</integer>
+    </dict>
+  </array>
+
+  <!-- launchd opens these BEFORE exec, so the directory has to already exist.
+       ~/Library/Logs always does; /tmp is periodically cleaned. -->
+  <key>StandardOutPath</key>
+  <string>/Users/allen.koickal/Library/Logs/qa-first-check.out</string>
+  <key>StandardErrorPath</key>
+  <string>/Users/allen.koickal/Library/Logs/qa-first-check.err</string>
+
+  <key>EnvironmentVariables</key>
+  <dict>
+    <key>PATH</key>
+    <string>/opt/zocdoc/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin</string>
+    <!-- pinned so the per-day log is at a predictable /tmp/ddr-first-check/<date>.log -->
+    <key>TMPDIR</key>
+    <string>/tmp</string>
+  </dict>
+
+  <!-- Never fire on load: loading it at 14:00 must not post at 14:00. -->
+  <key>RunAtLoad</key>
+  <false/>
+
+  <!-- No key needed for missed runs: launchd already runs a StartCalendarInterval
+       job on wake if the Mac was asleep at the fire time. If it wakes the NEXT
+       day, nudge.py's date check refuses rather than posting stale counts. -->
+</dict>
+</plist>

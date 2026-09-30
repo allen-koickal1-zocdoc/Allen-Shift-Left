@@ -1,0 +1,6 @@
+{
+  "Desktop Web":        ["MacBook", "Chrome 151"],
+  "Mobile Web":         ["iPhone", "Safari 26.6"],
+  "iOS Mobile App":     ["iPhone 13 mini", "4.231"],
+  "Android Mobile App": ["Samsung S25 Ultra", "3.252"]
+}

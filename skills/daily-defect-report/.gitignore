@@ -1,0 +1,9 @@
+# Secrets — never commit
+.xray-credentials
+scripts/.xray_token
+
+# Runtime artifacts
+*.state.json
+*.allclear
+__pycache__/
+.pytest_cache/
